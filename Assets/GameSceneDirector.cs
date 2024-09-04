@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameSceneDirector : MonoBehaviour
 {
-    //UIŠÖ˜A
+    //UIé–¢é€£
     [SerializeField] Text textTurnInfo;
     [SerializeField] Text textResultInfo;
     [SerializeField] Button buttonTitle;
@@ -13,18 +13,18 @@ public class GameSceneDirector : MonoBehaviour
     [SerializeField] Button buttonEvolutionApply;
     [SerializeField] Button buttonEvolutionCancel;
 
-    //ƒQ[ƒ€İ’è
+    //ã‚²ãƒ¼ãƒ è¨­å®š
     const int PlayerMax = 4;
     int boardWidth;
     int boardHeight;
 
-    //ƒ^ƒCƒ‹‚ÌƒvƒŒƒnƒu
+    //ã‚¿ã‚¤ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabTile;
 
-    //ƒ†ƒjƒbƒg‚ÌƒvƒŒƒnƒu
+    //ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] List<GameObject> prefabUnits;
 
-    //‰Šú”z’u
+    //åˆæœŸé…ç½®
     int[,] boardSetting =
     {
         { 0, 0, 16, 17, 18, 17, 16, 0, 0 },
@@ -41,14 +41,14 @@ public class GameSceneDirector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //UIŠÖ˜A‰Šúİ’è
+        //UIé–¢é€£åˆæœŸè¨­å®š
         buttonTitle.gameObject.SetActive(false);
         buttonRematch.gameObject.SetActive(false);
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
         textResultInfo.text = "";
 
-        //ƒ{[ƒhƒTƒCƒY
+        //ãƒœãƒ¼ãƒ‰ã‚µã‚¤ã‚º
         boardWidth = boardSetting.GetLength(0);
         boardHeight = boardSetting.GetLength(1);
 
@@ -56,28 +56,34 @@ public class GameSceneDirector : MonoBehaviour
         {
             for (int j = 0; j < boardHeight; j++)
             {
-                //ƒ^ƒCƒ‹‚Æƒ†ƒjƒbƒg‚Ìƒ|ƒWƒVƒ‡ƒ“
+                //ã‚¿ã‚¤ãƒ«ã¨ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒã‚¸ã‚·ãƒ§ãƒ³
                 float x = i - boardWidth / 2;
                 float y = j - boardHeight / 2;
 
-                //ƒ|ƒWƒVƒ‡ƒ“
+                //ãƒã‚¸ã‚·ãƒ§ãƒ³
                 Vector3 pos = new Vector3(x, 0, y);
 
-                //ƒ^ƒCƒ‹ì¬
+                //ã‚¿ã‚¤ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+                Vector2Int tileindex = new Vector2Int(i, j);
+
+                //ã‚¿ã‚¤ãƒ«ä½œæˆ
                 GameObject tile = Instantiate(prefabTile, pos, Quaternion.identity);
 
-                //ƒ†ƒjƒbƒgì¬
+                //ãƒ¦ãƒ‹ãƒƒãƒˆä½œæˆ
                 int type = boardSetting[i, j] % 10;
                 int player = boardSetting[i, j] / 10;
 
                 if (0 == type) continue;
 
-                //‰Šú‰»
+                //åˆæœŸåŒ–
                 pos.y = 0.7f;
 
                 GameObject prefab = prefabUnits[type - 1];
                 GameObject unit = Instantiate(prefab, pos, Quaternion.Euler(90, player * 90, 0));
                 unit.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = unit.AddComponent<UnitController>();
+                unitctrl.Init(player, type, tile, tileindex);
             }
         }
     }
