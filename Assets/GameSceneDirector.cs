@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class GameSceneDirector : MonoBehaviour
 {
-    //UIŠÖ˜A
+    //UIé–¢é€£
     [SerializeField] Text textTurnInfo;
     [SerializeField] Text textResultInfo;
     [SerializeField] Button buttonTitle;
@@ -15,18 +15,18 @@ public class GameSceneDirector : MonoBehaviour
     [SerializeField] Button buttonEvolutionApply;
     [SerializeField] Button buttonEvolutionCancel;
 
-    //ƒQ[ƒ€İ’è
+    //ã‚²ãƒ¼ãƒ è¨­å®š
     const int PlayerMax = 4;
     int boardWidth;
     int boardHeight;
 
-    //ƒ^ƒCƒ‹‚ÌƒvƒŒƒnƒu
+    //ã‚¿ã‚¤ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabTile;
 
-    //ƒ†ƒjƒbƒg‚ÌƒvƒŒƒnƒu
+    //ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] List<GameObject> prefabUnits;
 
-    //‰Šú”z’u
+    //åˆæœŸé…ç½®
     int[,] boardSetting =
     {
         { 0, 0, 16, 17, 18, 17, 16, 0, 0 },
@@ -40,28 +40,28 @@ public class GameSceneDirector : MonoBehaviour
         { 0, 0, 36, 37, 38, 37, 36, 0, 0 },
     };
 
-    //ƒtƒB[ƒ‹ƒhƒf[ƒ^
+    //ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãƒ‡ãƒ¼ã‚¿
     Dictionary<Vector2Int, GameObject> tiles;
     UnitController[,] units;
 
-    //Œ»İ‘I‘ğ’†‚Ìƒ†ƒjƒbƒg
+    //ç¾åœ¨é¸æŠä¸­ã®ãƒ¦ãƒ‹ãƒƒãƒˆ
     UnitController selectUnit;
 
-    //ˆÚ“®‰Â”\”ÍˆÍ
+    //ç§»å‹•å¯èƒ½ç¯„å›²
     Dictionary<GameObject, Vector2Int> movableTiles;
 
-    //ƒJ[ƒ\ƒ‹‚ÌƒvƒŒƒnƒu
+    //ã‚«ãƒ¼ã‚½ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabCursor;
 
-    //ƒJ[ƒ\ƒ‹ƒIƒuƒWƒFƒNƒg
+    //ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     List<GameObject> cursors;
 
-    //ƒvƒŒƒCƒ„[‚Æƒ^[ƒ“
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã‚¿ãƒ¼ãƒ³
     int nowPlayer;
     int turnCount;
     bool isCpu;
 
-    //ƒ‚[ƒh
+    //ãƒ¢ãƒ¼ãƒ‰
     enum Mode
     {
         None,
@@ -74,68 +74,68 @@ public class GameSceneDirector : MonoBehaviour
 
     Mode nowMode, nextMode;
 
-    //‚¿‹îƒ^ƒCƒ‹‚ÌƒvƒŒƒnƒu
+    //æŒã¡é§’ã‚¿ã‚¤ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabUnitTile;
 
-    //‚¿‹î‚ğ’u‚­êŠ
+    //æŒã¡é§’ã‚’ç½®ãå ´æ‰€
     List<GameObject>[] unitTiles;
 
-    //ƒLƒƒƒvƒ`ƒƒ‚³‚ê‚½ƒ†ƒjƒbƒg
+    //ã‚­ãƒ£ãƒ—ãƒãƒ£ã•ã‚ŒãŸãƒ¦ãƒ‹ãƒƒãƒˆ
     List<UnitController> captureUnits;
 
     // Start is called before the first frame update
     void Start()
     {
-        //UIŠÖ˜A‰Šúİ’è
+        //UIé–¢é€£åˆæœŸè¨­å®š
         buttonTitle.gameObject.SetActive(false);
         buttonRematch.gameObject.SetActive(false);
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
         textResultInfo.text = "";
 
-        //ƒ{[ƒhƒTƒCƒY
+        //ãƒœãƒ¼ãƒ‰ã‚µã‚¤ã‚º
         boardWidth = boardSetting.GetLength(0);
         boardHeight = boardSetting.GetLength(1);
 
-        //ƒtƒB[ƒ‹ƒh‰Šú‰»
+        //ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰åˆæœŸåŒ–
         tiles = new Dictionary<Vector2Int, GameObject>();
         units = new UnitController[boardWidth, boardHeight];
 
-        //ˆÚ“®‰Â”\”ÍˆÍ
+        //ç§»å‹•å¯èƒ½ç¯„å›²
         movableTiles = new Dictionary<GameObject, Vector2Int>();
         cursors = new List<GameObject>();
 
-        //‚¿‹î‚ğ’u‚­êŠ
+        //æŒã¡é§’ã‚’ç½®ãå ´æ‰€
         unitTiles = new List<GameObject>[PlayerMax];
 
-        //ƒLƒƒƒvƒ`ƒƒ‚³‚ê‚½ƒ†ƒjƒbƒg
+        //ã‚­ãƒ£ãƒ—ãƒãƒ£ã•ã‚ŒãŸãƒ¦ãƒ‹ãƒƒãƒˆ
         captureUnits = new List<UnitController>();
 
         for (int i = 0; i < boardWidth; i++)
         {
             for (int j = 0; j < boardHeight; j++)
             {
-                //ƒ^ƒCƒ‹‚Æƒ†ƒjƒbƒg‚Ìƒ|ƒWƒVƒ‡ƒ“
+                //ã‚¿ã‚¤ãƒ«ã¨ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒã‚¸ã‚·ãƒ§ãƒ³
                 float x = i - boardWidth / 2;
                 float y = j - boardHeight / 2;
 
-                //ƒ|ƒWƒVƒ‡ƒ“
+                //ãƒã‚¸ã‚·ãƒ§ãƒ³
                 Vector3 pos = new Vector3(x, 0, y);
 
-                //ƒ^ƒCƒ‹‚ÌƒCƒ“ƒfƒbƒNƒX
+                //ã‚¿ã‚¤ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
                 Vector2Int tileindex = new Vector2Int(i, j);
 
-                //ƒ^ƒCƒ‹ì¬
+                //ã‚¿ã‚¤ãƒ«ä½œæˆ
                 GameObject tile = Instantiate(prefabTile, pos, Quaternion.identity);
                 tiles.Add(tileindex, tile);
 
-                //ƒ†ƒjƒbƒgì¬
+                //ãƒ¦ãƒ‹ãƒƒãƒˆä½œæˆ
                 int type = boardSetting[i, j] % 10;
                 int player = boardSetting[i, j] / 10;
 
                 if (0 == type) continue;
 
-                //‰Šú‰»
+                //åˆæœŸåŒ–
                 pos.y = 0.7f;
 
                 GameObject prefab = prefabUnits[type - 1];
@@ -145,12 +145,12 @@ public class GameSceneDirector : MonoBehaviour
                 UnitController unitctrl = unit.AddComponent<UnitController>();
                 unitctrl.Init(player, type, tile, tileindex);
 
-                //ƒ†ƒjƒbƒgƒf[ƒ^ƒZƒbƒg
+                //ãƒ¦ãƒ‹ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ
                 units[i, j] = unitctrl;
             }
         }
 
-        //‚¿‹î‚ğ’u‚­êŠ‚Ìì¬
+        //æŒã¡é§’ã‚’ç½®ãå ´æ‰€ã®ä½œæˆ
         Vector3 startposEven = new Vector3(-4, 0.5f, -5);
         Vector3 startposOdd = new Vector3(-5, 0.5f, 4);
 
@@ -188,10 +188,10 @@ public class GameSceneDirector : MonoBehaviour
             }
         }
 
-        //TurnChange‚©‚çn‚ß‚éê‡-1
+        //TurnChangeã‹ã‚‰å§‹ã‚ã‚‹å ´åˆ-1
         nowPlayer = -1;
 
-        //‰‰ñƒ‚[ƒh
+        //åˆå›ãƒ¢ãƒ¼ãƒ‰
         nowMode = Mode.None;
         nextMode = Mode.TurnChange;
     }
@@ -212,7 +212,7 @@ public class GameSceneDirector : MonoBehaviour
             turnChangeMode();
         }
 
-        //ƒ‚[ƒh•ÏX
+        //ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´
         if (Mode.None != nextMode)
         {
             nowMode = nextMode;
@@ -220,27 +220,27 @@ public class GameSceneDirector : MonoBehaviour
         }
     }
 
-    //‘I‘ğ
+    //é¸æŠæ™‚
     void setSelectCursors(UnitController unit = null, bool playerunit = true)
     {
-        //ƒJ[ƒ\ƒ‹íœ
+        //ã‚«ãƒ¼ã‚½ãƒ«å‰Šé™¤
         foreach (var item in cursors)
         {
             Destroy(item);
         }
         cursors.Clear();
 
-        //‘I‘ğƒ†ƒjƒbƒg‚Ì”ñ‘I‘ğó‘Ô
+        //é¸æŠãƒ¦ãƒ‹ãƒƒãƒˆã®éé¸æŠçŠ¶æ…‹
         if (selectUnit)
         {
             selectUnit.Select(false);
             selectUnit = null;
         }
 
-        //ƒ†ƒjƒbƒgî•ñ‚ª‚È‚¯‚ê‚ÎI—¹
+        //ãƒ¦ãƒ‹ãƒƒãƒˆæƒ…å ±ãŒãªã‘ã‚Œã°çµ‚äº†
         if (!unit) return;
 
-        //ˆÚ“®‰Â”\”ÍˆÍæ“¾
+        //ç§»å‹•å¯èƒ½ç¯„å›²å–å¾—
         List<Vector2Int> movabletiles = getMovableTiles(unit);
         movableTiles.Clear();
 
@@ -248,14 +248,14 @@ public class GameSceneDirector : MonoBehaviour
         {
             movableTiles.Add(tiles[item], item);
 
-            //ƒJ[ƒ\ƒ‹¶¬
+            //ã‚«ãƒ¼ã‚½ãƒ«ç”Ÿæˆ
             Vector3 pos = tiles[item].transform.position;
             pos.y += 0.51f;
             GameObject cursor = Instantiate(prefabCursor, pos, Quaternion.identity);
             cursors.Add(cursor);
         }
 
-        //‘I‘ğó‘Ô
+        //é¸æŠçŠ¶æ…‹
         if (playerunit)
         {
             unit.Select();
@@ -263,41 +263,41 @@ public class GameSceneDirector : MonoBehaviour
         }
     }
 
-    //ƒ†ƒjƒbƒgˆÚ“®
+    //ãƒ¦ãƒ‹ãƒƒãƒˆç§»å‹•
     Mode moveUnit(UnitController unit, Vector2Int tileindex)
     {
-        //ˆÚ“®‚µI‚í‚Á‚½Œã‚Ìƒ‚[ƒh
+        //ç§»å‹•ã—çµ‚ã‚ã£ãŸå¾Œã®ãƒ¢ãƒ¼ãƒ‰
         Mode ret = Mode.TurnChange;
 
-        //Œ»İ’n
+        //ç¾åœ¨åœ°
         Vector2Int oldpos = unit.Pos;
 
-        //ˆÚ“®æ‚É’N‚©‚¢‚½‚çæ‚é
+        //ç§»å‹•å…ˆã«èª°ã‹ã„ãŸã‚‰å–ã‚‹
         captureUnit(nowPlayer, tileindex);
 
-        //ƒ†ƒjƒbƒgˆÚ“®
+        //ãƒ¦ãƒ‹ãƒƒãƒˆç§»å‹•
         unit.Move(tiles[tileindex], tileindex);
 
-        //“à•”ƒf[ƒ^XV(V‚µ‚¢êŠ)
+        //å†…éƒ¨ãƒ‡ãƒ¼ã‚¿æ›´æ–°(æ–°ã—ã„å ´æ‰€)
         units[tileindex.x, tileindex.y] = unit;
 
-        //ƒ{[ƒhã‚Ì‹î‚ğXV
+        //ãƒœãƒ¼ãƒ‰ä¸Šã®é§’ã‚’æ›´æ–°
         if (FieldStatus.OnBoard == unit.FieldStatus)
         {
-            //“à•”ƒf[ƒ^XV
+            //å†…éƒ¨ãƒ‡ãƒ¼ã‚¿æ›´æ–°
             units[oldpos.x, oldpos.y] = null;
         }
-        //‚¿‹î‚ÌXV
+        //æŒã¡é§’ã®æ›´æ–°
         else
         {
-            //‚¿‹î‚ÌXV
+            //æŒã¡é§’ã®æ›´æ–°
             captureUnits.Remove(unit);
         }
 
-        //ƒ†ƒjƒbƒg‚Ìó‘Ô‚ğXV
+        //ãƒ¦ãƒ‹ãƒƒãƒˆã®çŠ¶æ…‹ã‚’æ›´æ–°
         unit.FieldStatus = FieldStatus.OnBoard;
 
-        //‚¿‹î•\¦‚ğXV
+        //æŒã¡é§’è¡¨ç¤ºã‚’æ›´æ–°
         alignCaptureUnits(nowPlayer);
 
         return ret;
@@ -307,50 +307,50 @@ public class GameSceneDirector : MonoBehaviour
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        //‰¤è‚³‚ê‚Ä‚µ‚Ü‚¤‚©ƒ`ƒFƒbƒN
+        //ç‹æ‰‹ã•ã‚Œã¦ã—ã¾ã†ã‹ãƒã‚§ãƒƒã‚¯
 
         return ret;
     }
 
-    //ƒ^[ƒ“ŠJn
+    //ã‚¿ãƒ¼ãƒ³é–‹å§‹
     void startMode()
     {
-        //Ÿ”s‚ª‚Â‚¢‚Ä‚¢‚È‚¯‚ê‚Î’Êíƒ‚[ƒh
+        //å‹æ•—ãŒã¤ã„ã¦ã„ãªã‘ã‚Œã°é€šå¸¸ãƒ¢ãƒ¼ãƒ‰
         nextMode = Mode.Select;
 
-        //InfoXV
-        textTurnInfo.text = "" + (nowPlayer + 1) + "P‚Ì”Ô‚Å‚·";
+        //Infoæ›´æ–°
+        textTurnInfo.text = "" + (nowPlayer + 1) + "Pã®ç•ªã§ã™";
         textResultInfo.text = "";
 
-        //Ÿ”sƒ`ƒFƒbƒN
+        //å‹æ•—ãƒã‚§ãƒƒã‚¯
 
     }
 
-    //ƒ†ƒjƒbƒg‚Æƒ^ƒCƒ‹‘I‘ğ
+    //ãƒ¦ãƒ‹ãƒƒãƒˆã¨ã‚¿ã‚¤ãƒ«é¸æŠ
     void selectMode()
     {
         GameObject tile = null;
         UnitController unit = null;
 
-        //ƒvƒŒƒCƒ„[ˆ—
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‡¦ç†
         if (Input.GetMouseButtonUp(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //è‘O‚Ìƒ†ƒjƒbƒg‚É‚à“–‚½‚è”»’è‚ª‚ ‚é‚Ì‚Åƒqƒbƒg‚µ‚½‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒgî•ñ‚ğæ“¾
+            //æ‰‹å‰ã®ãƒ¦ãƒ‹ãƒƒãƒˆã«ã‚‚å½“ãŸã‚Šåˆ¤å®šãŒã‚ã‚‹ã®ã§ãƒ’ãƒƒãƒˆã—ãŸã™ã¹ã¦ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±ã‚’å–å¾—
             foreach (RaycastHit hit in Physics.RaycastAll(ray))
             {
                 UnitController hitunit = hit.transform.GetComponent<UnitController>();
 
-                //‚¿‹î
+                //æŒã¡é§’
                 if (hitunit && FieldStatus.Captured == hitunit.FieldStatus)
                 {
                     unit = hitunit;
                 }
-                //ƒ^ƒCƒ‹‘I‘ğ‚Æã‚Éæ‚Á‚Ä‚¢‚éƒ†ƒjƒbƒg
+                //ã‚¿ã‚¤ãƒ«é¸æŠã¨ä¸Šã«ä¹—ã£ã¦ã„ã‚‹ãƒ¦ãƒ‹ãƒƒãƒˆ
                 else if (tiles.ContainsValue(hit.transform.gameObject))
                 {
                     tile = hit.transform.gameObject;
-                    //ƒ^ƒCƒ‹‚©‚çƒ†ƒjƒbƒg‚ğ’T‚·
+                    //ã‚¿ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ‹ãƒƒãƒˆã‚’æ¢ã™
                     foreach (var item in tiles)
                     {
                         if (item.Value == tile)
@@ -363,16 +363,16 @@ public class GameSceneDirector : MonoBehaviour
             }
         }
 
-        //‰½‚à‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Îˆ—‚ğ‚µ‚È‚¢
+        //ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã‘ã‚Œã°å‡¦ç†ã‚’ã—ãªã„
         if (null == tile && null == unit) return;
 
-        //ˆÚ“®æ‘I‘ğ
+        //ç§»å‹•å…ˆé¸æŠ
         if (tile && selectUnit && movableTiles.ContainsKey(tile))
         {
             nextMode = moveUnit(selectUnit, movableTiles[tile]);
         }
 
-        //ƒ†ƒjƒbƒg‘I‘ğ
+        //ãƒ¦ãƒ‹ãƒƒãƒˆé¸æŠ
         if (unit)
         {
             bool isPlayer = nowPlayer == unit.Player;
@@ -380,22 +380,22 @@ public class GameSceneDirector : MonoBehaviour
         }
     }
 
-    //ƒ^[ƒ“•ÏX
+    //ã‚¿ãƒ¼ãƒ³å¤‰æ›´
     void turnChangeMode()
     {
-        //ƒ{ƒ^ƒ“‚ÆƒJ[ƒ\ƒ‹‚ÌƒŠƒZƒbƒg
+        //ãƒœã‚¿ãƒ³ã¨ã‚«ãƒ¼ã‚½ãƒ«ã®ãƒªã‚»ãƒƒãƒˆ
         setSelectCursors();
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
 
-        //CPUó‘Ô‰ğœ
+        //CPUçŠ¶æ…‹è§£é™¤
         isCpu = false;
 
-        //Ÿ‚ÌƒvƒŒƒCƒ„[‚Ö
+        //æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¸
         nowPlayer = GetNextPlayer(nowPlayer);
 
 
-        //Œo‰ßƒ^[ƒ“
+        //çµŒéã‚¿ãƒ¼ãƒ³
         if (0 == nowPlayer)
         {
             turnCount++;
@@ -404,7 +404,7 @@ public class GameSceneDirector : MonoBehaviour
         nextMode = Mode.Start;
     }
 
-    //Ÿ‚ÌƒvƒŒƒCƒ„[”Ô†‚ğ•Ô‚·
+    //æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã‚’è¿”ã™
     public static int GetNextPlayer(int player)
     {
         int next = player + 1;
@@ -422,16 +422,16 @@ public class GameSceneDirector : MonoBehaviour
         units[tileindex.x, tileindex.y] = null;
     }
 
-    //‚¿‹î‚ğ•À‚×‚é
+    //æŒã¡é§’ã‚’ä¸¦ã¹ã‚‹
     void alignCaptureUnits(int player)
     {
-        //ŠŒÂ”‚ğ‚¢‚Á‚½‚ñ”ñ•\¦
+        //æ‰€æŒå€‹æ•°ã‚’ã„ã£ãŸã‚“éè¡¨ç¤º
         foreach (var item in unitTiles[player])
         {
             item.SetActive(false);
         }
 
-        //ƒ†ƒjƒbƒg‚²‚Æ‚É•ª‚¯‚é
+        //ãƒ¦ãƒ‹ãƒƒãƒˆã”ã¨ã«åˆ†ã‘ã‚‹
         Dictionary<UnitType, List<UnitController>> typeunits = new Dictionary<UnitType, List<UnitController>>();
 
         foreach (var item in captureUnits)
@@ -441,32 +441,32 @@ public class GameSceneDirector : MonoBehaviour
             typeunits[item.UnitType].Add(item);
         }
 
-        //ƒ^ƒCƒv‚²‚Æ‚É•À‚×‚Äˆê”Ôã‚¾‚¯•\¦‚·‚é
+        //ã‚¿ã‚¤ãƒ—ã”ã¨ã«ä¸¦ã¹ã¦ä¸€ç•ªä¸Šã ã‘è¡¨ç¤ºã™ã‚‹
         int tilecount = 0;
         foreach (var item in typeunits)
         {
             if (1 > item.Value.Count) continue;
 
-            //’u‚­êŠ
+            //ç½®ãå ´æ‰€
             GameObject tile = unitTiles[player][tilecount++];
 
-            //”ñ•\¦‚É‚µ‚Ä‚¢‚½ƒ^ƒCƒ‹‚ğ•\¦‚·‚é
+            //éè¡¨ç¤ºã«ã—ã¦ã„ãŸã‚¿ã‚¤ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹
             tile.SetActive(true);
 
-            //ŠŒÂ”‚Ì•\¦
+            //æ‰€æŒå€‹æ•°ã®è¡¨ç¤º
             tile.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = "" + item.Value.Count;
 
-            //“¯‚¶í—Ş‚Ì‚¿‹î‚ğ•À‚×‚é
+            //åŒã˜ç¨®é¡ã®æŒã¡é§’ã‚’ä¸¦ã¹ã‚‹
             for (int i = 0; i < item.Value.Count; i++)
             {
-                //ƒŠƒXƒg“à‚Ìƒ†ƒjƒbƒg‚ğ•\¦
+                //ãƒªã‚¹ãƒˆå†…ã®ãƒ¦ãƒ‹ãƒƒãƒˆã‚’è¡¨ç¤º
                 GameObject unit = item.Value[i].gameObject;
-                //’u‚­êŠ
+                //ç½®ãå ´æ‰€
                 Vector3 pos = tile.transform.position;
-                //ˆê’Uƒ†ƒjƒbƒg‚ğˆÚ“®‚µ‚Ä•\¦‚·‚é
+                //ä¸€æ—¦ãƒ¦ãƒ‹ãƒƒãƒˆã‚’ç§»å‹•ã—ã¦è¡¨ç¤ºã™ã‚‹
                 unit.SetActive(true);
                 unit.transform.position = pos;
-                //1ŒÂ–ÚˆÈŠO‚Í”ñ•\¦
+                //1å€‹ç›®ä»¥å¤–ã¯éè¡¨ç¤º
                 if (0 < i) unit.SetActive(false);
             }
         }
