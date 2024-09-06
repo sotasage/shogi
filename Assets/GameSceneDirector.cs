@@ -167,7 +167,7 @@ public class GameSceneDirector : MonoBehaviour
                 if (i == 0 || i == 2)
                 {
                     Vector3 posEven = startposEven;
-                    posEven.x = (posEven.x + 1) * dir;
+                    posEven.x = (posEven.x + j) * dir;
                     posEven.z = posEven.z * dir;
 
                     resultpos = posEven;
@@ -176,7 +176,7 @@ public class GameSceneDirector : MonoBehaviour
                 {
                     Vector3 posOdd = startposOdd;
                     posOdd.x = posOdd.x * dir;
-                    posOdd.z = (posOdd.z - 1) * dir;
+                    posOdd.z = (posOdd.z - j) * dir;
 
                     resultpos = posOdd;
                 }
