@@ -160,8 +160,8 @@ public class UnitController : MonoBehaviour
             Vector2Int dir = new Vector2Int(0, 1);
 
             if (Player == 1) dir = new Vector2Int(1, 0);
-            if (Player == 2) dir = new Vector2Int(0, -1);
-            if (Player == 3) dir = new Vector2Int(-1, 0);
+            else if (Player == 2) dir = new Vector2Int(0, -1);
+            else if (Player == 3) dir = new Vector2Int(-1, 0);
 
             //前方1マス
             List<Vector2Int> vec = new List<Vector2Int>()
@@ -196,5 +196,37 @@ public class UnitController : MonoBehaviour
     {
         if (unit && Player == unit.Player) return true;
         return false;
+    }
+
+    //キャプチャされたとき
+    public void Caputure(int player)
+    {
+        Player = player;
+        FieldStatus = FieldStatus.Captured;
+        Evolution(false);
+        GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    //成
+    public void Evolution(bool evolution = true)
+    {
+        Vector3 angle = transform.eulerAngles;
+
+        //成
+        if (evolution && UnitType.None != evolutionTable[UnitType])
+        {
+            UnitType = evolutionTable[UnitType];
+            angle.x = 270;
+            angle.y = 90 * (Player - 2);
+            angle.z = 0;
+            transform.eulerAngles = angle;
+        }
+        else
+        {
+            UnitType = OldUnitType;
+            transform.eulerAngles = getDefaultAngles(Player);
+        }
+
+        isEvolution = evolution;
     }
 }
