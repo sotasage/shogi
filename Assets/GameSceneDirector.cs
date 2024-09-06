@@ -83,9 +83,15 @@ public class GameSceneDirector : MonoBehaviour
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
+    //サウンド制御
+    [SerializeField] SoundController sound;
+
     // Start is called before the first frame update
     void Start()
     {
+        //BGM再生　うるさいので消しておく
+        //sound.PlayBGM(0);
+
         //UI関連初期設定
         buttonTitle.gameObject.SetActive(false);
         buttonRematch.gameObject.SetActive(false);
@@ -299,6 +305,9 @@ public class GameSceneDirector : MonoBehaviour
 
         //持ち駒表示を更新
         alignCaptureUnits(nowPlayer);
+
+        //SE再生
+        sound.PlaySE(0);
 
         return ret;
     }
