@@ -111,8 +111,7 @@ public class UnitController : MonoBehaviour
 
         Pos = tileindex;
     }
-<<<<<<< Updated upstream
-=======
+
 
     public void Select(bool select = true)
     {
@@ -151,7 +150,7 @@ public class UnitController : MonoBehaviour
             //持ち駒状態
         }
         //玉
-        else if(UnitTtype.Gyokku == UnitType)
+        else if(UnitType.Gyoku == UnitType)
         {
             //玉の移動範囲
         }
@@ -542,5 +541,4 @@ public class UnitController : MonoBehaviour
 
         isEvolution = evolution;
     }
->>>>>>> Stashed changes
 }
