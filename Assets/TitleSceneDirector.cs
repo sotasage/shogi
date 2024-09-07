@@ -91,6 +91,7 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
         string playerName = pNameInputField.text;
         if (!string.IsNullOrEmpty(playerName)) //–¼‘O‚ª‚µ‚Á‚©‚è“ü—Í‚³‚ê‚Ä‚¢‚ê‚Î
         {
+            ActivatePanel(joiningPanel.name);
             PhotonNetwork.LocalPlayer.NickName = playerName; //Photonã‚Ì–¼‘O‚ğİ’è
             PhotonNetwork.ConnectUsingSettings();
         }
