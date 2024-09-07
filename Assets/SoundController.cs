@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,14 +22,14 @@ public class SoundController : MonoBehaviour
         
     }
 
-    //BGMÄ¶
+    //BGMå†ç”Ÿ
     public void PlayBGM(int no)
     {
         audioSource.clip = bgm[no];
         audioSource.Play();
     }
 
-    //SEÄ¶
+    //SEå†ç”Ÿ
     public void PlaySE(int no)
     {
         audioSource.PlayOneShot(se[no]);

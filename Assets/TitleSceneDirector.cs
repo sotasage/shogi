@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,8 +40,8 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
     void Start()
     {
         ActivatePanel(selectModePanel.name);
-        cachedRoomList = new Dictionary<string, RoomInfo>(); //Key‚ğstringŒ^AValue‚ğRoomInfoŒ^‚Ì”z—ñ‚ğéŒ¾
-        roomListGameObjects = new Dictionary<string, GameObject>(); //Key‚ğstringŒ^AValue‚ğGameObjectŒ^‚Ì”z—ñ‚ğéŒ¾
+        cachedRoomList = new Dictionary<string, RoomInfo>(); //Keyã‚’stringå‹ã€Valueã‚’RoomInfoå‹ã®é…åˆ—ã‚’å®£è¨€
+        roomListGameObjects = new Dictionary<string, GameObject>(); //Keyã‚’stringå‹ã€Valueã‚’GameObjectå‹ã®é…åˆ—ã‚’å®£è¨€
     }
 
     // Update is called once per frame
@@ -60,27 +60,27 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
         ActivatePanel(loginPanel.name);
     }
 
-    public void PlayerNameInputValueChanged() //PlayerName‚Ì“ü—Í‚ÅŒÄ‚ÔŠÖ”
+    public void PlayerNameInputValueChanged() //PlayerNameã®å…¥åŠ›ã§å‘¼ã¶é–¢æ•°
     {
-        loginBtn.interactable = IsValidPName(); //boolŠÖ”‚©‚ç”»’è‚ğó‚¯‚éAfalse‚È‚çButton‚ª”¼“§–¾‚É‚È‚Á‚Ä‰Ÿ‚¹‚È‚¢
+        loginBtn.interactable = IsValidPName(); //boolé–¢æ•°ã‹ã‚‰åˆ¤å®šã‚’å—ã‘ã‚‹ã€falseãªã‚‰ButtonãŒåŠé€æ˜ã«ãªã£ã¦æŠ¼ã›ãªã„
     }
 
     private bool IsValidPName()
     {
-        //–¼‘O‚Í3•¶šˆÈã12•¶šˆÈ‰º‚Å‚ ‚éğŒ‚É‚µ‚Ä‚¢‚é
+        //åå‰ã¯3æ–‡å­—ä»¥ä¸Š12æ–‡å­—ä»¥ä¸‹ã§ã‚ã‚‹æ¡ä»¶ã«ã—ã¦ã„ã‚‹
         return !string.IsNullOrWhiteSpace(pNameInputField.text)
             && 3 <= pNameInputField.text.Length
             && pNameInputField.text.Length <= 12;
     }
 
-    public void RoomNameInputValueChanged() //“¯‚¶‚­RoomName‚Ì“ü—Í‚ÅŒÄ‚ÔŠÖ”
+    public void RoomNameInputValueChanged() //åŒã˜ãRoomNameã®å…¥åŠ›ã§å‘¼ã¶é–¢æ•°
     {
         createBtn.interactable = IsValidRName();
     }
 
     private bool IsValidRName()
     {
-        //–¼‘O‚Í3•¶šˆÈã12•¶šˆÈ‰º‚Å‚ ‚éğŒ‚É‚µ‚Ä‚¢‚é
+        //åå‰ã¯3æ–‡å­—ä»¥ä¸Š12æ–‡å­—ä»¥ä¸‹ã§ã‚ã‚‹æ¡ä»¶ã«ã—ã¦ã„ã‚‹
         return !string.IsNullOrWhiteSpace(rNameInputField.text)
             && 3 <= pNameInputField.text.Length
             && pNameInputField.text.Length <= 12;
@@ -89,40 +89,40 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
     public void LoginClicked()
     {
         string playerName = pNameInputField.text;
-        if (!string.IsNullOrEmpty(playerName)) //–¼‘O‚ª‚µ‚Á‚©‚è“ü—Í‚³‚ê‚Ä‚¢‚ê‚Î
+        if (!string.IsNullOrEmpty(playerName)) //åå‰ãŒã—ã£ã‹ã‚Šå…¥åŠ›ã•ã‚Œã¦ã„ã‚Œã°
         {
             ActivatePanel(joiningPanel.name);
-            PhotonNetwork.LocalPlayer.NickName = playerName; //Photonã‚Ì–¼‘O‚ğİ’è
+            PhotonNetwork.LocalPlayer.NickName = playerName; //Photonä¸Šã®åå‰ã‚’è¨­å®š
             PhotonNetwork.ConnectUsingSettings();
         }
     }
 
-    public void CreateRoomClicked() //LobbyPanel‚Å‚ÌCreateRoomButton
+    public void CreateRoomClicked() //LobbyPanelã§ã®CreateRoomButton
     {
         ActivatePanel(createPanel.name);
     }
 
-    public void CreateEnterClicked() //CreatePanel‚Å‚ÌCreateEnter
+    public void CreateEnterClicked() //CreatePanelã§ã®CreateEnter
     {
         string roomName = rNameInputField.text;
 
-        if (string.IsNullOrEmpty(roomName)) //–¼‘O‚ªnull‚Ìê‡
+        if (string.IsNullOrEmpty(roomName)) //åå‰ãŒnullã®å ´åˆ
         {
-            roomName = "Room " + Random.Range(1000, 10000); //©“®‚Å–¼‘O‚ğ‚Â‚¯‚é
+            roomName = "Room " + Random.Range(1000, 10000); //è‡ªå‹•ã§åå‰ã‚’ã¤ã‘ã‚‹
         }
 
-        RoomOptions roomOptions = new RoomOptions(); //RoomOptionsƒNƒ‰ƒX‚ÌéŒ¾
-        roomOptions.MaxPlayers = 2; //ƒ‹[ƒ€’èˆõ2–¼‚Éİ’è
+        RoomOptions roomOptions = new RoomOptions(); //RoomOptionsã‚¯ãƒ©ã‚¹ã®å®£è¨€
+        roomOptions.MaxPlayers = 2; //ãƒ«ãƒ¼ãƒ å®šå“¡2åã«è¨­å®š
 
-        PhotonNetwork.CreateRoom(roomName, roomOptions); //PhotonNetworkƒNƒ‰ƒX‚Éƒ‹[ƒ€ì¬‚ğ‘—M
+        PhotonNetwork.CreateRoom(roomName, roomOptions); //PhotonNetworkã‚¯ãƒ©ã‚¹ã«ãƒ«ãƒ¼ãƒ ä½œæˆã‚’é€ä¿¡
     }
 
-    public void LoginCancelClicked() //LoginPanel‚Å‚ÌCancelButton
+    public void LoginCancelClicked() //LoginPanelã§ã®CancelButton
     {
         ActivatePanel(selectModePanel.name);
     }
 
-    public void CreateCancelClicked() //LobbyPanel‚Å‚ÌCancelButton
+    public void CreateCancelClicked() //LobbyPanelã§ã®CancelButton
     {
         ActivatePanel(lobbyPanel.name);
     }
@@ -140,7 +140,7 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
     }
 
     #region Photon Callbacks
-    public override void OnConnectedToMaster() //ƒT[ƒo[‚É‚Â‚È‚ª‚èAƒƒr[‹@”\‚ªg‚¦‚é‚æ‚¤‚É‚È‚Á‚½‚çŒÄ‚Î‚ê‚éŠÖ”
+    public override void OnConnectedToMaster() //ã‚µãƒ¼ãƒãƒ¼ã«ã¤ãªãŒã‚Šã€ãƒ­ãƒ“ãƒ¼æ©Ÿèƒ½ãŒä½¿ãˆã‚‹ã‚ˆã†ã«ãªã£ãŸã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•°
     {
         ActivatePanel(lobbyPanel.name);
         if (!PhotonNetwork.InLobby)
@@ -149,72 +149,72 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnJoinedRoom() //ƒ‹[ƒ€‚É“ü‚Á‚½‚çŒÄ‚Î‚ê‚éŠÖ”
+    public override void OnJoinedRoom() //ãƒ«ãƒ¼ãƒ ã«å…¥ã£ãŸã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•°
     {
         ActivatePanel(joiningPanel.name);
-        PhotonNetwork.LoadLevel("GameScene"); //ƒIƒ“ƒ‰ƒCƒ“‚ÌƒQ[ƒ€ƒV[ƒ“‚Ö‘JˆÚ 
+        PhotonNetwork.LoadLevel("GameScene"); //ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ã®ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã¸é·ç§» 
         print("Enter!");
     }
 
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)//RoomList‚É•ÏX‚ª‚ ‚ê‚ÎŒÄ‚Î‚ê‚éŠÖ”
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)//RoomListã«å¤‰æ›´ãŒã‚ã‚Œã°å‘¼ã°ã‚Œã‚‹é–¢æ•°
     {
-        ClearRoomListView(); //ƒ‹[ƒ€ƒvƒŒƒtƒ@ƒu‚ÌƒŠƒXƒg‚ğíœ‚·‚éŠÖ”
+        ClearRoomListView(); //ãƒ«ãƒ¼ãƒ ãƒ—ãƒ¬ãƒ•ã‚¡ãƒ–ã®ãƒªã‚¹ãƒˆã‚’å‰Šé™¤ã™ã‚‹é–¢æ•°
 
-        foreach (RoomInfo room in roomList) //Šù‘¶‚Ì‘Sƒ‹[ƒ€‚É‘Î‚µ‚Äˆ—
+        foreach (RoomInfo room in roomList) //æ—¢å­˜ã®å…¨ãƒ«ãƒ¼ãƒ ã«å¯¾ã—ã¦å‡¦ç†
         {
-            if (!room.IsOpen || !room.IsVisible || room.RemovedFromList) //Œ®‚ª‚©‚©‚Á‚Ä‚¢‚½‚èA”ñ•\¦‚Èi—LŒø‚Å‚È‚¢jƒ‹[ƒ€‚Ìê‡
+            if (!room.IsOpen || !room.IsVisible || room.RemovedFromList) //éµãŒã‹ã‹ã£ã¦ã„ãŸã‚Šã€éè¡¨ç¤ºãªï¼ˆæœ‰åŠ¹ã§ãªã„ï¼‰ãƒ«ãƒ¼ãƒ ã®å ´åˆ
             {
-                if (cachedRoomList.ContainsKey(room.Name)) //—LŒø‚Èƒ‹[ƒ€‚Æ‚µ‚ÄƒŠƒXƒg‚ÉŠi”[‚³‚ê‚Ä‚¢‚éê‡
+                if (cachedRoomList.ContainsKey(room.Name)) //æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã¨ã—ã¦ãƒªã‚¹ãƒˆã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹å ´åˆ
                 {
-                    cachedRoomList.Remove(room.Name); //—LŒø‚Èƒ‹[ƒ€‚ÌƒŠƒXƒg‚©‚çíœ
+                    cachedRoomList.Remove(room.Name); //æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã®ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
                 }
             }
-            else //—LŒø‚Èƒ‹[ƒ€‚Ìê‡
+            else //æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã®å ´åˆ
             {
-                if (cachedRoomList.ContainsKey(room.Name)) //‚·‚Å‚É—LŒø‚Èƒ‹[ƒ€‚ÌƒŠƒXƒg‚ÉŠi”[‚³‚ê‚Ä‚¢‚éê‡
+                if (cachedRoomList.ContainsKey(room.Name)) //ã™ã§ã«æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã®ãƒªã‚¹ãƒˆã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹å ´åˆ
                 {
-                    cachedRoomList[room.Name] = room; //RoomInfoŒ^‚Ìî•ñ‚ğ“n‚·
+                    cachedRoomList[room.Name] = room; //RoomInfoå‹ã®æƒ…å ±ã‚’æ¸¡ã™
                 }
-                else //V‹K‚ÉŒ©‚Â‚©‚Á‚½ê‡
+                else //æ–°è¦ã«è¦‹ã¤ã‹ã£ãŸå ´åˆ
                 {
-                    cachedRoomList.Add(room.Name, room); //—LŒø‚Èƒ‹[ƒ€‚Æ‚µ‚ÄƒŠƒXƒg‚É’Ç‰Á
+                    cachedRoomList.Add(room.Name, room); //æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã¨ã—ã¦ãƒªã‚¹ãƒˆã«è¿½åŠ 
                 }
             }
         }
 
-        foreach (RoomInfo room in cachedRoomList.Values) //Šù‘¶‚Ì‘S‚Ä‚Ì—LŒø‚Èƒ‹[ƒ€‚É‘Î‚µ‚Äˆ—
+        foreach (RoomInfo room in cachedRoomList.Values) //æ—¢å­˜ã®å…¨ã¦ã®æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã«å¯¾ã—ã¦å‡¦ç†
         {
-            GameObject roomListEntryGameObject = Instantiate(roomPrefab); //‚»‚Ìƒ‹[ƒ€—p‚Ìƒ‹[ƒ€ƒvƒŒƒtƒ@ƒu‚ğ¶¬
-            roomListEntryGameObject.transform.SetParent(parentObj.transform); //Content”z‰º‚ÉŠi”[
+            GameObject roomListEntryGameObject = Instantiate(roomPrefab); //ãã®ãƒ«ãƒ¼ãƒ ç”¨ã®ãƒ«ãƒ¼ãƒ ãƒ—ãƒ¬ãƒ•ã‚¡ãƒ–ã‚’ç”Ÿæˆ
+            roomListEntryGameObject.transform.SetParent(parentObj.transform); //Contenté…ä¸‹ã«æ ¼ç´
             roomListEntryGameObject.transform.localScale = Vector3.one;
 
-            roomListEntryGameObject.transform.Find("TextRoomName").GetComponent<Text>().text = room.Name; //ƒ‹[ƒ€–¼‚ğ•\¦
-            roomListEntryGameObject.transform.Find("TextRoomPlayers").GetComponent<Text>().text = room.PlayerCount + " / " + room.MaxPlayers; //ƒvƒŒƒCƒ„[”‚ğ•\¦
-            roomListEntryGameObject.transform.Find("ButtonJoinRoom").GetComponent<Button>().onClick.AddListener(() => OnJoinRoomButtonClicked(room.Name)); //ƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚Æƒ‹[ƒ€‚É“ü‚éŠÖ”‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É•R•t‚¯
+            roomListEntryGameObject.transform.Find("TextRoomName").GetComponent<Text>().text = room.Name; //ãƒ«ãƒ¼ãƒ åã‚’è¡¨ç¤º
+            roomListEntryGameObject.transform.Find("TextRoomPlayers").GetComponent<Text>().text = room.PlayerCount + " / " + room.MaxPlayers; //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°ã‚’è¡¨ç¤º
+            roomListEntryGameObject.transform.Find("ButtonJoinRoom").GetComponent<Button>().onClick.AddListener(() => OnJoinRoomButtonClicked(room.Name)); //ãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã¨ãƒ«ãƒ¼ãƒ ã«å…¥ã‚‹é–¢æ•°ãŒå‘¼ã°ã‚Œã‚‹ã‚ˆã†ã«ç´ä»˜ã‘
 
-            roomListGameObjects.Add(room.Name, roomListEntryGameObject); //ƒ‹[ƒ€î•ñ‚ğ‚Á‚½ƒ‹[ƒ€ƒvƒŒƒtƒ@ƒu‚ÌƒŠƒXƒg‚É’Ç‰Á
+            roomListGameObjects.Add(room.Name, roomListEntryGameObject); //ãƒ«ãƒ¼ãƒ æƒ…å ±ã‚’æŒã£ãŸãƒ«ãƒ¼ãƒ ãƒ—ãƒ¬ãƒ•ã‚¡ãƒ–ã®ãƒªã‚¹ãƒˆã«è¿½åŠ 
         }
     }
 
-    public override void OnLeftLobby() //ƒƒr[‚ğo‚éiàƒƒOƒAƒEƒgj‚ÆŒÄ‚Î‚ê‚éŠÖ”
+    public override void OnLeftLobby() //ãƒ­ãƒ“ãƒ¼ã‚’å‡ºã‚‹ï¼ˆâ‰’ãƒ­ã‚°ã‚¢ã‚¦ãƒˆï¼‰ã¨å‘¼ã°ã‚Œã‚‹é–¢æ•°
     {
-        ClearRoomListView(); //ƒ‹[ƒ€ƒvƒŒƒtƒ@ƒu‚ÌƒŠƒXƒg‚ğíœ‚·‚éŠÖ”
-        cachedRoomList.Clear(); //—LŒø‚Èƒ‹[ƒ€‚ÌƒŠƒXƒg‚ğíœ
+        ClearRoomListView(); //ãƒ«ãƒ¼ãƒ ãƒ—ãƒ¬ãƒ•ã‚¡ãƒ–ã®ãƒªã‚¹ãƒˆã‚’å‰Šé™¤ã™ã‚‹é–¢æ•°
+        cachedRoomList.Clear(); //æœ‰åŠ¹ãªãƒ«ãƒ¼ãƒ ã®ãƒªã‚¹ãƒˆã‚’å‰Šé™¤
     }
 
-    public override void OnJoinRandomFailed(short returnCode, string message) //•”‰®‚ª‚È‚­ƒ‰ƒ“ƒ_ƒ€Q‰Á‚Å‚«‚È‚©‚Á‚½‚Æ‚«A©“®‚Åƒ‹[ƒ€‚ğì¬‚·‚é
+    public override void OnJoinRandomFailed(short returnCode, string message) //éƒ¨å±‹ãŒãªããƒ©ãƒ³ãƒ€ãƒ å‚åŠ ã§ããªã‹ã£ãŸã¨ãã€è‡ªå‹•ã§ãƒ«ãƒ¼ãƒ ã‚’ä½œæˆã™ã‚‹
     {
-        string roomName = "Room " + Random.Range(1000, 10000); //•”‰®–¼‚ğƒ‰ƒ“ƒ_ƒ€‚È”Ô†‚É
+        string roomName = "Room " + Random.Range(1000, 10000); //éƒ¨å±‹åã‚’ãƒ©ãƒ³ãƒ€ãƒ ãªç•ªå·ã«
 
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 2; //ƒvƒŒƒCƒ„[”‚ğ2‚É
+        roomOptions.MaxPlayers = 2; //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°ã‚’2ã«
         PhotonNetwork.CreateRoom(roomName, roomOptions);
     }
     #endregion
 
     void OnJoinRoomButtonClicked(string _roomName)
     {
-        if (PhotonNetwork.InLobby) //Joinƒ{ƒ^ƒ“‚Åƒƒr[‚ğ—£‚ê‚Äƒ‹[ƒ€‚Ö
+        if (PhotonNetwork.InLobby) //Joinãƒœã‚¿ãƒ³ã§ãƒ­ãƒ“ãƒ¼ã‚’é›¢ã‚Œã¦ãƒ«ãƒ¼ãƒ ã¸
         {
             PhotonNetwork.LeaveLobby();
         }
@@ -223,7 +223,7 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
     }
 
 
-    void ClearRoomListView() //ƒ‹[ƒ€ƒvƒŒƒtƒ@ƒu‚ÌƒŠƒXƒg‚ğíœ‚·‚éŠÖ”
+    void ClearRoomListView() //ãƒ«ãƒ¼ãƒ ãƒ—ãƒ¬ãƒ•ã‚¡ãƒ–ã®ãƒªã‚¹ãƒˆã‚’å‰Šé™¤ã™ã‚‹é–¢æ•°
     {
         foreach (var roomListGameObject in roomListGameObjects.Values)
         {
@@ -233,8 +233,8 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
     }
 
     #region  Public Methods
-    //“Á’è‚Ìƒpƒlƒ‹‚ğ•\¦‚³‚¹‚éŠÖ”
-    public void ActivatePanel(string panelToBeActivated) //‚±‚±‚ÉŠÜ‚Ü‚ê‚éƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚Í‚¢‚¸‚ê‚©1‚Â‚¾‚¯•\¦‚³‚ê‚é‚æ‚¤‚É‚È‚é
+    //ç‰¹å®šã®ãƒ‘ãƒãƒ«ã‚’è¡¨ç¤ºã•ã›ã‚‹é–¢æ•°
+    public void ActivatePanel(string panelToBeActivated) //ã“ã“ã«å«ã¾ã‚Œã‚‹ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ã„ãšã‚Œã‹1ã¤ã ã‘è¡¨ç¤ºã•ã‚Œã‚‹ã‚ˆã†ã«ãªã‚‹
     {
         selectModePanel.SetActive(panelToBeActivated.Equals(selectModePanel.name));
         loginPanel.SetActive(panelToBeActivated.Equals(loginPanel.name));
