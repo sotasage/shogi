@@ -111,6 +111,8 @@ public class UnitController : MonoBehaviour
 
         Pos = tileindex;
     }
+<<<<<<< Updated upstream
+=======
 
     public void Select(bool select = true)
     {
@@ -143,7 +145,51 @@ public class UnitController : MonoBehaviour
     {
         List<Vector2Int> ret = new List<Vector2Int>();
 
-        ret = GetMovableTiles(units, UnitType.Hu);
+        //持ち駒状態
+        if(FieldStatus.Captured == FieldStatus)
+        {
+            //持ち駒状態
+        }
+        //玉
+        else if(UnitTtype.Gyokku == UnitType)
+        {
+            //玉の移動範囲
+        }
+        //金と同じ動き
+        else if (UnitType.Tokin == UnitType 
+            || UnitType.NariKyo == UnitType
+            || UnitType.Narikei == UnitType
+            || UnitType.Narigin == UnitType)
+        {
+            ret = GetMovableTiles(units, UnitType.Kin);
+
+        }
+        //馬(玉+角）
+        else if( UnitType.Uma == UnitType)
+        {
+            ret = GetMovableTiles(units, UnitType.Gyoku);
+            foreach (var item in GetMovableTiles(units, UnitType.Kaku))
+            {
+                if (!ret.Contains(item)) ret.Add(item);
+            }
+
+        }
+        //龍(玉+角）
+        else if (UnitType.Ryu == UnitType)
+        {
+            ret = GetMovableTiles(units, UnitType.Gyoku);
+            foreach (var item in GetMovableTiles(units, UnitType.Hisha))
+            {
+                if (!ret.Contains(item)) ret.Add(item);
+            }
+
+        }
+
+        else
+        {
+            ret = GetMovableTiles(units, UnitType);
+
+        }
 
         return ret;
     }
@@ -151,31 +197,298 @@ public class UnitController : MonoBehaviour
     List<Vector2Int> GetMovableTiles(UnitController[,] units, UnitType unittype)
     {
         List<Vector2Int> ret = new List<Vector2Int>();
+        List<Vector2Int> dirs = new List<Vector2Int>();
 
         //歩
         if (UnitType.Hu == unittype)
         {
             //4人用なので向きが4方向になる 左回りにターンが進む
             //向き
-            Vector2Int dir = new Vector2Int(0, 1);
-
-            if (Player == 1) dir = new Vector2Int(1, 0);
-            else if (Player == 2) dir = new Vector2Int(0, -1);
-            else if (Player == 3) dir = new Vector2Int(-1, 0);
-
-            //前方1マス
-            List<Vector2Int> vec = new List<Vector2Int>()
+            if (Player == 0)
             {
-                dir
-            };
+                dirs.Add(new Vector2Int(0, 1));
+            }
+            else if (Player == 1)
+            {
+                dirs.Add(new Vector2Int(1, 0));
+            }
+            else if (Player == 2)
+            {
+                dirs.Add(new Vector2Int(0, -1));
+            }
+            else if (Player == 3)
+            {
+                dirs.Add(new Vector2Int(-1, 0));
+            }
 
-            foreach (var item in vec)
+            foreach (var item in dirs)
             {
                 Vector2Int checkpos = Pos + item;
                 if (!isCheckable(units, checkpos) || isFriendlyUnit(units[checkpos.x, checkpos.y])) continue;
                 ret.Add(checkpos);
             }
         }
+        //桂馬
+        else if (UnitType.Keima== unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            if (Player == 0)
+            {
+                dirs.Add(new Vector2Int(1, 2));
+                dirs.Add(new Vector2Int(-1, 2));
+            }
+            else if (Player == 1)
+            {
+                dirs.Add(new Vector2Int(2,1));
+                dirs.Add(new Vector2Int(2,-1));
+
+            }
+            else if (Player == 2)
+            {
+                dirs.Add(new Vector2Int(1, -2));
+                dirs.Add(new Vector2Int(-1, -2));
+
+            }
+            else if (Player == 3)
+            {
+                dirs.Add(new Vector2Int(-2, 1));
+                dirs.Add(new Vector2Int(-2, -1));
+
+            }
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                if (!isCheckable(units, checkpos) || isFriendlyUnit(units[checkpos.x, checkpos.y])) continue;
+                ret.Add(checkpos);
+            }
+
+        }
+        //銀
+        else if (UnitType.Gin == unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            if (Player == 0)
+            {
+                dirs.Add(new Vector2Int(-1, 1));
+                dirs.Add(new Vector2Int(0, 1));
+                dirs.Add(new Vector2Int(1, 1));
+                dirs.Add(new Vector2Int(-1, -1));
+                dirs.Add(new Vector2Int(1, -1));
+
+            }
+            else if (Player == 1)
+            {
+                dirs.Add(new Vector2Int(1, -1));
+                dirs.Add(new Vector2Int(1, 0));
+                dirs.Add(new Vector2Int(1, 1));
+                dirs.Add(new Vector2Int(-1, -1));
+                dirs.Add(new Vector2Int(-1, 1));
+
+            }
+            else if (Player == 2)
+            {
+                dirs.Add(new Vector2Int(-1, -1));
+                dirs.Add(new Vector2Int(0, -1));
+                dirs.Add(new Vector2Int(1, -1));
+                dirs.Add(new Vector2Int(-1, 1));
+                dirs.Add(new Vector2Int(1, 1));
+
+            }
+            else if (Player == 3)
+            {
+                dirs.Add(new Vector2Int(-1, -1));
+                dirs.Add(new Vector2Int(-1, 0));
+                dirs.Add(new Vector2Int(-1, 1));
+                dirs.Add(new Vector2Int(1, -1));
+                dirs.Add(new Vector2Int(1, 1));
+
+            }
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                if (!isCheckable(units, checkpos) || isFriendlyUnit(units[checkpos.x, checkpos.y])) continue;
+                ret.Add(checkpos);
+            }
+
+        }
+        //金
+        else if (UnitType.Kin == unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            if (Player == 0)
+            {
+                dirs.Add(new Vector2Int(-1, 1));
+                dirs.Add(new Vector2Int(0, 1));
+                dirs.Add(new Vector2Int(1, 1));
+                dirs.Add(new Vector2Int(-1, 0));
+                dirs.Add(new Vector2Int(1, 0));
+                dirs.Add(new Vector2Int(0,-1));
+
+            }
+            else if (Player == 1)
+            {
+                dirs.Add(new Vector2Int(1, -1));
+                dirs.Add(new Vector2Int(1, 0));
+                dirs.Add(new Vector2Int(1, 1));
+                dirs.Add(new Vector2Int(0, -1));
+                dirs.Add(new Vector2Int(0, 1));
+                dirs.Add(new Vector2Int(-1, 0));
+
+            }
+            else if (Player == 2)
+            {
+                dirs.Add(new Vector2Int(-1, -1));
+                dirs.Add(new Vector2Int(0, -1));
+                dirs.Add(new Vector2Int(1, -1));
+                dirs.Add(new Vector2Int(-1, 0));
+                dirs.Add(new Vector2Int(1, 0));
+                dirs.Add(new Vector2Int(0, 1));
+
+            }
+            else if (Player == 3)
+            {
+                dirs.Add(new Vector2Int(-1, -1));
+                dirs.Add(new Vector2Int(-1, 0));
+                dirs.Add(new Vector2Int(-1, 1));
+                dirs.Add(new Vector2Int(0, -1));
+                dirs.Add(new Vector2Int(0, 1));
+                dirs.Add(new Vector2Int(1, 0));
+
+
+            }
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                if (!isCheckable(units, checkpos) || isFriendlyUnit(units[checkpos.x, checkpos.y])) continue;
+                ret.Add(checkpos);
+            }
+
+        }
+        //玉
+        else if (UnitType.Gyoku == unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            dirs.Add(new Vector2Int(-1, 1));
+            dirs.Add(new Vector2Int(0, 1));
+            dirs.Add(new Vector2Int(1, 1));
+            dirs.Add(new Vector2Int(-1, 0));
+            dirs.Add(new Vector2Int(1, 0));
+            dirs.Add(new Vector2Int(0, -1));
+            dirs.Add(new Vector2Int(-1, -1));
+            dirs.Add(new Vector2Int(1, -1));
+
+
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                if (!isCheckable(units, checkpos) || isFriendlyUnit(units[checkpos.x, checkpos.y])) continue;
+                ret.Add(checkpos);
+            }
+
+        }
+        //角
+        else if (UnitType.Kaku == unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            dirs.Add(new Vector2Int(-1, 1));
+            dirs.Add(new Vector2Int(1, 1));
+            dirs.Add(new Vector2Int(-1, -1));
+            dirs.Add(new Vector2Int(1, -1));
+
+
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                while (isCheckable(units, checkpos) && !isFriendlyUnit(units[checkpos.x, checkpos.y]))
+                {
+                    if (units[checkpos.x, checkpos.y])
+                    {
+                        ret.Add(checkpos);
+                        break;
+                    }
+                    ret.Add(checkpos);
+                    checkpos += item;
+                }
+            }
+
+        }
+        //飛車
+        else if (UnitType.Hisha == unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            dirs.Add(new Vector2Int(0, 1));
+            dirs.Add(new Vector2Int(0, -1));
+            dirs.Add(new Vector2Int(-1, 0));
+            dirs.Add(new Vector2Int(1, 0));
+
+
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                while (isCheckable(units, checkpos) && !isFriendlyUnit(units[checkpos.x, checkpos.y]))
+                {
+                    if (units[checkpos.x,checkpos.y])
+                    {
+                        ret.Add(checkpos);
+                        break;
+                    }
+                    ret.Add(checkpos);
+                    checkpos += item;
+                }
+            }
+
+        }
+        //香車
+        else if (UnitType.Kyousha == unittype)
+        {
+            //4人用なので向きが4方向になる 左回りにターンが進む
+            //向き
+            if (Player == 0)
+            {
+                dirs.Add(new Vector2Int(0, 1));
+            }
+            else if (Player == 1)
+            {
+                dirs.Add(new Vector2Int(1, 0));
+            }
+            else if (Player == 2)
+            {
+                dirs.Add(new Vector2Int(0, -1));
+            }
+            else if (Player == 3)
+            {
+                dirs.Add(new Vector2Int(-1, 0));
+            }
+
+            foreach (var item in dirs)
+            {
+                Vector2Int checkpos = Pos + item;
+                while (isCheckable(units, checkpos) && !isFriendlyUnit(units[checkpos.x, checkpos.y]))
+                {
+                    if (units[checkpos.x, checkpos.y])
+                    {
+                        ret.Add(checkpos);
+                        break;
+                    }
+                    ret.Add(checkpos);
+                    checkpos += item;
+                }
+            }
+
+        }
+
 
         return ret;
     }
@@ -229,4 +542,5 @@ public class UnitController : MonoBehaviour
 
         isEvolution = evolution;
     }
+>>>>>>> Stashed changes
 }
