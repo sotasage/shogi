@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -93,4 +94,40 @@ public class GameSceneDirector : MonoBehaviour
     {
         
     }
+
+    //指定された配列をコピーして返す
+    public static UnitController[,] GetCopyArray(UnitController[,] ary)
+    {
+        UnitController[,] ret = new UnitController[ary.GetLength(0), ary.GetLength(1)];
+        Array.Copy(ary, ret, ary.Length);
+        return ret;
+    }
+
+    //指定された配置で王手しているユニットを返す
+    public static List<UnitController> GetOuteUnits(UnitController[,] units, int player, bool checkotherunit)
+    {
+        List<UnitController> ret = new List<UnitController>();
+
+        foreach (var unit in units)
+        {
+            if (!unit || player == unit.Player) continue;
+
+            //ユニットの移動可能範囲
+            List<Vector2Int> movabletiles = unit.GetMovableTiles(units, checkotherunit);
+
+            foreach (var tile in movabletiles)
+            {
+                //ユニットがいなければ
+                if (!units[tile.x, tile.y]) continue;
+
+                if(UnitType.Gyoku == units[tile.x, tile.y].UnitType)
+                {
+                    ret.Add(unit);
+                }
+            }
+
+        }
+
+        return ret;
+    } 
 }
