@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class GameSceneDirector : MonoBehaviour
@@ -423,6 +424,20 @@ public class GameSceneDirector : MonoBehaviour
         return next;
     }
 
+    //自分以外のプレイヤー番号を返す
+    public static List<int> GetOtherPlayer(int player)
+    {
+        List<int> ret = new List<int>();
+        int nextplayer = player;
+        for (int i = 0; i < 3; i++)
+        {
+            nextplayer = GetNextPlayer(nextplayer);
+            ret.Add(nextplayer);
+        }
+
+        return ret;
+    }
+
     void captureUnit(int player, Vector2Int tileindex)
     {
         UnitController unit = units[tileindex.x, tileindex.y];
@@ -480,5 +495,69 @@ public class GameSceneDirector : MonoBehaviour
                 if (0 < i) unit.SetActive(false);
             }
         }
+    }
+
+    //指定された配列をコピーして返す
+    public static UnitController[,] GetCopyArray(UnitController[,] ary)
+    {
+        UnitController[,] ret = new UnitController[ary.GetLength(0), ary.GetLength(1)];
+        Array.Copy(ary, ret, ary.Length);
+        return ret;
+    }
+
+    //指定された配置で王手しているユニットを返す 引数のplayerは王手されているプレイヤー番号
+    public static List<UnitController> GetOuteUnitsUke(UnitController[,] units, int player, bool checkotherunit = true)
+    {
+        List<UnitController> ret = new List<UnitController>();
+
+        foreach (var unit in units)
+        {
+            //仲間のユニットだったら
+            if (!unit || player == unit.Player) continue;
+
+            //ユニットの移動可能範囲
+            List<Vector2Int> movabletiles = unit.GetMovableTiles(units, checkotherunit);
+
+            foreach (var tile in movabletiles)
+            {
+                //ユニットがいなければ
+                if (!units[tile.x, tile.y]) continue;
+
+                if (UnitType.Gyoku == units[tile.x, tile.y].UnitType)
+                {
+                    ret.Add(unit);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    //指定された配置で王手されているプレイヤーを返す 引数のplayerは王手しているプレイヤー番号
+    public static List<int> GetOuteUnitsSeme(UnitController[,] units, int player, bool checkotherunit = true)
+    {
+        List<int> ret = new List<int>();
+
+        foreach (var unit in units)
+        {
+            //仲間のユニットだったら
+            if (!unit || player != unit.Player) continue;
+
+            //ユニットの移動可能範囲
+            List<Vector2Int> movabletiles = unit.GetMovableTiles(units, checkotherunit);
+
+            foreach (var tile in movabletiles)
+            {
+                //ユニットがいなければ
+                if (!units[tile.x, tile.y]) continue;
+
+                if (UnitType.Gyoku == units[tile.x, tile.y].UnitType && units[tile.x, tile.y].Player != player)
+                {
+                    ret.Add(units[tile.x, tile.y].Player);
+                }
+            }
+        }
+
+        return ret;
     }
 }
