@@ -490,7 +490,7 @@ public class GameSceneDirector : MonoBehaviour
         }
 
         //ユニット選択
-        if (unit)
+        else if (unit)
         {
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
