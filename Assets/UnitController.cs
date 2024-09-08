@@ -57,7 +57,7 @@ public class UnitController : MonoBehaviour
     };
 
     //成り済みかどうか
-    public bool isEvolution;
+
 
     //ユニットの選択/非選択のy座標
     public const float SelectUnitY = 1.5f;
@@ -649,7 +649,6 @@ public class UnitController : MonoBehaviour
             transform.eulerAngles = getDefaultAngles(Player);
         }
 
-        isEvolution = evolution;
     }
 
     //空いているタイルを返す
@@ -665,5 +664,15 @@ public class UnitController : MonoBehaviour
             }
         }
         return ret;
+    }
+
+    //進化できるかどうか
+    public bool isEvolution()
+    {
+        if (!evolutionTable.ContainsKey(UnitType) || UnitType.None == evolutionTable[UnitType])
+        {
+            return false;
+        }
+        return true;
     }
 }

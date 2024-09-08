@@ -85,6 +85,9 @@ public class GameSceneDirector : MonoBehaviour
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
+    const int EnemyLine = 3;
+    List<int>[] enemyLines;
+
     //サウンド制御
     [SerializeField] SoundController sound;
 
@@ -199,6 +202,23 @@ public class GameSceneDirector : MonoBehaviour
         //TurnChangeから始める場合-1
         nowPlayer = -1;
 
+        //敵陣設定
+        enemyLines = new List<int>[PlayerMax];
+        for (int i = 0; i < PlayerMax; i++)
+        {
+            enemyLines[i] = new List<int>();
+            int rangemin = 0;
+            if (0 == i || 1 == i)
+            {
+                rangemin = boardHeight - EnemyLine;
+            }
+
+            for (int j = 0; j < EnemyLine; j++)
+            {
+                enemyLines[i].Add(rangemin + j);
+            }
+        }
+
         //初回モード
         nowMode = Mode.None;
         nextMode = Mode.TurnChange;
@@ -294,6 +314,70 @@ public class GameSceneDirector : MonoBehaviour
         {
             //内部データ更新
             units[oldpos.x, oldpos.y] = null;
+
+            //成
+            if (nowPlayer == 0 || nowPlayer == 2)
+            {
+                if (unit.isEvolution() && enemyLines[nowPlayer].Contains(tileindex.y))
+                {
+                    //次のターンに移動可能かどうか
+                    UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
+                    //自分以外いないフィールドを作る
+                    copyunits[unit.Pos.x, unit.Pos.y] = unit;
+
+                    //CPUもしくは次移動できないなら強制成
+                    if (isCpu || 1 > unit.GetMovableTiles(copyunits).Count)
+                    {
+                        unit.Evolution();
+                    }
+                    //なるか確認
+                    else
+                    {
+                        //成った状態を表示
+                        unit.Evolution();
+                        setSelectCursors(unit);
+                        print(unit.UnitType);
+
+                        //ナビゲーション
+                        textResultInfo.text = "成りますか？";
+                        buttonEvolutionApply.gameObject.SetActive(true);
+                        buttonEvolutionCancel.gameObject.SetActive(true);
+
+                        ret = Mode.WaitEvolution;
+                    }
+                }
+            }
+            else
+            {
+                if (unit.isEvolution() && enemyLines[nowPlayer].Contains(tileindex.x))
+                {
+                    //次のターンに移動可能かどうか
+                    UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
+                    //自分以外いないフィールドを作る
+                    copyunits[unit.Pos.x, unit.Pos.y] = unit;
+
+                    //CPUもしくは次移動できないなら強制成
+                    if (isCpu || 1 > unit.GetMovableTiles(copyunits).Count)
+                    {
+                        unit.Evolution();
+                    }
+                    //なるか確認
+                    else
+                    {
+                        //成った状態を表示
+                        unit.Evolution();
+                        setSelectCursors(unit);
+                        print(unit.UnitType);
+
+                        //ナビゲーション
+                        textResultInfo.text = "成りますか？";
+                        buttonEvolutionApply.gameObject.SetActive(true);
+                        buttonEvolutionCancel.gameObject.SetActive(true);
+
+                        ret = Mode.WaitEvolution;
+                    }
+                }
+            }
         }
         //持ち駒の更新
         else
@@ -314,11 +398,33 @@ public class GameSceneDirector : MonoBehaviour
         return ret;
     }
 
+    //移動可能範囲取得
     List<Vector2Int> getMovableTiles(UnitController unit)
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
         //王手されてしまうかチェック
+        UnitController[,] copyunits = GetCopyArray(units);
+        if (FieldStatus.OnBoard == unit.FieldStatus)
+        {
+            copyunits[unit.Pos.x, unit.Pos.y] = null;
+        }
+        int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
+
+        //王手を回避できる場所を返す
+        if (0 < outecount)
+        {
+            ret = new List<Vector2Int>();
+            List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
+            foreach (var item in movabletiles)
+            {
+                //移動した状態を作る
+                UnitController[,] copyunits2 = GetCopyArray(copyunits);
+                copyunits2[item.x, item.y] = unit;
+                outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
+                if (1 > outecount) ret.Add(item);
+            }
+        }
 
         return ret;
     }
@@ -523,7 +629,7 @@ public class GameSceneDirector : MonoBehaviour
                 //ユニットがいなければ
                 if (!units[tile.x, tile.y]) continue;
 
-                if (UnitType.Gyoku == units[tile.x, tile.y].UnitType)
+                if (UnitType.Gyoku == units[tile.x, tile.y].UnitType && units[tile.x, tile.y].Player == player)
                 {
                     ret.Add(unit);
                 }
@@ -540,7 +646,7 @@ public class GameSceneDirector : MonoBehaviour
 
         foreach (var unit in units)
         {
-            //仲間のユニットだったら
+            //敵のユニットだったら
             if (!unit || player != unit.Player) continue;
 
             //ユニットの移動可能範囲
@@ -559,5 +665,18 @@ public class GameSceneDirector : MonoBehaviour
         }
 
         return ret;
+    }
+
+    //成るボタン
+    public void OnClickEvolutionApply()
+    {
+        nextMode = Mode.TurnChange;
+    }
+
+    //成らないボタン
+    public void OnClickEvolutionCancel()
+    {
+        selectUnit.Evolution(false);
+        OnClickEvolutionApply();
     }
 }
