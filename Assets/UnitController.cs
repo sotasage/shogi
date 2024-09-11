@@ -156,8 +156,10 @@ public class UnitController : MonoBehaviour
                 Pos = checkpos;
                 FieldStatus = FieldStatus.OnBoard;
 
-                //置いた後で移動できないなら移動不可
-                if (1 > GetMovableTiles(units, UnitType).Count)
+                //自分以外いないフィールドを作って、置いた後で移動できないなら移動不可
+                UnitController[,] exunits = new UnitController[units.GetLength(0), units.GetLength(1)];
+                exunits[checkpos.x, checkpos.y] = this;
+                if (1 > GetMovableTiles(exunits, UnitType).Count)
                 {
                     ismovable = false;
                 }

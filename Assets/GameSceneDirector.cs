@@ -318,7 +318,7 @@ public class GameSceneDirector : MonoBehaviour
             //成
             if (nowPlayer == 0 || nowPlayer == 2)
             {
-                if (unit.isEvolution() && enemyLines[nowPlayer].Contains(tileindex.y))
+                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -349,7 +349,7 @@ public class GameSceneDirector : MonoBehaviour
             }
             else
             {
-                if (unit.isEvolution() && enemyLines[nowPlayer].Contains(tileindex.x))
+                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.x) || enemyLines[nowPlayer].Contains(oldpos.y)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
