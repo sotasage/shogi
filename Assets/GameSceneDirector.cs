@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -92,6 +93,11 @@ public class GameSceneDirector : MonoBehaviour
     //サウンド制御
     [SerializeField] SoundController sound;
 
+    //プレイヤーの詰み状態
+    bool[] istumi;
+
+    int tumicount;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -122,6 +128,10 @@ public class GameSceneDirector : MonoBehaviour
 
         //キャプチャされたユニット
         captureUnits = new List<UnitController>();
+
+        //プレイヤーの詰み状態
+        istumi = new bool[4];
+        tumicount = 0;
 
         for (int i = 0; i < boardWidth; i++)
         {
@@ -442,6 +452,55 @@ public class GameSceneDirector : MonoBehaviour
 
         //勝敗チェック
 
+        //王手しているユニット
+        List<UnitController> outeunits = GetOuteUnitsUke(units, nowPlayer);
+        bool isoute = 0 < outeunits.Count;
+        if (isoute)
+        {
+            textResultInfo.text = "王手";
+        }
+
+        //自軍が移動可能か調べる
+        int movablecount = 0;
+        foreach (var item in getUnits(nowPlayer))
+        {
+            movablecount += getMovableTiles(item).Count;
+        }
+
+        //詰み
+        if (istumi[nowPlayer]) nextMode = Mode.TurnChange;
+        else
+        {
+            if (1 > movablecount && isoute)
+            {
+                istumi[nowPlayer] = true;
+                tumicount++;
+
+                nextMode = Mode.TurnChange;
+            }
+        }
+
+        if (tumicount >= 3)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (!istumi[i])
+                {
+                    textResultInfo.text = "詰み\n" + (i + 1) + "Pの勝ち";
+                    break;
+                }
+            }
+
+            nextMode = Mode.Result;
+        }
+
+        //次が結果表示画面なら
+        if (Mode.Result == nextMode)
+        {
+            textTurnInfo.text = "";
+            buttonRematch.gameObject.SetActive(true);
+            buttonTitle.gameObject.SetActive(true);
+        }
     }
 
     //ユニットとタイル選択
@@ -679,5 +738,34 @@ public class GameSceneDirector : MonoBehaviour
     {
         selectUnit.Evolution(false);
         OnClickEvolutionApply();
+    }
+
+    //指定されたプレイヤー番号の全ユニットを取得する
+    List<UnitController> getUnits(int player)
+    {
+        List<UnitController> ret = new List<UnitController>();
+
+        //全ユニットのリストを作成する
+        List<UnitController> allunits = new List<UnitController>(captureUnits);
+        allunits.AddRange(units);
+        foreach (var item in allunits)
+        {
+            if (!item || player != item.Player) continue;
+            ret.Add(item);
+        }
+
+        return ret;
+    }
+
+    //リザルト再戦
+    public void OnClickRematch()
+    {
+        SceneManager.LoadScene("GameScene");
+    }
+
+    //リザルトタイトルへ
+    public void OnClickTitle()
+    {
+        SceneManager.LoadScene("TitleScene");
     }
 }
