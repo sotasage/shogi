@@ -5,11 +5,6 @@ using System.ComponentModel;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-<<<<<<< Updated upstream
-=======
-using UnityEngine.SceneManagement;
-using UnityEngine.Tilemaps;
->>>>>>> Stashed changes
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
@@ -51,8 +46,6 @@ public class GameSceneDirector : MonoBehaviour
         { 0, 0, 36, 37, 38, 37, 36, 0, 0 },
     };
 
-<<<<<<< Updated upstream
-=======
     //フィールドデータ
     Dictionary<Vector2Int, GameObject> tiles;
     UnitController[,] units;
@@ -108,59 +101,8 @@ public class GameSceneDirector : MonoBehaviour
     //サウンド制御
     [SerializeField] SoundController sound;
 
->>>>>>> Stashed changes
-    //フィールドデータ
-    Dictionary<Vector2Int, GameObject> tiles;
-    UnitController[,] units;
-
-    //現在選択中のユニット
-    UnitController selectUnit;
-
-    //移動可能範囲
-    Dictionary<GameObject, Vector2Int> movableTiles;
-
-    //カーソルのプレハブ
-    [SerializeField] GameObject prefabCursor;
-
-    //カーソルオブジェクト
-    List<GameObject> cursors;
-
-    //プレイヤーとターン
-    int nowPlayer;
-    int turnCount;
-    bool isCpu;
-
-    //モード
-    enum Mode
-    {
-        None,
-        Start,
-        Select,
-        WaitEvolution,
-        TurnChange,
-        Result
-    }
-
-    Mode nowMode, nextMode;
-
-    //持ち駒タイルのプレハブ
-    [SerializeField] GameObject prefabUnitTile;
-
-    //持ち駒を置く場所
-    List<GameObject>[] unitTiles;
-
-    //キャプチャされたユニット
-    List<UnitController> captureUnits;
-
-    const int EnemyLine = 3;
-    List<int>[] enemyLines;
-
-    //サウンド制御
-    [SerializeField] SoundController sound;
-
     //プレイヤーの詰み状態
     bool[] istumi;
-
     int tumicount;
 
     // Start is called before the first frame update
