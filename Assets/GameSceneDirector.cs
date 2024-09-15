@@ -501,6 +501,13 @@ public class GameSceneDirector : MonoBehaviour
             nextMode = Mode.Result;
         }
 
+        //CPU判定
+        if (PlayerCount <= nowPlayer)
+        {
+            isCpu = true;
+            enemyWaitTimer = Random.Range(1, EnemyWaitTimerMax);
+        }
+
         //次が結果表示画面なら
         if (Mode.Result == nextMode)
         {
@@ -544,6 +551,39 @@ public class GameSceneDirector : MonoBehaviour
                     }
                     break;
                 }
+            }
+        }
+
+        //CPU処理
+        if (isCpu)
+        {
+            //タイマー消化
+            if (0 < enemyWaitTimer)
+            {
+                enemyWaitTimer -= Time.deltaTime;
+                return;
+            }
+
+            //ユニット選択
+            if (!selectUnit)
+            {
+                //全ユニット取得してランダムで選択
+                List<UnitController> allunits = getUnits(nowPlayer);
+                unit = allunits[Random.Range(0, allunits.Count)];
+                //移動できないならやり直し
+                if (1 > getMovableTiles(unit).Count)
+                {
+                    unit = null;
+                }
+            }
+            //タイル選択
+            else
+            {
+                //今回移動可能なタイルをランダムで選択
+                List<GameObject> tiles = new List<GameObject>(movableTiles.Keys);
+                tile = tiles[Random.Range(0, tiles.Count)];
+                //持ち駒は非表示になっている可能性があるので表示する
+                selectUnit.gameObject.SetActive(true);
             }
         }
 
