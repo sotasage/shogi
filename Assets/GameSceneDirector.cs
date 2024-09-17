@@ -336,28 +336,28 @@ public class GameSceneDirector : MonoBehaviour
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        //王手されてしまうかチェック
-        UnitController[,] copyunits = GetCopyArray(units);
-        if (FieldStatus.OnBoard == unit.FieldStatus)
-        {
-            copyunits[unit.Pos.x, unit.Pos.y] = null;
-        }
-        int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
+        ////王手されてしまうかチェック
+        //UnitController[,] copyunits = GetCopyArray(units);
+        //if (FieldStatus.OnBoard == unit.FieldStatus)
+        //{
+        //    copyunits[unit.Pos.x, unit.Pos.y] = null;
+        //}
+        //int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
 
-        //王手を回避できる場所を返す
-        if (0 < outecount)
-        {
-            ret = new List<Vector2Int>();
-            List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
-            foreach (var item in movabletiles)
-            {
-                //移動した状態を作る
-                UnitController[,] copyunits2 = GetCopyArray(copyunits);
-                copyunits2[item.x, item.y] = unit;
-                outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
-                if (1 > outecount) ret.Add(item);
-            }
-        }
+        ////王手を回避できる場所を返す
+        //if (0 < outecount)
+        //{
+        //    ret = new List<Vector2Int>();
+        //    List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
+        //    foreach (var item in movabletiles)
+        //    {
+        //        //移動した状態を作る
+        //        UnitController[,] copyunits2 = GetCopyArray(copyunits);
+        //        copyunits2[item.x, item.y] = unit;
+        //        outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
+        //        if (1 > outecount) ret.Add(item);
+        //    }
+        //}
 
         return ret;
     }
@@ -397,6 +397,7 @@ public class GameSceneDirector : MonoBehaviour
             movablecount += getMovableTiles(item).Count;
         }
 
+<<<<<<< Updated upstream
         //動かせない
         if (1 > movablecount)
         {
@@ -407,14 +408,52 @@ public class GameSceneDirector : MonoBehaviour
                 textResultInfo.text = "詰み！！\n" + (nowPlayer+1)+"P脱落！！";
                 //脱落処理
 
+=======
+        //王がとられているか判定
+        bool gyoku_survive = false;
+        foreach (var item in getUnits(nowPlayer))
+        {
+            if(item.UnitType == UnitType.Gyoku)
+            {
+                gyoku_survive = true;
+            }
+        }
+
+        //詰み
+        if (istumi[nowPlayer]) nextMode = Mode.TurnChange;
+        else
+        {
+            if (!gyoku_survive)
+            {
+                istumi[nowPlayer] = true;
+                tumicount++;
+                Console.Write("hai");
+                nextMode = Mode.TurnChange;
+>>>>>>> Stashed changes
             }
            
         }
 
+<<<<<<< Updated upstream
         //残り人数によって処理を変える
         //まだ人いたらselectModeへ
         //残り一人だったらnextMode = Mode.Result;
         //getnextplayer関数を改良する
+=======
+        if (tumicount >= 3)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (!istumi[i])
+                {
+                    textResultInfo.text = "勝負あり\n" + (i + 1) + "Pの勝ち";
+                    break;
+                }
+            }
+
+            nextMode = Mode.Result;
+        }
+>>>>>>> Stashed changes
 
         //CPU判定
         if(PlayerCount <= nowPlayer)
