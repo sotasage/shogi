@@ -158,7 +158,7 @@ public class GameSceneDirector : MonoBehaviour
     void Update()
     {
 <<<<<<< Updated upstream
-        
+
 =======
         if (Mode.Start == nowMode)
         {
@@ -372,6 +372,17 @@ public class GameSceneDirector : MonoBehaviour
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
         textResultInfo.text = "";
 
+         //持ち駒に王があったら
+        foreach (var item in getUnits(nowPlayer))
+        {
+            while (item.UnitType == UnitType.Gyoku  && item.Fieldstatus == FieldStatus.Captured)
+            {
+                textResultInfo.text = "王を置く場所を選んでください";
+                //TO DO　王を置く場所を選んでおけるようにする、王を持っている限り
+            }
+        }
+
+
         //勝敗チェック
 
         //王手しているユニット
@@ -427,12 +438,11 @@ public class GameSceneDirector : MonoBehaviour
             {
                 istumi[nowPlayer] = true;
                 tumicount++;
-                Console.Write("hai");
                 nextMode = Mode.TurnChange;
 >>>>>>> Stashed changes
-            }
-           
-        }
+    }
+
+}
 
 <<<<<<< Updated upstream
         //残り人数によって処理を変える
@@ -470,7 +480,6 @@ public class GameSceneDirector : MonoBehaviour
             buttonTitle.gameObject.SetActive(true);
         }
 
-    }
 
     //ユニットとタイル選択
     void selectMode()
