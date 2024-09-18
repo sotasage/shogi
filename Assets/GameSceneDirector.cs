@@ -86,6 +86,15 @@ public class GameSceneDirector : MonoBehaviour
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
+    //カードのプレハブ
+    [SerializeField] List<GameObject> prefabCards;
+
+    //カードデータ
+    CardController[,] cards;
+
+    //現在選択中のカード
+    CardController selectCard;
+
     const int EnemyLine = 3;
     List<int>[] enemyLines;
 
@@ -198,6 +207,12 @@ public class GameSceneDirector : MonoBehaviour
 
                 obj.SetActive(false);
             }
+        }
+
+        //カードの作成
+        for (int i = 0; i < 1; i++)
+        {
+            ;
         }
 
         //TurnChangeから始める場合-1
