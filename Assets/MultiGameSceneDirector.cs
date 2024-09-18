@@ -1,4 +1,4 @@
-using Photon.Pun.UtilityScripts;
+ï»¿using Photon.Pun.UtilityScripts;
 using Photon.Pun;
 using System;
 using System.Collections;
@@ -14,7 +14,7 @@ using Photon.Realtime;
 
 public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
-    //UIŠÖ˜A
+    //UIé–¢é€£
     [SerializeField] Text textTurnInfo;
     [SerializeField] Text textResultInfo;
     [SerializeField] Button buttonTitle;
@@ -22,18 +22,18 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     [SerializeField] Button buttonEvolutionApply;
     [SerializeField] Button buttonEvolutionCancel;
 
-    //ƒQ[ƒ€İ’è
+    //ã‚²ãƒ¼ãƒ è¨­å®š
     const int PlayerMax = 4;
     int boardWidth;
     int boardHeight;
 
-    //ƒ^ƒCƒ‹‚ÌƒvƒŒƒnƒu
+    //ã‚¿ã‚¤ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabTile;
 
-    //ƒ†ƒjƒbƒg‚ÌƒvƒŒƒnƒu
+    //ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] List<GameObject> prefabUnits;
 
-    //‰Šú”z’u
+    //åˆæœŸé…ç½®
     int[,] boardSetting =
     {
         { 0, 0, 16, 17, 18, 17, 16, 0, 0 },
@@ -47,29 +47,29 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         { 0, 0, 36, 37, 38, 37, 36, 0, 0 },
     };
 
-    //ƒtƒB[ƒ‹ƒhƒf[ƒ^
+    //ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãƒ‡ãƒ¼ã‚¿
     Dictionary<Vector2Int, GameObject> tiles;
     UnitController[,] units;
 
-    //Œ»İ‘I‘ğ’†‚Ìƒ†ƒjƒbƒg
+    //ç¾åœ¨é¸æŠä¸­ã®ãƒ¦ãƒ‹ãƒƒãƒˆ
     UnitController selectUnit;
 
-    //ˆÚ“®‰Â”\”ÍˆÍ
+    //ç§»å‹•å¯èƒ½ç¯„å›²
     Dictionary<GameObject, Vector2Int> movableTiles;
 
-    //ƒJ[ƒ\ƒ‹‚ÌƒvƒŒƒnƒu
+    //ã‚«ãƒ¼ã‚½ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabCursor;
 
-    //ƒJ[ƒ\ƒ‹ƒIƒuƒWƒFƒNƒg
+    //ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     List<GameObject> cursors;
 
-    //ƒvƒŒƒCƒ„[‚Æƒ^[ƒ“
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã‚¿ãƒ¼ãƒ³
     int nowPlayer;
     int turnCount;
     bool isCpu;
     bool myturn;
 
-    //ƒ‚[ƒh
+    //ãƒ¢ãƒ¼ãƒ‰
     enum Mode
     {
         None,
@@ -82,27 +82,27 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
     Mode nowMode, nextMode;
 
-    //‚¿‹îƒ^ƒCƒ‹‚ÌƒvƒŒƒnƒu
+    //æŒã¡é§’ã‚¿ã‚¤ãƒ«ã®ãƒ—ãƒ¬ãƒãƒ–
     [SerializeField] GameObject prefabUnitTile;
 
-    //‚¿‹î‚ğ’u‚­êŠ
+    //æŒã¡é§’ã‚’ç½®ãå ´æ‰€
     List<GameObject>[] unitTiles;
 
-    //ƒLƒƒƒvƒ`ƒƒ‚³‚ê‚½ƒ†ƒjƒbƒg
+    //ã‚­ãƒ£ãƒ—ãƒãƒ£ã•ã‚ŒãŸãƒ¦ãƒ‹ãƒƒãƒˆ
     List<UnitController> captureUnits;
 
     const int EnemyLine = 3;
     List<int>[] enemyLines;
 
-    //ƒTƒEƒ“ƒh§Œä
+    //ã‚µã‚¦ãƒ³ãƒ‰åˆ¶å¾¡
     [SerializeField] SoundController sound;
 
-    //ƒvƒŒƒCƒ„[‚Ì‹l‚İó‘Ô
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è©°ã¿çŠ¶æ…‹
     bool[] istumi;
 
     int tumicount;
 
-    //ƒvƒŒƒCƒ„[
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     List<PlayerController> Players;
 
     //PUN
@@ -119,68 +119,68 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     // Start is called before the first frame update
     void Start()
     {
-        SetupTurnManager(); //PunTurnManager‚ª‹@”\‚·‚é‚æ‚¤‚É‚·‚é
+        SetupTurnManager(); //PunTurnManagerãŒæ©Ÿèƒ½ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹
 
-        //BGMÄ¶@‚¤‚é‚³‚¢‚Ì‚ÅÁ‚µ‚Ä‚¨‚­
+        //BGMå†ç”Ÿã€€ã†ã‚‹ã•ã„ã®ã§æ¶ˆã—ã¦ãŠã
         //sound.PlayBGM(0);
 
-        //UIŠÖ˜A‰Šúİ’è
+        //UIé–¢é€£åˆæœŸè¨­å®š
         buttonTitle.gameObject.SetActive(false);
         buttonRematch.gameObject.SetActive(false);
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
         textResultInfo.text = "";
 
-        //ƒ{[ƒhƒTƒCƒY
+        //ãƒœãƒ¼ãƒ‰ã‚µã‚¤ã‚º
         boardWidth = boardSetting.GetLength(0);
         boardHeight = boardSetting.GetLength(1);
 
-        //ƒtƒB[ƒ‹ƒh‰Šú‰»
+        //ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰åˆæœŸåŒ–
         tiles = new Dictionary<Vector2Int, GameObject>();
         units = new UnitController[boardWidth, boardHeight];
 
-        //ˆÚ“®‰Â”\”ÍˆÍ
+        //ç§»å‹•å¯èƒ½ç¯„å›²
         movableTiles = new Dictionary<GameObject, Vector2Int>();
         cursors = new List<GameObject>();
 
-        //‚¿‹î‚ğ’u‚­êŠ
+        //æŒã¡é§’ã‚’ç½®ãå ´æ‰€
         unitTiles = new List<GameObject>[PlayerMax];
 
-        //ƒLƒƒƒvƒ`ƒƒ‚³‚ê‚½ƒ†ƒjƒbƒg
+        //ã‚­ãƒ£ãƒ—ãƒãƒ£ã•ã‚ŒãŸãƒ¦ãƒ‹ãƒƒãƒˆ
         captureUnits = new List<UnitController>();
 
-        //ƒvƒŒƒCƒ„[‚Ì‹l‚İó‘Ô
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è©°ã¿çŠ¶æ…‹
         istumi = new bool[4];
         tumicount = 0;
 
-        //ƒvƒŒƒCƒ„[
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
         Players = new List<PlayerController>();
 
         for (int i = 0; i < boardWidth; i++)
         {
             for (int j = 0; j < boardHeight; j++)
             {
-                //ƒ^ƒCƒ‹‚Æƒ†ƒjƒbƒg‚Ìƒ|ƒWƒVƒ‡ƒ“
+                //ã‚¿ã‚¤ãƒ«ã¨ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒã‚¸ã‚·ãƒ§ãƒ³
                 float x = i - boardWidth / 2;
                 float y = j - boardHeight / 2;
 
-                //ƒ|ƒWƒVƒ‡ƒ“
+                //ãƒã‚¸ã‚·ãƒ§ãƒ³
                 Vector3 pos = new Vector3(x, 0, y);
 
-                //ƒ^ƒCƒ‹‚ÌƒCƒ“ƒfƒbƒNƒX
+                //ã‚¿ã‚¤ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
                 Vector2Int tileindex = new Vector2Int(i, j);
 
-                //ƒ^ƒCƒ‹ì¬
+                //ã‚¿ã‚¤ãƒ«ä½œæˆ
                 GameObject tile = Instantiate(prefabTile, pos, Quaternion.identity);
                 tiles.Add(tileindex, tile);
 
-                //ƒ†ƒjƒbƒgì¬
+                //ãƒ¦ãƒ‹ãƒƒãƒˆä½œæˆ
                 int type = boardSetting[i, j] % 10;
                 int player = boardSetting[i, j] / 10;
 
                 if (0 == type) continue;
 
-                //‰Šú‰»
+                //åˆæœŸåŒ–
                 pos.y = 0.7f;
 
                 GameObject prefab = prefabUnits[type - 1];
@@ -190,12 +190,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 UnitController unitctrl = unit.AddComponent<UnitController>();
                 unitctrl.Init(player, type, tile, tileindex);
 
-                //ƒ†ƒjƒbƒgƒf[ƒ^ƒZƒbƒg
+                //ãƒ¦ãƒ‹ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ
                 units[i, j] = unitctrl;
             }
         }
 
-        //‚¿‹î‚ğ’u‚­êŠ‚Ìì¬
+        //æŒã¡é§’ã‚’ç½®ãå ´æ‰€ã®ä½œæˆ
         Vector3 startposEven = new Vector3(-4, 0.5f, -5);
         Vector3 startposOdd = new Vector3(-5, 0.5f, 4);
 
@@ -233,10 +233,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             }
         }
 
-        //TurnChange‚©‚çn‚ß‚éê‡-1
+        //TurnChangeã‹ã‚‰å§‹ã‚ã‚‹å ´åˆ-1
         nowPlayer = -1;
 
-        //“Gwİ’è
+        //æ•µé™£è¨­å®š
         enemyLines = new List<int>[PlayerMax];
         for (int i = 0; i < PlayerMax; i++)
         {
@@ -253,7 +253,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             }
         }
 
-        //‰‰ñƒ‚[ƒh
+        //åˆå›ãƒ¢ãƒ¼ãƒ‰
         /*nowMode = Mode.None;
         nextMode = Mode.TurnChange;*/
         nowMode = Mode.None;
@@ -276,7 +276,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             turnChangeMode();
         }
 
-        //ƒ‚[ƒh•ÏX
+        //ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´
         if (Mode.None != nextMode)
         {
             nowMode = nextMode;
@@ -284,27 +284,27 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //‘I‘ğ
+    //é¸æŠæ™‚
     void setSelectCursors(UnitController unit = null, bool playerunit = true)
     {
-        //ƒJ[ƒ\ƒ‹íœ
+        //ã‚«ãƒ¼ã‚½ãƒ«å‰Šé™¤
         foreach (var item in cursors)
         {
             Destroy(item);
         }
         cursors.Clear();
 
-        //‘I‘ğƒ†ƒjƒbƒg‚Ì”ñ‘I‘ğó‘Ô
+        //é¸æŠãƒ¦ãƒ‹ãƒƒãƒˆã®éé¸æŠçŠ¶æ…‹
         if (selectUnit)
         {
             selectUnit.Select(false);
             selectUnit = null;
         }
 
-        //ƒ†ƒjƒbƒgî•ñ‚ª‚È‚¯‚ê‚ÎI—¹
+        //ãƒ¦ãƒ‹ãƒƒãƒˆæƒ…å ±ãŒãªã‘ã‚Œã°çµ‚äº†
         if (!unit) return;
 
-        //ˆÚ“®‰Â”\”ÍˆÍæ“¾
+        //ç§»å‹•å¯èƒ½ç¯„å›²å–å¾—
         List<Vector2Int> movabletiles = getMovableTiles(unit);
         movableTiles.Clear();
 
@@ -312,14 +312,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             movableTiles.Add(tiles[item], item);
 
-            //ƒJ[ƒ\ƒ‹¶¬
+            //ã‚«ãƒ¼ã‚½ãƒ«ç”Ÿæˆ
             Vector3 pos = tiles[item].transform.position;
             pos.y += 0.51f;
             GameObject cursor = Instantiate(prefabCursor, pos, Quaternion.identity);
             cursors.Add(cursor);
         }
 
-        //‘I‘ğó‘Ô
+        //é¸æŠçŠ¶æ…‹
         if (playerunit)
         {
             unit.Select();
@@ -327,57 +327,57 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //ƒ†ƒjƒbƒgˆÚ“®
+    //ãƒ¦ãƒ‹ãƒƒãƒˆç§»å‹•
     Mode moveUnit(UnitController unit, Vector2Int tileindex)
     {
-        //ˆÚ“®‚µI‚í‚Á‚½Œã‚Ìƒ‚[ƒh
+        //ç§»å‹•ã—çµ‚ã‚ã£ãŸå¾Œã®ãƒ¢ãƒ¼ãƒ‰
         Mode ret = Mode.TurnChange;
 
-        //Œ»İ’n
+        //ç¾åœ¨åœ°
         Vector2Int oldpos = unit.Pos;
 
-        //ˆÚ“®æ‚É’N‚©‚¢‚½‚çæ‚é
+        //ç§»å‹•å…ˆã«èª°ã‹ã„ãŸã‚‰å–ã‚‹
         captureUnit(nowPlayer, tileindex);
 
-        //ƒ†ƒjƒbƒgˆÚ“®
+        //ãƒ¦ãƒ‹ãƒƒãƒˆç§»å‹•
         unit.Move(tiles[tileindex], tileindex);
 
-        //“à•”ƒf[ƒ^XV(V‚µ‚¢êŠ)
+        //å†…éƒ¨ãƒ‡ãƒ¼ã‚¿æ›´æ–°(æ–°ã—ã„å ´æ‰€)
         units[tileindex.x, tileindex.y] = unit;
 
-        //ƒ{[ƒhã‚Ì‹î‚ğXV
+        //ãƒœãƒ¼ãƒ‰ä¸Šã®é§’ã‚’æ›´æ–°
         if (FieldStatus.OnBoard == unit.FieldStatus)
         {
-            //“à•”ƒf[ƒ^XV
+            //å†…éƒ¨ãƒ‡ãƒ¼ã‚¿æ›´æ–°
             units[oldpos.x, oldpos.y] = null;
 
-            //¬
+            //æˆ
             if (nowPlayer == 0 || nowPlayer == 2)
             {
                 if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
                 {
-                    //Ÿ‚Ìƒ^[ƒ“‚ÉˆÚ“®‰Â”\‚©‚Ç‚¤‚©
+                    //æ¬¡ã®ã‚¿ãƒ¼ãƒ³ã«ç§»å‹•å¯èƒ½ã‹ã©ã†ã‹
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
-                    //©•ªˆÈŠO‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ğì‚é
+                    //è‡ªåˆ†ä»¥å¤–ã„ãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ä½œã‚‹
                     copyunits[unit.Pos.x, unit.Pos.y] = unit;
 
-                    //CPU‚à‚µ‚­‚ÍŸˆÚ“®‚Å‚«‚È‚¢‚È‚ç‹­§¬
+                    //CPUã‚‚ã—ãã¯æ¬¡ç§»å‹•ã§ããªã„ãªã‚‰å¼·åˆ¶æˆ
                     if (isCpu || 1 > unit.GetMovableTiles(copyunits).Count)
                     {
                         unit.Evolution();
                     }
-                    //‚È‚é‚©Šm”F
+                    //ãªã‚‹ã‹ç¢ºèª
                     else
                     {
                         if (myturn)
                         {
-                            //¬‚Á‚½ó‘Ô‚ğ•\¦
+                            //æˆã£ãŸçŠ¶æ…‹ã‚’è¡¨ç¤º
                             unit.Evolution();
                             setSelectCursors(unit);
                             print(unit.UnitType);
 
-                            //ƒiƒrƒQ[ƒVƒ‡ƒ“
-                            textResultInfo.text = "¬‚è‚Ü‚·‚©H";
+                            //ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³
+                            textResultInfo.text = "æˆã‚Šã¾ã™ã‹ï¼Ÿ";
                             buttonEvolutionApply.gameObject.SetActive(true);
                             buttonEvolutionCancel.gameObject.SetActive(true);
                         }
@@ -390,28 +390,28 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             {
                 if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.x) || enemyLines[nowPlayer].Contains(oldpos.x)))
                 {
-                    //Ÿ‚Ìƒ^[ƒ“‚ÉˆÚ“®‰Â”\‚©‚Ç‚¤‚©
+                    //æ¬¡ã®ã‚¿ãƒ¼ãƒ³ã«ç§»å‹•å¯èƒ½ã‹ã©ã†ã‹
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
-                    //©•ªˆÈŠO‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ğì‚é
+                    //è‡ªåˆ†ä»¥å¤–ã„ãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ä½œã‚‹
                     copyunits[unit.Pos.x, unit.Pos.y] = unit;
 
-                    //CPU‚à‚µ‚­‚ÍŸˆÚ“®‚Å‚«‚È‚¢‚È‚ç‹­§¬
+                    //CPUã‚‚ã—ãã¯æ¬¡ç§»å‹•ã§ããªã„ãªã‚‰å¼·åˆ¶æˆ
                     if (isCpu || 1 > unit.GetMovableTiles(copyunits).Count)
                     {
                         unit.Evolution();
                     }
-                    //‚È‚é‚©Šm”F
+                    //ãªã‚‹ã‹ç¢ºèª
                     else
                     {
                         if (myturn)
                         {
-                            //¬‚Á‚½ó‘Ô‚ğ•\¦
+                            //æˆã£ãŸçŠ¶æ…‹ã‚’è¡¨ç¤º
                             unit.Evolution();
                             setSelectCursors(unit);
                             print(unit.UnitType);
 
-                            //ƒiƒrƒQ[ƒVƒ‡ƒ“
-                            textResultInfo.text = "¬‚è‚Ü‚·‚©H";
+                            //ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³
+                            textResultInfo.text = "æˆã‚Šã¾ã™ã‹ï¼Ÿ";
                             buttonEvolutionApply.gameObject.SetActive(true);
                             buttonEvolutionCancel.gameObject.SetActive(true);
                         }
@@ -421,31 +421,31 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 }
             }
         }
-        //‚¿‹î‚ÌXV
+        //æŒã¡é§’ã®æ›´æ–°
         else
         {
-            //‚¿‹î‚ÌXV
+            //æŒã¡é§’ã®æ›´æ–°
             captureUnits.Remove(unit);
         }
 
-        //ƒ†ƒjƒbƒg‚Ìó‘Ô‚ğXV
+        //ãƒ¦ãƒ‹ãƒƒãƒˆã®çŠ¶æ…‹ã‚’æ›´æ–°
         unit.FieldStatus = FieldStatus.OnBoard;
 
-        //‚¿‹î•\¦‚ğXV
+        //æŒã¡é§’è¡¨ç¤ºã‚’æ›´æ–°
         alignCaptureUnits(nowPlayer);
 
-        //SEÄ¶
+        //SEå†ç”Ÿ
         sound.PlaySE(0);
 
         return ret;
     }
 
-    //ˆÚ“®‰Â”\”ÍˆÍæ“¾
+    //ç§»å‹•å¯èƒ½ç¯„å›²å–å¾—
     List<Vector2Int> getMovableTiles(UnitController unit)
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        //‰¤è‚³‚ê‚Ä‚µ‚Ü‚¤‚©ƒ`ƒFƒbƒN
+        //ç‹æ‰‹ã•ã‚Œã¦ã—ã¾ã†ã‹ãƒã‚§ãƒƒã‚¯
         UnitController[,] copyunits = GetCopyArray(units);
         if (FieldStatus.OnBoard == unit.FieldStatus)
         {
@@ -453,14 +453,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
         int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
 
-        //‰¤è‚ğ‰ñ”ğ‚Å‚«‚éêŠ‚ğ•Ô‚·
+        //ç‹æ‰‹ã‚’å›é¿ã§ãã‚‹å ´æ‰€ã‚’è¿”ã™
         if (0 < outecount)
         {
             ret = new List<Vector2Int>();
             List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
             foreach (var item in movabletiles)
             {
-                //ˆÚ“®‚µ‚½ó‘Ô‚ğì‚é
+                //ç§»å‹•ã—ãŸçŠ¶æ…‹ã‚’ä½œã‚‹
                 UnitController[,] copyunits2 = GetCopyArray(copyunits);
                 copyunits2[item.x, item.y] = unit;
                 outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
@@ -471,35 +471,35 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
-    //ƒ^[ƒ“ŠJn
+    //ã‚¿ãƒ¼ãƒ³é–‹å§‹
     void startMode()
     {
-        //Ÿ”s‚ª‚Â‚¢‚Ä‚¢‚È‚¯‚ê‚Î’Êíƒ‚[ƒh
+        //å‹æ•—ãŒã¤ã„ã¦ã„ãªã‘ã‚Œã°é€šå¸¸ãƒ¢ãƒ¼ãƒ‰
         //nextMode = Mode.Select;
         photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.Select);
 
-        //InfoXV
-        textTurnInfo.text = "" + (nowPlayer + 1) + "P‚Ì”Ô‚Å‚·";
+        //Infoæ›´æ–°
+        textTurnInfo.text = "" + (nowPlayer + 1) + "Pã®ç•ªã§ã™";
         textResultInfo.text = "";
 
-        //Ÿ”sƒ`ƒFƒbƒN
+        //å‹æ•—ãƒã‚§ãƒƒã‚¯
 
-        //‰¤è‚µ‚Ä‚¢‚éƒ†ƒjƒbƒg
+        //ç‹æ‰‹ã—ã¦ã„ã‚‹ãƒ¦ãƒ‹ãƒƒãƒˆ
         List<UnitController> outeunits = GetOuteUnitsUke(units, nowPlayer);
         bool isoute = 0 < outeunits.Count;
         if (isoute)
         {
-            textResultInfo.text = "‰¤è";
+            textResultInfo.text = "ç‹æ‰‹";
         }
 
-        //©ŒR‚ªˆÚ“®‰Â”\‚©’²‚×‚é
+        //è‡ªè»ãŒç§»å‹•å¯èƒ½ã‹èª¿ã¹ã‚‹
         int movablecount = 0;
         foreach (var item in getUnits(nowPlayer))
         {
             movablecount += getMovableTiles(item).Count;
         }
 
-        //‹l‚İ
+        //è©°ã¿
         if (istumi[nowPlayer])
         {
             //nextMode = Mode.TurnChange;
@@ -523,7 +523,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             {
                 if (!istumi[i])
                 {
-                    textResultInfo.text = "‹l‚İ\n" + (i + 1) + "P‚ÌŸ‚¿";
+                    textResultInfo.text = "è©°ã¿\n" + (i + 1) + "Pã®å‹ã¡";
                     break;
                 }
             }
@@ -531,7 +531,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             nextMode = Mode.Result;
         }
 
-        //Ÿ‚ªŒ‹‰Ê•\¦‰æ–Ê‚È‚ç
+        //æ¬¡ãŒçµæœè¡¨ç¤ºç”»é¢ãªã‚‰
         if (Mode.Result == nextMode)
         {
             textTurnInfo.text = "";
@@ -540,31 +540,31 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //ƒ†ƒjƒbƒg‚Æƒ^ƒCƒ‹‘I‘ğ
+    //ãƒ¦ãƒ‹ãƒƒãƒˆã¨ã‚¿ã‚¤ãƒ«é¸æŠ
     void selectMode()
     {
         GameObject tile = null;
         UnitController unit = null;
 
-        //ƒvƒŒƒCƒ„[ˆ—
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‡¦ç†
         if (Input.GetMouseButtonUp(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //è‘O‚Ìƒ†ƒjƒbƒg‚É‚à“–‚½‚è”»’è‚ª‚ ‚é‚Ì‚Åƒqƒbƒg‚µ‚½‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒgî•ñ‚ğæ“¾
+            //æ‰‹å‰ã®ãƒ¦ãƒ‹ãƒƒãƒˆã«ã‚‚å½“ãŸã‚Šåˆ¤å®šãŒã‚ã‚‹ã®ã§ãƒ’ãƒƒãƒˆã—ãŸã™ã¹ã¦ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±ã‚’å–å¾—
             foreach (RaycastHit hit in Physics.RaycastAll(ray))
             {
                 UnitController hitunit = hit.transform.GetComponent<UnitController>();
 
-                //‚¿‹î
+                //æŒã¡é§’
                 if (hitunit && FieldStatus.Captured == hitunit.FieldStatus)
                 {
                     unit = hitunit;
                 }
-                //ƒ^ƒCƒ‹‘I‘ğ‚Æã‚Éæ‚Á‚Ä‚¢‚éƒ†ƒjƒbƒg
+                //ã‚¿ã‚¤ãƒ«é¸æŠã¨ä¸Šã«ä¹—ã£ã¦ã„ã‚‹ãƒ¦ãƒ‹ãƒƒãƒˆ
                 else if (tiles.ContainsValue(hit.transform.gameObject))
                 {
                     tile = hit.transform.gameObject;
-                    //ƒ^ƒCƒ‹‚©‚çƒ†ƒjƒbƒg‚ğ’T‚·
+                    //ã‚¿ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ‹ãƒƒãƒˆã‚’æ¢ã™
                     foreach (var item in tiles)
                     {
                         if (item.Value == tile)
@@ -577,10 +577,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             }
         }
 
-        //‰½‚à‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Îˆ—‚ğ‚µ‚È‚¢
+        //ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã‘ã‚Œã°å‡¦ç†ã‚’ã—ãªã„
         if (null == tile && null == unit) return;
 
-        //ˆÚ“®æ‘I‘ğ
+        //ç§»å‹•å…ˆé¸æŠ
         if (myturn && tile && selectUnit && movableTiles.ContainsKey(tile))
         {
             //nextMode = moveUnit(selectUnit, movableTiles[tile]);
@@ -588,7 +588,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             punTurnManager.SendMove(data, false);
         }
 
-        //ƒ†ƒjƒbƒg‘I‘ğ
+        //ãƒ¦ãƒ‹ãƒƒãƒˆé¸æŠ
         else if (unit)
         {
             //bool isPlayer = nowPlayer == unit.Player;
@@ -598,22 +598,22 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //ƒ^[ƒ“•ÏX
+    //ã‚¿ãƒ¼ãƒ³å¤‰æ›´
     void turnChangeMode()
     {
-        //ƒ{ƒ^ƒ“‚ÆƒJ[ƒ\ƒ‹‚ÌƒŠƒZƒbƒg
+        //ãƒœã‚¿ãƒ³ã¨ã‚«ãƒ¼ã‚½ãƒ«ã®ãƒªã‚»ãƒƒãƒˆ
         setSelectCursors();
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
 
-        //Ÿ‚ÌƒvƒŒƒCƒ„[‚Ö
+        //æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¸
         nowPlayer = GetNextPlayer(nowPlayer);
 
         //nextMode = Mode.Start;
         photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.Start);
     }
 
-    //Ÿ‚ÌƒvƒŒƒCƒ„[”Ô†‚ğ•Ô‚·
+    //æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã‚’è¿”ã™
     public static int GetNextPlayer(int player)
     {
         int next = player + 1;
@@ -622,7 +622,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return next;
     }
 
-    //©•ªˆÈŠO‚ÌƒvƒŒƒCƒ„[”Ô†‚ğ•Ô‚·
+    //è‡ªåˆ†ä»¥å¤–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã‚’è¿”ã™
     public static List<int> GetOtherPlayer(int player)
     {
         List<int> ret = new List<int>();
@@ -645,16 +645,16 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         units[tileindex.x, tileindex.y] = null;
     }
 
-    //‚¿‹î‚ğ•À‚×‚é
+    //æŒã¡é§’ã‚’ä¸¦ã¹ã‚‹
     void alignCaptureUnits(int player)
     {
-        //ŠŒÂ”‚ğ‚¢‚Á‚½‚ñ”ñ•\¦
+        //æ‰€æŒå€‹æ•°ã‚’ã„ã£ãŸã‚“éè¡¨ç¤º
         foreach (var item in unitTiles[player])
         {
             item.SetActive(false);
         }
 
-        //ƒ†ƒjƒbƒg‚²‚Æ‚É•ª‚¯‚é
+        //ãƒ¦ãƒ‹ãƒƒãƒˆã”ã¨ã«åˆ†ã‘ã‚‹
         Dictionary<UnitType, List<UnitController>> typeunits = new Dictionary<UnitType, List<UnitController>>();
 
         foreach (var item in captureUnits)
@@ -664,38 +664,38 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             typeunits[item.UnitType].Add(item);
         }
 
-        //ƒ^ƒCƒv‚²‚Æ‚É•À‚×‚Äˆê”Ôã‚¾‚¯•\¦‚·‚é
+        //ã‚¿ã‚¤ãƒ—ã”ã¨ã«ä¸¦ã¹ã¦ä¸€ç•ªä¸Šã ã‘è¡¨ç¤ºã™ã‚‹
         int tilecount = 0;
         foreach (var item in typeunits)
         {
             if (1 > item.Value.Count) continue;
 
-            //’u‚­êŠ
+            //ç½®ãå ´æ‰€
             GameObject tile = unitTiles[player][tilecount++];
 
-            //”ñ•\¦‚É‚µ‚Ä‚¢‚½ƒ^ƒCƒ‹‚ğ•\¦‚·‚é
+            //éè¡¨ç¤ºã«ã—ã¦ã„ãŸã‚¿ã‚¤ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹
             tile.SetActive(true);
 
-            //ŠŒÂ”‚Ì•\¦
+            //æ‰€æŒå€‹æ•°ã®è¡¨ç¤º
             tile.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = "" + item.Value.Count;
 
-            //“¯‚¶í—Ş‚Ì‚¿‹î‚ğ•À‚×‚é
+            //åŒã˜ç¨®é¡ã®æŒã¡é§’ã‚’ä¸¦ã¹ã‚‹
             for (int i = 0; i < item.Value.Count; i++)
             {
-                //ƒŠƒXƒg“à‚Ìƒ†ƒjƒbƒg‚ğ•\¦
+                //ãƒªã‚¹ãƒˆå†…ã®ãƒ¦ãƒ‹ãƒƒãƒˆã‚’è¡¨ç¤º
                 GameObject unit = item.Value[i].gameObject;
-                //’u‚­êŠ
+                //ç½®ãå ´æ‰€
                 Vector3 pos = tile.transform.position;
-                //ˆê’Uƒ†ƒjƒbƒg‚ğˆÚ“®‚µ‚Ä•\¦‚·‚é
+                //ä¸€æ—¦ãƒ¦ãƒ‹ãƒƒãƒˆã‚’ç§»å‹•ã—ã¦è¡¨ç¤ºã™ã‚‹
                 unit.SetActive(true);
                 unit.transform.position = pos;
-                //1ŒÂ–ÚˆÈŠO‚Í”ñ•\¦
+                //1å€‹ç›®ä»¥å¤–ã¯éè¡¨ç¤º
                 if (0 < i) unit.SetActive(false);
             }
         }
     }
 
-    //w’è‚³‚ê‚½”z—ñ‚ğƒRƒs[‚µ‚Ä•Ô‚·
+    //æŒ‡å®šã•ã‚ŒãŸé…åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦è¿”ã™
     public static UnitController[,] GetCopyArray(UnitController[,] ary)
     {
         UnitController[,] ret = new UnitController[ary.GetLength(0), ary.GetLength(1)];
@@ -703,22 +703,22 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
-    //w’è‚³‚ê‚½”z’u‚Å‰¤è‚µ‚Ä‚¢‚éƒ†ƒjƒbƒg‚ğ•Ô‚· ˆø”‚Ìplayer‚Í‰¤è‚³‚ê‚Ä‚¢‚éƒvƒŒƒCƒ„[”Ô†
+    //æŒ‡å®šã•ã‚ŒãŸé…ç½®ã§ç‹æ‰‹ã—ã¦ã„ã‚‹ãƒ¦ãƒ‹ãƒƒãƒˆã‚’è¿”ã™ å¼•æ•°ã®playerã¯ç‹æ‰‹ã•ã‚Œã¦ã„ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·
     public static List<UnitController> GetOuteUnitsUke(UnitController[,] units, int player, bool checkotherunit = true)
     {
         List<UnitController> ret = new List<UnitController>();
 
         foreach (var unit in units)
         {
-            //’‡ŠÔ‚Ìƒ†ƒjƒbƒg‚¾‚Á‚½‚ç
+            //ä»²é–“ã®ãƒ¦ãƒ‹ãƒƒãƒˆã ã£ãŸã‚‰
             if (!unit || player == unit.Player) continue;
 
-            //ƒ†ƒjƒbƒg‚ÌˆÚ“®‰Â”\”ÍˆÍ
+            //ãƒ¦ãƒ‹ãƒƒãƒˆã®ç§»å‹•å¯èƒ½ç¯„å›²
             List<Vector2Int> movabletiles = unit.GetMovableTiles(units, checkotherunit);
 
             foreach (var tile in movabletiles)
             {
-                //ƒ†ƒjƒbƒg‚ª‚¢‚È‚¯‚ê‚Î
+                //ãƒ¦ãƒ‹ãƒƒãƒˆãŒã„ãªã‘ã‚Œã°
                 if (!units[tile.x, tile.y]) continue;
 
                 if (UnitType.Gyoku == units[tile.x, tile.y].UnitType && units[tile.x, tile.y].Player == player)
@@ -731,22 +731,22 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
-    //w’è‚³‚ê‚½”z’u‚Å‰¤è‚³‚ê‚Ä‚¢‚éƒvƒŒƒCƒ„[‚ğ•Ô‚· ˆø”‚Ìplayer‚Í‰¤è‚µ‚Ä‚¢‚éƒvƒŒƒCƒ„[”Ô†
+    //æŒ‡å®šã•ã‚ŒãŸé…ç½®ã§ç‹æ‰‹ã•ã‚Œã¦ã„ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¿”ã™ å¼•æ•°ã®playerã¯ç‹æ‰‹ã—ã¦ã„ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·
     public static List<int> GetOuteUnitsSeme(UnitController[,] units, int player, bool checkotherunit = true)
     {
         List<int> ret = new List<int>();
 
         foreach (var unit in units)
         {
-            //“G‚Ìƒ†ƒjƒbƒg‚¾‚Á‚½‚ç
+            //æ•µã®ãƒ¦ãƒ‹ãƒƒãƒˆã ã£ãŸã‚‰
             if (!unit || player != unit.Player) continue;
 
-            //ƒ†ƒjƒbƒg‚ÌˆÚ“®‰Â”\”ÍˆÍ
+            //ãƒ¦ãƒ‹ãƒƒãƒˆã®ç§»å‹•å¯èƒ½ç¯„å›²
             List<Vector2Int> movabletiles = unit.GetMovableTiles(units, checkotherunit);
 
             foreach (var tile in movabletiles)
             {
-                //ƒ†ƒjƒbƒg‚ª‚¢‚È‚¯‚ê‚Î
+                //ãƒ¦ãƒ‹ãƒƒãƒˆãŒã„ãªã‘ã‚Œã°
                 if (!units[tile.x, tile.y]) continue;
 
                 if (UnitType.Gyoku == units[tile.x, tile.y].UnitType && units[tile.x, tile.y].Player != player)
@@ -759,14 +759,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
-    //¬‚éƒ{ƒ^ƒ“
+    //æˆã‚‹ãƒœã‚¿ãƒ³
     public void OnClickEvolutionApply()
     {
         //nextMode = Mode.TurnChange;
         FinishPlaying();
     }
 
-    //¬‚ç‚È‚¢ƒ{ƒ^ƒ“
+    //æˆã‚‰ãªã„ãƒœã‚¿ãƒ³
     public void OnClickEvolutionCancel()
     {
         //selectUnit.Evolution(false);
@@ -774,19 +774,19 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         OnClickEvolutionApply();
     }
 
-    //¬‚èƒLƒƒƒ“ƒZƒ‹
+    //æˆã‚Šã‚­ãƒ£ãƒ³ã‚»ãƒ«
     [PunRPC]
     void EvolutionCancel(int t)
     {
         selectUnit.Evolution(false);
     }
 
-    //w’è‚³‚ê‚½ƒvƒŒƒCƒ„[”Ô†‚Ì‘Sƒ†ƒjƒbƒg‚ğæ“¾‚·‚é
+    //æŒ‡å®šã•ã‚ŒãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã®å…¨ãƒ¦ãƒ‹ãƒƒãƒˆã‚’å–å¾—ã™ã‚‹
     List<UnitController> getUnits(int player)
     {
         List<UnitController> ret = new List<UnitController>();
 
-        //‘Sƒ†ƒjƒbƒg‚ÌƒŠƒXƒg‚ğì¬‚·‚é
+        //å…¨ãƒ¦ãƒ‹ãƒƒãƒˆã®ãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹
         List<UnitController> allunits = new List<UnitController>(captureUnits);
         allunits.AddRange(units);
         foreach (var item in allunits)
@@ -798,34 +798,34 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
-    //ƒ‚[ƒh‚ğ•ÏX‚·‚éŠÖ”
+    //ãƒ¢ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã™ã‚‹é–¢æ•°
     [PunRPC]
     void SetMode(Mode mode)
     {
         nextMode = mode;
     }
 
-    //ƒ^[ƒ“‚ğI—¹‚·‚éŠÖ”
+    //ã‚¿ãƒ¼ãƒ³ã‚’çµ‚äº†ã™ã‚‹é–¢æ•°
     void FinishPlaying()
     {
         if (myturn)
         {
             myturn = false;
-            punTurnManager.SendMove(null, true); //true‚Åè”ÔI—¹‚ğ‘—M
+            punTurnManager.SendMove(null, true); //trueã§æ‰‹ç•ªçµ‚äº†ã‚’é€ä¿¡
         }
     }
 
-    //ƒŠƒUƒ‹ƒgÄí
+    //ãƒªã‚¶ãƒ«ãƒˆå†æˆ¦
 /*    public void OnClickRematch()
     {
         SceneManager.LoadScene("GameScene");
     }*/
 
-    //ƒŠƒUƒ‹ƒgƒ^ƒCƒgƒ‹‚Ö
+    //ãƒªã‚¶ãƒ«ãƒˆã‚¿ã‚¤ãƒˆãƒ«ã¸
     public void OnClickTitle()
     {
         //SceneManager.LoadScene("TitleScene");
-        PhotonNetwork.LeaveRoom(); //ƒ‹[ƒ€‚©‚ço‚é
+        PhotonNetwork.LeaveRoom(); //ãƒ«ãƒ¼ãƒ ã‹ã‚‰å‡ºã‚‹
     }
 
     [PunRPC]
@@ -839,35 +839,35 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //ƒ‹[ƒ€‚ğo‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”
+    //ãƒ«ãƒ¼ãƒ ã‚’å‡ºãŸã¨ãã«å‘¼ã°ã‚Œã‚‹é–¢æ•°
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene("TitleScene"); //ƒ‹[ƒ€‚ğo‚½‚çTitleScene‚Ö
+        SceneManager.LoadScene("TitleScene"); //ãƒ«ãƒ¼ãƒ ã‚’å‡ºãŸã‚‰TitleSceneã¸
     }
 
-    //ƒvƒŒƒCƒ„[‚ª“üº‚µ‚½‚çA‚»‚ÌƒvƒŒƒCƒ„[ˆÈŠO‚Å“Ç‚Ü‚ê‚éŠÖ”
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå…¥å®¤ã—ãŸã‚‰ã€ãã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä»¥å¤–ã§èª­ã¾ã‚Œã‚‹é–¢æ•°
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         print("Enter!!");
         Debug.Log("OnPlayerEnteredRoom: " + newPlayer.NickName);
 
-        if (PhotonNetwork.CurrentRoom.PlayerCount >= 4) //’èˆõ4‚É’B‚µ‚½‚ç
+        if (PhotonNetwork.CurrentRoom.PlayerCount >= 4) //å®šå“¡4ã«é”ã—ãŸã‚‰
         {
             Debug.Log("start!");
 
             if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC(nameof(setPlayers), RpcTarget.All, 1);
-                punTurnManager.BeginTurn();//ƒ^[ƒ“ŠJn
+                punTurnManager.BeginTurn();//ã‚¿ãƒ¼ãƒ³é–‹å§‹
             }
         }
     }
 
-    void IPunTurnManagerCallbacks.OnTurnBegins(int turn) //ƒ^[ƒ“‚Ìn‚Ü‚è‚É“Ç‚Ü‚ê‚éŠÖ”
+    void IPunTurnManagerCallbacks.OnTurnBegins(int turn) //ã‚¿ãƒ¼ãƒ³ã®å§‹ã¾ã‚Šã«èª­ã¾ã‚Œã‚‹é–¢æ•°
     {
-        print(turn + "ƒ^[ƒ“–ÚŠJnI");
+        print(turn + "ã‚¿ãƒ¼ãƒ³ç›®é–‹å§‹ï¼");
 
-        // MasterClient‚ªæè‚Æ‚·‚é
+        // MasterClientãŒå…ˆæ‰‹ã¨ã™ã‚‹
         if (PhotonNetwork.IsMasterClient)
         {
             if (nowPlayer == 0) return;
@@ -877,10 +877,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //‚ ‚éƒvƒŒƒCƒ„[‚ªƒ^[ƒ“‚ğI—¹‚µ‚½‚Æ‚«‘Sˆõ‚ÉŒÄ‚Î‚ê‚éŠÖ”
+    //ã‚ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚¿ãƒ¼ãƒ³ã‚’çµ‚äº†ã—ãŸã¨ãå…¨å“¡ã«å‘¼ã°ã‚Œã‚‹é–¢æ•°
     void IPunTurnManagerCallbacks.OnPlayerFinished(Photon.Realtime.Player player, int turn, object move)
     {
-        // ©•ª‚ª MasterClient ‚Å‚Í‚È‚¢A‚©‚ÂAŒ»İ‚ÌƒvƒŒƒCƒ„[‚ÌŸ‚ÌƒvƒŒƒCƒ„[‚Ìê‡
+        // è‡ªåˆ†ãŒ MasterClient ã§ã¯ãªã„ã€ã‹ã¤ã€ç¾åœ¨ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ¬¡ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å ´åˆ
         if (!PhotonNetwork.IsMasterClient && PhotonNetwork.LocalPlayer.ActorNumber == player.ActorNumber + 1)
         {
             myturn = true;
@@ -888,7 +888,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    void IPunTurnManagerCallbacks.OnPlayerMove(Photon.Realtime.Player player, int turn, object move) //SendMoveŠÖ”‚ğó‚¯‚Ä“Ç‚Ü‚ê‚éŠÖ”
+    void IPunTurnManagerCallbacks.OnPlayerMove(Photon.Realtime.Player player, int turn, object move) //SendMoveé–¢æ•°ã‚’å—ã‘ã¦èª­ã¾ã‚Œã‚‹é–¢æ•°
     {
         object[] data = (object[])move;
         UnitController unit = (UnitController)data[0];
@@ -901,13 +901,13 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    void IPunTurnManagerCallbacks.OnTurnCompleted(int turn) //‘Sˆõ‚Ìè”Ô‚ªI‚í‚Á‚½‚ç“Ç‚Ü‚ê‚éŠÖ”
+    void IPunTurnManagerCallbacks.OnTurnCompleted(int turn) //å…¨å“¡ã®æ‰‹ç•ªãŒçµ‚ã‚ã£ãŸã‚‰èª­ã¾ã‚Œã‚‹é–¢æ•°
     {
-        print("‘Sˆõ‚Ìƒ^[ƒ“I—¹I");
+        print("å…¨å“¡ã®ã‚¿ãƒ¼ãƒ³çµ‚äº†ï¼");
         punTurnManager.BeginTurn();
     }
 
-    void IPunTurnManagerCallbacks.OnTurnTimeEnds(int turn) //ƒ^[ƒ“‚Ì§ŒÀŠÔ‚ª0‚É‚È‚Á‚½‚ç“Ç‚Ü‚ê‚éŠÖ”
+    void IPunTurnManagerCallbacks.OnTurnTimeEnds(int turn) //ã‚¿ãƒ¼ãƒ³ã®åˆ¶é™æ™‚é–“ãŒ0ã«ãªã£ãŸã‚‰èª­ã¾ã‚Œã‚‹é–¢æ•°
     {
         punTurnManager.BeginTurn();
     }
