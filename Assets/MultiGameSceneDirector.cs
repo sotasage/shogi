@@ -67,6 +67,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     int nowPlayer;
     int turnCount;
     bool isCpu;
+    bool myturn;
 
     //モード
     enum Mode
@@ -104,9 +105,22 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //プレイヤー
     List<PlayerController> Players;
 
+    //PUN
+    [Header("PUN")]
+    PunTurnManager punTurnManager = default;
+
+    void SetupTurnManager()
+    {
+        punTurnManager = GetComponent<PunTurnManager>();
+        punTurnManager.enabled = true;
+        punTurnManager.TurnManagerListener = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        SetupTurnManager(); //PunTurnManagerが機能するようにする
+
         //BGM再生　うるさいので消しておく
         //sound.PlayBGM(0);
 
@@ -240,8 +254,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
 
         //初回モード
+        /*nowMode = Mode.None;
+        nextMode = Mode.TurnChange;*/
         nowMode = Mode.None;
-        nextMode = Mode.TurnChange;
+        nextMode = Mode.None;
     }
 
     // Update is called once per frame
@@ -353,15 +369,18 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                     //なるか確認
                     else
                     {
-                        //成った状態を表示
-                        unit.Evolution();
-                        setSelectCursors(unit);
-                        print(unit.UnitType);
+                        if (myturn)
+                        {
+                            //成った状態を表示
+                            unit.Evolution();
+                            setSelectCursors(unit);
+                            print(unit.UnitType);
 
-                        //ナビゲーション
-                        textResultInfo.text = "成りますか？";
-                        buttonEvolutionApply.gameObject.SetActive(true);
-                        buttonEvolutionCancel.gameObject.SetActive(true);
+                            //ナビゲーション
+                            textResultInfo.text = "成りますか？";
+                            buttonEvolutionApply.gameObject.SetActive(true);
+                            buttonEvolutionCancel.gameObject.SetActive(true);
+                        }
 
                         ret = Mode.WaitEvolution;
                     }
@@ -384,15 +403,18 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                     //なるか確認
                     else
                     {
-                        //成った状態を表示
-                        unit.Evolution();
-                        setSelectCursors(unit);
-                        print(unit.UnitType);
+                        if (myturn)
+                        {
+                            //成った状態を表示
+                            unit.Evolution();
+                            setSelectCursors(unit);
+                            print(unit.UnitType);
 
-                        //ナビゲーション
-                        textResultInfo.text = "成りますか？";
-                        buttonEvolutionApply.gameObject.SetActive(true);
-                        buttonEvolutionCancel.gameObject.SetActive(true);
+                            //ナビゲーション
+                            textResultInfo.text = "成りますか？";
+                            buttonEvolutionApply.gameObject.SetActive(true);
+                            buttonEvolutionCancel.gameObject.SetActive(true);
+                        }
 
                         ret = Mode.WaitEvolution;
                     }
@@ -453,7 +475,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     void startMode()
     {
         //勝敗がついていなければ通常モード
-        nextMode = Mode.Select;
+        //nextMode = Mode.Select;
+        photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.Select);
 
         //Info更新
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
@@ -477,7 +500,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
 
         //詰み
-        if (istumi[nowPlayer]) nextMode = Mode.TurnChange;
+        if (istumi[nowPlayer])
+        {
+            //nextMode = Mode.TurnChange;
+            FinishPlaying();
+        }
         else
         {
             if (1 > movablecount && isoute)
@@ -485,7 +512,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 istumi[nowPlayer] = true;
                 tumicount++;
 
-                nextMode = Mode.TurnChange;
+                //nextMode = Mode.TurnChange;
+                FinishPlaying();
             }
         }
 
@@ -553,15 +581,19 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (null == tile && null == unit) return;
 
         //移動先選択
-        if (tile && selectUnit && movableTiles.ContainsKey(tile))
+        if (myturn && tile && selectUnit && movableTiles.ContainsKey(tile))
         {
-            nextMode = moveUnit(selectUnit, movableTiles[tile]);
+            //nextMode = moveUnit(selectUnit, movableTiles[tile]);
+            object[] data = new object[] { selectUnit, movableTiles[tile] };
+            punTurnManager.SendMove(data, false);
         }
 
         //ユニット選択
         else if (unit)
         {
-            bool isPlayer = nowPlayer == unit.Player;
+            //bool isPlayer = nowPlayer == unit.Player;
+            bool isPlayer = false;
+            if (myturn && nowPlayer == unit.Player) isPlayer = true;
             setSelectCursors(unit, isPlayer);
         }
     }
@@ -574,20 +606,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
 
-        //CPU状態解除
-        isCpu = false;
-
         //次のプレイヤーへ
         nowPlayer = GetNextPlayer(nowPlayer);
 
-
-        //経過ターン
-        if (0 == nowPlayer)
-        {
-            turnCount++;
-        }
-
-        nextMode = Mode.Start;
+        //nextMode = Mode.Start;
+        photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.Start);
     }
 
     //次のプレイヤー番号を返す
@@ -739,14 +762,23 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //成るボタン
     public void OnClickEvolutionApply()
     {
-        nextMode = Mode.TurnChange;
+        //nextMode = Mode.TurnChange;
+        FinishPlaying();
     }
 
     //成らないボタン
     public void OnClickEvolutionCancel()
     {
-        selectUnit.Evolution(false);
+        //selectUnit.Evolution(false);
+        photonView.RPC(nameof(EvolutionCancel), RpcTarget.All, 1);
         OnClickEvolutionApply();
+    }
+
+    //成りキャンセル
+    [PunRPC]
+    void EvolutionCancel(int t)
+    {
+        selectUnit.Evolution(false);
     }
 
     //指定されたプレイヤー番号の全ユニットを取得する
@@ -766,16 +798,34 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
+    //モードを変更する関数
+    [PunRPC]
+    void SetMode(Mode mode)
+    {
+        nextMode = mode;
+    }
+
+    //ターンを終了する関数
+    void FinishPlaying()
+    {
+        if (myturn)
+        {
+            myturn = false;
+            punTurnManager.SendMove(null, true); //trueで手番終了を送信
+        }
+    }
+
     //リザルト再戦
-    public void OnClickRematch()
+/*    public void OnClickRematch()
     {
         SceneManager.LoadScene("GameScene");
-    }
+    }*/
 
     //リザルトタイトルへ
     public void OnClickTitle()
     {
-        SceneManager.LoadScene("TitleScene");
+        //SceneManager.LoadScene("TitleScene");
+        PhotonNetwork.LeaveRoom(); //ルームから出る
     }
 
     [PunRPC]
@@ -789,11 +839,17 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
+    //ルームを出たときに呼ばれる関数
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene("TitleScene"); //ルームを出たらTitleSceneへ
+    }
+
     //プレイヤーが入室したら、そのプレイヤー以外で読まれる関数
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         print("Enter!!");
-        Debug.Log("OnPlayerEnteredRoom: " + PhotonNetwork.NickName);
+        Debug.Log("OnPlayerEnteredRoom: " + newPlayer.NickName);
 
         if (PhotonNetwork.CurrentRoom.PlayerCount >= 4) //定員4に達したら
         {
@@ -802,7 +858,57 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC(nameof(setPlayers), RpcTarget.All, 1);
+                punTurnManager.BeginTurn();//ターン開始
             }
         }
+    }
+
+    void IPunTurnManagerCallbacks.OnTurnBegins(int turn) //ターンの始まりに読まれる関数
+    {
+        print(turn + "ターン目開始！");
+
+        // MasterClientが先手とする
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (nowPlayer == 0) return;
+            myturn = true;
+            //nextMode = Mode.TurnChange;
+            photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.TurnChange);
+        }
+    }
+
+    //あるプレイヤーがターンを終了したとき全員に呼ばれる関数
+    void IPunTurnManagerCallbacks.OnPlayerFinished(Photon.Realtime.Player player, int turn, object move)
+    {
+        // 自分が MasterClient ではない、かつ、現在のプレイヤーの次のプレイヤーの場合
+        if (!PhotonNetwork.IsMasterClient && PhotonNetwork.LocalPlayer.ActorNumber == player.ActorNumber + 1)
+        {
+            myturn = true;
+            photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.TurnChange);
+        }
+    }
+
+    void IPunTurnManagerCallbacks.OnPlayerMove(Photon.Realtime.Player player, int turn, object move) //SendMove関数を受けて読まれる関数
+    {
+        object[] data = (object[])move;
+        UnitController unit = (UnitController)data[0];
+        Vector2Int pos = (Vector2Int)data[1];
+        Mode mode = moveUnit(unit, pos);
+        if (mode == Mode.TurnChange) FinishPlaying();
+        else
+        {
+            if (myturn) nextMode = mode;
+        }
+    }
+
+    void IPunTurnManagerCallbacks.OnTurnCompleted(int turn) //全員の手番が終わったら読まれる関数
+    {
+        print("全員のターン終了！");
+        punTurnManager.BeginTurn();
+    }
+
+    void IPunTurnManagerCallbacks.OnTurnTimeEnds(int turn) //ターンの制限時間が0になったら読まれる関数
+    {
+        punTurnManager.BeginTurn();
     }
 }

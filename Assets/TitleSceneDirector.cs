@@ -112,7 +112,7 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
         }
 
         RoomOptions roomOptions = new RoomOptions(); //RoomOptionsクラスの宣言
-        roomOptions.MaxPlayers = 2; //ルーム定員2名に設定
+        roomOptions.MaxPlayers = 4; //ルーム定員4名に設定
 
         PhotonNetwork.CreateRoom(roomName, roomOptions); //PhotonNetworkクラスにルーム作成を送信
     }
@@ -152,7 +152,7 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom() //ルームに入ったら呼ばれる関数
     {
         ActivatePanel(joiningPanel.name);
-        PhotonNetwork.LoadLevel("GameScene"); //オンラインのゲームシーンへ遷移 
+        PhotonNetwork.LoadLevel("MultiGameScene"); //オンラインのゲームシーンへ遷移 
         print("Enter!");
     }
 
@@ -207,7 +207,7 @@ public class TitleSceneDirector : MonoBehaviourPunCallbacks
         string roomName = "Room " + Random.Range(1000, 10000); //部屋名をランダムな番号に
 
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 2; //プレイヤー数を2に
+        roomOptions.MaxPlayers = 4; //プレイヤー数を4に
         PhotonNetwork.CreateRoom(roomName, roomOptions);
     }
     #endregion
