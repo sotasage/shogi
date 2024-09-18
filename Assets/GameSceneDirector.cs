@@ -2,11 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-<<<<<<< Updated upstream
-=======
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
->>>>>>> Stashed changes
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -46,8 +43,6 @@ public class GameSceneDirector : MonoBehaviour
         { 0, 0, 36, 37, 38, 37, 36, 0, 0 },
     };
 
-<<<<<<< Updated upstream
-=======
     //フィールドデータ
     Dictionary<Vector2Int, GameObject> tiles;
     UnitController[,] units;
@@ -103,7 +98,6 @@ public class GameSceneDirector : MonoBehaviour
     //サウンド制御
     [SerializeField] SoundController sound;
 
->>>>>>> Stashed changes
     // Start is called before the first frame update
     void Start()
     {
@@ -157,9 +151,7 @@ public class GameSceneDirector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-<<<<<<< Updated upstream
 
-=======
         if (Mode.Start == nowMode)
         {
             startMode();
@@ -372,10 +364,10 @@ public class GameSceneDirector : MonoBehaviour
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
         textResultInfo.text = "";
 
-         //持ち駒に王があったら
+        //持ち駒に王があったら
         foreach (var item in getUnits(nowPlayer))
         {
-            while (item.UnitType == UnitType.Gyoku  && item.Fieldstatus == FieldStatus.Captured)
+            while (item.UnitType == UnitType.Gyoku && item.FieldStatus == FieldStatus.Captured)
             {
                 textResultInfo.text = "王を置く場所を選んでください";
                 //TO DO　王を置く場所を選んでおけるようにする、王を持っている限り
@@ -387,7 +379,7 @@ public class GameSceneDirector : MonoBehaviour
 
         //王手しているユニット
         List<UnitController> outeunits = GetOuteUnitsUke(units, nowPlayer);
-        bool isoute = 0< outeunits.Count;
+        bool isoute = 0 < outeunits.Count;
         if (isoute)
         {
             textResultInfo.text = "王手！！";
@@ -408,23 +400,11 @@ public class GameSceneDirector : MonoBehaviour
             movablecount += getMovableTiles(item).Count;
         }
 
-<<<<<<< Updated upstream
-        //動かせない
-        if (1 > movablecount)
-        {
-            textResultInfo.text = "動かせません\n" + "ひきわけ";
-
-            if (isoute)
-            {
-                textResultInfo.text = "詰み！！\n" + (nowPlayer+1)+"P脱落！！";
-                //脱落処理
-
-=======
         //王がとられているか判定
         bool gyoku_survive = false;
         foreach (var item in getUnits(nowPlayer))
         {
-            if(item.UnitType == UnitType.Gyoku)
+            if (item.UnitType == UnitType.Gyoku)
             {
                 gyoku_survive = true;
             }
@@ -439,17 +419,10 @@ public class GameSceneDirector : MonoBehaviour
                 istumi[nowPlayer] = true;
                 tumicount++;
                 nextMode = Mode.TurnChange;
->>>>>>> Stashed changes
-    }
+            }
 
-}
+        }
 
-<<<<<<< Updated upstream
-        //残り人数によって処理を変える
-        //まだ人いたらselectModeへ
-        //残り一人だったらnextMode = Mode.Result;
-        //getnextplayer関数を改良する
-=======
         if (tumicount >= 3)
         {
             for (int i = 0; i < 4; i++)
@@ -463,22 +436,22 @@ public class GameSceneDirector : MonoBehaviour
 
             nextMode = Mode.Result;
         }
->>>>>>> Stashed changes
 
         //CPU判定
-        if(PlayerCount <= nowPlayer)
+        if (PlayerCount <= nowPlayer)
         {
             isCpu = true;
-            enemyWaitTimer = Random.Range(1,EnemyWaitTimerMax);
+            enemyWaitTimer = Random.Range(1, EnemyWaitTimerMax);
         }
 
         //次が結果表示画面なら
-        if(Mode.Result == nextMode)
+        if (Mode.Result == nextMode)
         {
             textTurnInfo.text = "";
             buttonRematch.gameObject.SetActive(true);
             buttonTitle.gameObject.SetActive(true);
         }
+    }
 
 
     //ユニットとタイル選択
@@ -672,7 +645,6 @@ public class GameSceneDirector : MonoBehaviour
                 if (0 < i) unit.SetActive(false);
             }
         }
->>>>>>> Stashed changes
     }
 
     //指定された配列をコピーして返す
@@ -709,9 +681,6 @@ public class GameSceneDirector : MonoBehaviour
         }
 
         return ret;
-<<<<<<< Updated upstream
-    } 
-=======
     }
 
     //指定された配置で王手されているプレイヤーを返す 引数のplayerは王手しているプレイヤー番号
@@ -784,5 +753,4 @@ public class GameSceneDirector : MonoBehaviour
         SceneManager.LoadScene("TitleScene");
     }
 
->>>>>>> Stashed changes
 }
