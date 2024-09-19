@@ -98,6 +98,7 @@ public class GameSceneDirector : MonoBehaviour
     //現在選択中のカード
     CardController selectCard;
 
+    //敵陣設定
     const int EnemyLine = 3;
     List<int>[] enemyLines;
 
