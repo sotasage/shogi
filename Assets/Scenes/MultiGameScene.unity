@@ -205,8 +205,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameSceneDirector, Assembly-CSharp
+      - m_Target: {fileID: 413897294}
+        m_TargetAssemblyTypeName: MultiGameSceneDirector, Assembly-CSharp
         m_MethodName: OnClickEvolutionCancel
         m_Mode: 1
         m_Arguments:
@@ -333,6 +333,7 @@ MonoBehaviour:
   prefabCursor: {fileID: 6027442990332178381, guid: 6621dd9c0594660478210baed98412d2, type: 3}
   prefabUnitTile: {fileID: 4048784332414518758, guid: 1ae7a1fa8823cf94ca445d8070597dff, type: 3}
   sound: {fileID: 1780197189}
+  Scenecamera: {fileID: 963194227}
 --- !u!114 &413897295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -639,8 +640,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameSceneDirector, Assembly-CSharp
+      - m_Target: {fileID: 413897294}
+        m_TargetAssemblyTypeName: MultiGameSceneDirector, Assembly-CSharp
         m_MethodName: OnClickTitle
         m_Mode: 1
         m_Arguments:
@@ -866,8 +867,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameSceneDirector, Assembly-CSharp
+      - m_Target: {fileID: 413897294}
+        m_TargetAssemblyTypeName: MultiGameSceneDirector, Assembly-CSharp
         m_MethodName: OnClickEvolutionApply
         m_Mode: 1
         m_Arguments:

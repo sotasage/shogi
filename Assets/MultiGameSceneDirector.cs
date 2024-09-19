@@ -109,6 +109,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     [Header("PUN")]
     PunTurnManager punTurnManager = default;
 
+    //カメラ
+    [SerializeField]
+    Camera Scenecamera;
+
     void SetupTurnManager()
     {
         punTurnManager = GetComponent<PunTurnManager>();
@@ -120,6 +124,37 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     void Start()
     {
         SetupTurnManager(); //PunTurnManagerが機能するようにする
+
+        //カメラ
+        Vector3 cameraPos;
+
+        if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
+        {
+            cameraPos.x = -4.0f;
+            cameraPos.y = 10.0f;
+            cameraPos.z = 0.0f;
+            Scenecamera.transform.position = cameraPos;
+
+            Scenecamera.gameObject.transform.rotation = Quaternion.Euler(70, 90, 0);
+        }
+        if (PhotonNetwork.LocalPlayer.ActorNumber == 3)
+        {
+            cameraPos.x = 0.0f;
+            cameraPos.y = 10.0f;
+            cameraPos.z = 4.0f;
+            Scenecamera.transform.position = cameraPos;
+
+            Scenecamera.gameObject.transform.rotation = Quaternion.Euler(70, -180, 0);
+        }
+        if (PhotonNetwork.LocalPlayer.ActorNumber == 4)
+        {
+            cameraPos.x = 4.0f;
+            cameraPos.y = 10.0f;
+            cameraPos.z = 0.0f;
+            Scenecamera.transform.position = cameraPos;
+
+            Scenecamera.gameObject.transform.rotation = Quaternion.Euler(70, -90, 0);
+        }
 
         //BGM再生　うるさいので消しておく
         //sound.PlayBGM(0);
@@ -509,18 +544,22 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //詰み
         if (istumi[nowPlayer])
         {
+            print((nowPlayer + 1) + "P詰み！");
             //nextMode = Mode.TurnChange;
-            FinishPlaying();
+            //FinishPlaying();
+            StartCoroutine(FinishPlaying());
         }
         else
         {
             if (1 > movablecount && isoute)
             {
+                print((nowPlayer + 1) + "P詰み！");
                 istumi[nowPlayer] = true;
                 tumicount++;
 
                 //nextMode = Mode.TurnChange;
-                FinishPlaying();
+                //FinishPlaying();
+                StartCoroutine(FinishPlaying());
             }
         }
 
@@ -542,9 +581,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (Mode.Result == nextMode)
         {
             textTurnInfo.text = "";
-            buttonRematch.gameObject.SetActive(true);
+            //buttonRematch.gameObject.SetActive(true);
             buttonTitle.gameObject.SetActive(true);
         }
+
+        print("startMode終了");
     }
 
     //ユニットとタイル選択
@@ -590,9 +631,16 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //移動先選択
         if (myturn && tile && selectUnit && movableTiles.ContainsKey(tile))
         {
-            //nextMode = moveUnit(selectUnit, movableTiles[tile]);
-            int[] unitpos = UnitPosition(selectUnit);
-            photonView.RPC(nameof(SetSelectUnit), RpcTarget.All, unitpos);
+            if (selectUnit.FieldStatus == FieldStatus.Captured)
+            {
+                int capturedunitpos = CapturedUnitPosition(selectUnit);
+                photonView.RPC(nameof(CapturedSetSelectUnit), RpcTarget.All, capturedunitpos);
+            }
+            else
+            {
+                int[] unitpos = UnitPosition(selectUnit);
+                photonView.RPC(nameof(SetSelectUnit), RpcTarget.All, unitpos);
+            }
             object[] data = new object[] { movableTiles[tile].x, movableTiles[tile].y };
             punTurnManager.SendMove(data, false);
         }
@@ -790,11 +838,30 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
+    //持ち駒の位置を返す関数
+    int CapturedUnitPosition(UnitController unit)
+    {
+        int ret = 0;
+
+        for (int i = 0; i < captureUnits.Count; i++)
+        {
+            if (captureUnits[i] == unit)
+            {
+                ret = i;
+                return ret;
+            }
+        }
+
+        return ret;
+    }
+
     //成るボタン
     public void OnClickEvolutionApply()
     {
         //nextMode = Mode.TurnChange;
-        FinishPlaying();
+        photonView.RPC(nameof(Evolution), RpcTarget.Others, 1);
+        //FinishPlaying();
+        StartCoroutine(FinishPlaying());
     }
 
     //成らないボタン
@@ -802,7 +869,15 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         //selectUnit.Evolution(false);
         photonView.RPC(nameof(EvolutionCancel), RpcTarget.All, 1);
-        OnClickEvolutionApply();
+        //FinishPlaying();
+        StartCoroutine(FinishPlaying());
+    }
+
+    //成る
+    [PunRPC]
+    void Evolution(int t)
+    {
+        selectUnit.Evolution();
     }
 
     //成りキャンセル
@@ -837,12 +912,13 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         nextMode = (Mode)mode;
     }
 
-    //ターンを終了する関数
-    void FinishPlaying()
+    //ターンを終了する関数 一瞬時間を空ける
+    IEnumerator FinishPlaying()
     {
         if (myturn)
         {
             myturn = false;
+            yield return new WaitForSeconds(0.5f);
             punTurnManager.SendMove(null, true); //trueで手番終了を送信
         }
     }
@@ -855,11 +931,19 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         selectUnit = units[unitpos[0], unitpos[1]];
     }
 
-    //リザルト再戦
-/*    public void OnClickRematch()
+    //持ち駒だった場合のselectUnitをセットする関数
+    [PunRPC]
+    void CapturedSetSelectUnit(int unitpos)
     {
-        SceneManager.LoadScene("GameScene");
-    }*/
+        if (unitpos < 0 || captureUnits.Count <= unitpos) return;
+        selectUnit = captureUnits[unitpos];
+    }
+
+    //リザルト再戦
+    /*    public void OnClickRematch()
+        {
+            SceneManager.LoadScene("GameScene");
+        }*/
 
     //リザルトタイトルへ
     public void OnClickTitle()
@@ -940,7 +1024,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         nextpos.y = nextposy;
 
         Mode mode = moveUnit(selectUnit, nextpos);
-        if (mode == Mode.TurnChange) FinishPlaying();
+        if (mode == Mode.TurnChange)
+        {
+            //FinishPlaying();
+            StartCoroutine(FinishPlaying());
+        }
         else
         {
             if (myturn) nextMode = mode;
