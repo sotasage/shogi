@@ -103,7 +103,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     int tumicount;
 
     //プレイヤー
-    List<PlayerController> Players;
+    string[] Players;
 
     //PUN
     [Header("PUN")]
@@ -189,7 +189,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         tumicount = 0;
 
         //プレイヤー
-        Players = new List<PlayerController>();
+        Players = new string[4];
 
         for (int i = 0; i < boardWidth; i++)
         {
@@ -521,7 +521,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.Select);
 
         //Info更新
-        textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
+        textTurnInfo.text = "" + Players[nowPlayer] + "さんの番です";
         textResultInfo.text = "";
 
         //勝敗チェック
@@ -569,7 +569,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             {
                 if (!istumi[i])
                 {
-                    textResultInfo.text = "詰み\n" + (i + 1) + "Pの勝ち";
+                    textResultInfo.text = "詰み\n" + Players[i] + "さんの勝ち";
                     break;
                 }
             }
@@ -957,9 +957,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         foreach (var p in PhotonNetwork.PlayerList)
         {
-            PlayerController player = new PlayerController();
-            player.playername = p.NickName;
-            Players.Add(player);
+            Players[p.ActorNumber - 1] = p.NickName;
         }
     }
 
