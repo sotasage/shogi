@@ -336,7 +336,7 @@ public class GameSceneDirector : MonoBehaviour
             //成
             if (nowPlayer == 0 || nowPlayer == 2)
             {
-                if (unit.isEvolution && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
+                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -492,15 +492,6 @@ public class GameSceneDirector : MonoBehaviour
             };
         }
 
-        //王がとられているか判定
-        bool gyoku_survive = false;
-        foreach (var item in getUnits(nowPlayer))
-        {
-            if (item.UnitType == UnitType.Gyoku)
-            {
-                gyoku_survive = true;
-            }
-        }
 
         //詰み
         if (istumi[nowPlayer]) nextMode = Mode.TurnChange;
