@@ -89,7 +89,15 @@ public class GameSceneDirector : MonoBehaviour
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
-    //敵陣設定
+    //カードのプレハブ
+    [SerializeField] List<GameObject> prefabCards;
+
+    //カードデータ
+    CardController[,] cards;
+
+    //現在選択中のカード
+    CardController selectCard;
+
     const int EnemyLine = 3;
     List<int>[] enemyLines;
 
@@ -104,6 +112,9 @@ public class GameSceneDirector : MonoBehaviour
     //プレイヤーの詰み状態
     bool[] istumi;
     int tumicount;
+
+    //canvas
+    public GameObject canvas;
 
     // Start is called before the first frame update
     void Start()
@@ -215,6 +226,19 @@ public class GameSceneDirector : MonoBehaviour
 
                 obj.SetActive(false);
             }
+        }
+
+        //カードの作成
+        for (int i = 0; i < 1; i++)
+        {
+            int type = 0;
+            int player = 0;
+            GameObject prefab = prefabCards[type];
+            GameObject card = Instantiate(prefab);
+            card.transform.SetParent (canvas.transform, false);
+
+            CardController cardctrl = card.AddComponent<CardController>();
+            cardctrl.Init(player, type);
         }
 
         //TurnChangeから始める場合-1
