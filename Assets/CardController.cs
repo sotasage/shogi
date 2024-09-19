@@ -6,7 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 //カードのタイプ
 public enum CardType
 {
-    Muhon,
+    Zyunbantobashi,
 }
 
 public class CardController : MonoBehaviour
@@ -37,8 +37,18 @@ public class CardController : MonoBehaviour
         Show();
     }
 
+    //カードを表示
     public void Show()
     {
         this.gameObject.SetActive(true);
+    }
+
+    //カードを使用
+    public void UseCard()
+    {
+        if (CardType.Zyunbantobashi == CardType)
+        {
+            
+        }
     }
 }

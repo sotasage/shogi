@@ -101,6 +101,9 @@ public class GameSceneDirector : MonoBehaviour
     //サウンド制御
     [SerializeField] SoundController sound;
 
+    //canvas
+    public GameObject canvas;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -212,7 +215,14 @@ public class GameSceneDirector : MonoBehaviour
         //カードの作成
         for (int i = 0; i < 1; i++)
         {
-            ;
+            int type = 0;
+            int player = 0;
+            GameObject prefab = prefabCards[type];
+            GameObject card = Instantiate(prefab);
+            card.transform.SetParent (canvas.transform, false);
+
+            CardController cardctrl = card.AddComponent<CardController>();
+            cardctrl.Init(player, type);
         }
 
         //TurnChangeから始める場合-1
