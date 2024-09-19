@@ -305,6 +305,7 @@ MonoBehaviour:
   prefabCards:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
   sound: {fileID: 1780197189}
+  canvas: {fileID: 1795245983}
 --- !u!4 &413897292
 Transform:
   m_ObjectHideFlags: 0
