@@ -364,16 +364,6 @@ public class GameSceneDirector : MonoBehaviour
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
         textResultInfo.text = "";
 
-        //持ち駒に王があったら
-        foreach (var item in getUnits(nowPlayer))
-        {
-            while (item.UnitType == UnitType.Gyoku && item.FieldStatus == FieldStatus.Captured)
-            {
-                textResultInfo.text = "王を置く場所を選んでください";
-                //TO DO　王を置く場所を選んでおけるようにする、王を持っている限り
-            }
-        }
-
 
         //勝敗チェック
 
@@ -393,11 +383,21 @@ public class GameSceneDirector : MonoBehaviour
         }
         */
 
-        //自軍が移動可能か調べる
-        int movablecount = 0;
+        ////自軍が移動可能か調べる
+        //int movablecount = 0;
+        //foreach (var item in getUnits(nowPlayer))
+        //{
+        //    movablecount += getMovableTiles(item).Count;
+        //}
+
+        //玉がとられているかどうか
+        bool gyoku_survive = false;
         foreach (var item in getUnits(nowPlayer))
         {
-            movablecount += getMovableTiles(item).Count;
+            if (UnitType.Gyoku == item.UnitType)
+            {
+                gyoku_survive = true;
+            };
         }
 
         //王がとられているか判定
@@ -588,12 +588,21 @@ public class GameSceneDirector : MonoBehaviour
         return ret;
     }
 
+    //敵の駒を獲る
     void captureUnit(int player, Vector2Int tileindex)
     {
         UnitController unit = units[tileindex.x, tileindex.y];
         if (!unit) return;
         unit.Caputure(player);
-        captureUnits.Add(unit);
+        if (unit.UnitType != UnitType.Gyoku) 
+        {
+            captureUnits.Add(unit); 
+        }
+        else
+        {
+            Destroy(unit.gameObject);
+            //TODO:王を採ったときの処理を書く
+        }
         units[tileindex.x, tileindex.y] = null;
     }
 

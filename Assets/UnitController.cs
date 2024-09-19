@@ -154,8 +154,8 @@ public class UnitController : MonoBehaviour
             //玉の移動範囲
             ret = GetMovableTiles(units, UnitType.Gyoku);
 
-            //相手の移動範囲を考慮しない
-            if (!checkotherunit) return ret;
+            ////相手の移動範囲を考慮しない
+            //if (!checkotherunit) return ret;
 
             ////削除対象のタイル
             //List<Vector2Int> removetiles = new List<Vector2Int>();
