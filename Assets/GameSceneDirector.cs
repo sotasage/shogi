@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -98,9 +101,16 @@ public class GameSceneDirector : MonoBehaviour
     //サウンド制御
     [SerializeField] SoundController sound;
 
+    //プレイヤーの詰み状態
+    bool[] istumi;
+    int tumicount;
+
     // Start is called before the first frame update
     void Start()
     {
+        //BGM再生　うるさいので消しておく
+        //sound.PlayBGM(0);
+
         //UI関連初期設定
         buttonTitle.gameObject.SetActive(false);
         buttonRematch.gameObject.SetActive(false);
@@ -111,6 +121,24 @@ public class GameSceneDirector : MonoBehaviour
         //ボードサイズ
         boardWidth = boardSetting.GetLength(0);
         boardHeight = boardSetting.GetLength(1);
+
+        //フィールド初期化
+        tiles = new Dictionary<Vector2Int, GameObject>();
+        units = new UnitController[boardWidth, boardHeight];
+
+        //移動可能範囲
+        movableTiles = new Dictionary<GameObject, Vector2Int>();
+        cursors = new List<GameObject>();
+
+        //持ち駒を置く場所
+        unitTiles = new List<GameObject>[PlayerMax];
+
+        //キャプチャされたユニット
+        captureUnits = new List<UnitController>();
+
+        //プレイヤーの詰み状態
+        istumi = new bool[4];
+        tumicount = 0;
 
         for (int i = 0; i < boardWidth; i++)
         {
@@ -128,6 +156,7 @@ public class GameSceneDirector : MonoBehaviour
 
                 //タイル作成
                 GameObject tile = Instantiate(prefabTile, pos, Quaternion.identity);
+                tiles.Add(tileindex, tile);
 
                 //ユニット作成
                 int type = boardSetting[i, j] % 10;
@@ -144,14 +173,78 @@ public class GameSceneDirector : MonoBehaviour
 
                 UnitController unitctrl = unit.AddComponent<UnitController>();
                 unitctrl.Init(player, type, tile, tileindex);
+
+                //ユニットデータセット
+                units[i, j] = unitctrl;
             }
         }
+
+        //持ち駒を置く場所の作成
+        Vector3 startposEven = new Vector3(-4, 0.5f, -5);
+        Vector3 startposOdd = new Vector3(-5, 0.5f, 4);
+
+        for (int i = 0; i < PlayerMax; i++)
+        {
+            unitTiles[i] = new List<GameObject>();
+            int dir = 1;
+            if (i == 2 || i == 3) dir = -1;
+
+            for (int j = 0; j < 9; j++)
+            {
+                Vector3 resultpos = new Vector3();
+
+                if (i == 0 || i == 2)
+                {
+                    Vector3 posEven = startposEven;
+                    posEven.x = (posEven.x + j) * dir;
+                    posEven.z = posEven.z * dir;
+
+                    resultpos = posEven;
+                }
+                else
+                {
+                    Vector3 posOdd = startposOdd;
+                    posOdd.x = posOdd.x * dir;
+                    posOdd.z = (posOdd.z - j) * dir;
+
+                    resultpos = posOdd;
+                }
+
+                GameObject obj = Instantiate(prefabUnitTile, resultpos, Quaternion.Euler(0, 90 * i, 0));
+                unitTiles[i].Add(obj);
+
+                obj.SetActive(false);
+            }
+        }
+
+        //TurnChangeから始める場合-1
+        nowPlayer = -1;
+
+        //敵陣設定
+        enemyLines = new List<int>[PlayerMax];
+        for (int i = 0; i < PlayerMax; i++)
+        {
+            enemyLines[i] = new List<int>();
+            int rangemin = 0;
+            if (0 == i || 1 == i)
+            {
+                rangemin = boardHeight - EnemyLine;
+            }
+
+            for (int j = 0; j < EnemyLine; j++)
+            {
+                enemyLines[i].Add(rangemin + j);
+            }
+        }
+
+        //初回モード
+        nowMode = Mode.None;
+        nextMode = Mode.TurnChange;
     }
 
     // Update is called once per frame
     void Update()
     {
-
         if (Mode.Start == nowMode)
         {
             startMode();
@@ -274,7 +367,7 @@ public class GameSceneDirector : MonoBehaviour
             }
             else
             {
-                if (unit.isEvolution && (enemyLines[nowPlayer].Contains(tileindex.x) || enemyLines[nowPlayer].Contains(oldpos.y)))
+                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.x) || enemyLines[nowPlayer].Contains(oldpos.x)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -372,8 +465,7 @@ public class GameSceneDirector : MonoBehaviour
         bool isoute = 0 < outeunits.Count;
         if (isoute)
         {
-            textResultInfo.text = "王手！！";
-
+            textResultInfo.text = "王手";
         }
 
         //５００手ルール
@@ -429,7 +521,7 @@ public class GameSceneDirector : MonoBehaviour
             {
                 if (!istumi[i])
                 {
-                    textResultInfo.text = "勝負あり\n" + (i + 1) + "Pの勝ち";
+                    textResultInfo.text = "詰み\n" + (i + 1) + "Pの勝ち";
                     break;
                 }
             }
@@ -523,7 +615,7 @@ public class GameSceneDirector : MonoBehaviour
                 selectUnit.gameObject.SetActive(true);
             }
         }
-            
+
         //何も選択されていなければ処理をしない
         if (null == tile && null == unit) return;
 
@@ -664,13 +756,14 @@ public class GameSceneDirector : MonoBehaviour
         return ret;
     }
 
-    //指定された配置で王手しているユニットを返す
-    public static List<UnitController> GetOuteUnits(UnitController[,] units, int player, bool checkotherunit)
+    //指定された配置で王手しているユニットを返す 引数のplayerは王手されているプレイヤー番号
+    public static List<UnitController> GetOuteUnitsUke(UnitController[,] units, int player, bool checkotherunit = true)
     {
         List<UnitController> ret = new List<UnitController>();
 
         foreach (var unit in units)
         {
+            //仲間のユニットだったら
             if (!unit || player == unit.Player) continue;
 
             //ユニットの移動可能範囲
@@ -681,12 +774,11 @@ public class GameSceneDirector : MonoBehaviour
                 //ユニットがいなければ
                 if (!units[tile.x, tile.y]) continue;
 
-                if(UnitType.Gyoku == units[tile.x, tile.y].UnitType)
+                if (UnitType.Gyoku == units[tile.x, tile.y].UnitType && units[tile.x, tile.y].Player == player)
                 {
                     ret.Add(unit);
                 }
             }
-
         }
 
         return ret;
@@ -761,5 +853,4 @@ public class GameSceneDirector : MonoBehaviour
     {
         SceneManager.LoadScene("TitleScene");
     }
-
 }

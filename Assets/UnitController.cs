@@ -35,7 +35,7 @@ public enum FieldStatus
 
 public class UnitController : MonoBehaviour
 {
-    //ユニットのプレイヤー番号
+    //ユニットのプレイヤー番号 1P: 0, 2P: 1, 3P: 2, 4P: 3
     public int Player;
     //ユニットの種類
     public UnitType UnitType, OldUnitType;
@@ -57,7 +57,7 @@ public class UnitController : MonoBehaviour
     };
 
     //成り済みかどうか
-    public bool isEvolution;
+
 
     //ユニットの選択/非選択のy座標
     public const float SelectUnitY = 1.5f;
@@ -146,7 +146,96 @@ public class UnitController : MonoBehaviour
         //持ち駒状態
         if(FieldStatus.Captured == FieldStatus)
         {
-            //持ち駒状態
+            foreach (var checkpos in getEmptyTiles(units))
+            {
+                //移動可能
+                bool ismovable = true;
+
+                //移動した状態を作る
+                Pos = checkpos;
+                FieldStatus = FieldStatus.OnBoard;
+
+                //自分以外いないフィールドを作って、置いた後で移動できないなら移動不可
+                UnitController[,] exunits = new UnitController[units.GetLength(0), units.GetLength(1)];
+                exunits[checkpos.x, checkpos.y] = this;
+                if (1 > GetMovableTiles(exunits, UnitType).Count)
+                {
+                    ismovable = false;
+                }
+
+                //歩
+                if (UnitType.Hu == UnitType)
+                {
+                    //二歩
+                    if (Player == 0 || Player == 2)
+                    {
+                        for (int i = 0; i < units.GetLength(1); i++)
+                        {
+                            if (units[checkpos.x, i] && UnitType.Hu == units[checkpos.x, i].UnitType && Player == units[checkpos.x, i].Player)
+                            {
+                                ismovable = false;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < units.GetLength(0); i++)
+                        {
+                            if (units[i, checkpos.y] && UnitType.Hu == units[i, checkpos.y].UnitType && Player == units[i, checkpos.y].Player)
+                            {
+                                ismovable = false;
+                                break;
+                            }
+                        }
+                    }
+
+ /*                   //うち歩詰め
+                    //今回打ったことにして、王手になる場合
+                    UnitController[,] copyunits = GameSceneDirector.GetCopyArray(units);
+                    copyunits[checkpos.x, checkpos.y] = this;
+
+                    List<int> outeplayers = GameSceneDirector.GetOuteUnitsSeme(copyunits, Player);
+                    int outecount = outeplayers.Count;
+
+                    if (0 < outecount && ismovable)
+                    {
+                        foreach (var player in outeplayers)
+                        {
+                            //うち歩詰め状態にしておく
+                            ismovable = false;
+
+                            //相手のいずれかの駒が歩を取った状態を再現
+                            foreach (var unit in units)
+                            {
+                                if (!unit || player != unit.Player) continue;
+
+                                //移動範囲にcheckposがない
+                                if (!unit.GetMovableTiles(copyunits).Contains(checkpos)) continue;
+                                //相手の駒を移動させた状態を作る
+                                copyunits[checkpos.x, checkpos.y] = unit;
+                                //再度王手されているかチェック
+                                outecount = GameSceneDirector.GetOuteUnitsUke(copyunits, player, false).Count;
+                                //1つでも王手を回避できる駒があれば打ち歩詰めじゃない
+                                if (1 > outecount)
+                                {
+                                    ismovable = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }*/   
+                }
+
+                //移動不可　次の場所を調べる
+                if (!ismovable) continue;
+
+                ret.Add(checkpos);
+            }
+
+            //移動状態を元に戻す
+            Pos = new Vector2Int(-1, -1);
+            FieldStatus = FieldStatus.Captured;
         }
         //玉
         else if(UnitType.Gyoku == UnitType)
@@ -197,7 +286,7 @@ public class UnitController : MonoBehaviour
             }
 
         }
-        //龍(玉+角）
+        //龍(玉+飛車）
         else if (UnitType.Ryu == UnitType)
         {
             ret = GetMovableTiles(units, UnitType.Gyoku);
@@ -211,7 +300,6 @@ public class UnitController : MonoBehaviour
         else
         {
             ret = GetMovableTiles(units, UnitType);
-
         }
 
         return ret;
@@ -563,6 +651,30 @@ public class UnitController : MonoBehaviour
             transform.eulerAngles = getDefaultAngles(Player);
         }
 
-        isEvolution = evolution;
+    }
+
+    //空いているタイルを返す
+    List<Vector2Int> getEmptyTiles(UnitController[,] units)
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+        for (int i = 0; i < units.GetLength(0); i++)
+        {
+            for (int j = 0; j < units.GetLength(1); j++)
+            {
+                if (units[i, j]) continue;
+                ret.Add(new Vector2Int(i, j));
+            }
+        }
+        return ret;
+    }
+
+    //進化できるかどうか
+    public bool isEvolution()
+    {
+        if (!evolutionTable.ContainsKey(UnitType) || UnitType.None == evolutionTable[UnitType])
+        {
+            return false;
+        }
+        return true;
     }
 }
