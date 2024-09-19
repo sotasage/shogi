@@ -333,6 +333,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //移動し終わった後のモード
         Mode ret = Mode.TurnChange;
 
+        if (tiles[tileindex] == null)
+        {
+            print("tileindexがnull");
+            return ret;
+        }
+
         //現在地
         Vector2Int oldpos = unit.Pos;
 
@@ -474,9 +480,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //ターン開始
     void startMode()
     {
+        print("現在のプレイヤー" + (nowPlayer + 1) + "P");
         //勝敗がついていなければ通常モード
-        //nextMode = Mode.Select;
-        photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.Select);
+        nextMode = Mode.Select;
+        //photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.Select);
 
         //Info更新
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
@@ -584,7 +591,9 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (myturn && tile && selectUnit && movableTiles.ContainsKey(tile))
         {
             //nextMode = moveUnit(selectUnit, movableTiles[tile]);
-            object[] data = new object[] { selectUnit, movableTiles[tile] };
+            int[] unitpos = UnitPosition(selectUnit);
+            photonView.RPC(nameof(SetSelectUnit), RpcTarget.All, unitpos);
+            object[] data = new object[] { movableTiles[tile].x, movableTiles[tile].y };
             punTurnManager.SendMove(data, false);
         }
 
@@ -601,6 +610,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //ターン変更
     void turnChangeMode()
     {
+        print("turnChangeModeコール");
         //ボタンとカーソルのリセット
         setSelectCursors();
         buttonEvolutionApply.gameObject.SetActive(false);
@@ -609,8 +619,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //次のプレイヤーへ
         nowPlayer = GetNextPlayer(nowPlayer);
 
-        //nextMode = Mode.Start;
-        photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.Start);
+        nextMode = Mode.Start;
+        //photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.Start);
     }
 
     //次のプレイヤー番号を返す
@@ -759,6 +769,27 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         return ret;
     }
 
+    //ユニットの位置を返す関数
+    int[] UnitPosition(UnitController unit)
+    {
+        int[] ret = new int[2];
+
+        for (int i = 0; i < boardWidth; i++)
+        {
+            for (int j = 0; j < boardHeight; j++)
+            {
+                if (units[i, j] == unit)
+                {
+                    ret[0] = i;
+                    ret[1] = j;
+                    return ret;
+                }
+            }
+        }
+
+        return ret;
+    }
+
     //成るボタン
     public void OnClickEvolutionApply()
     {
@@ -800,9 +831,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
     //モードを変更する関数
     [PunRPC]
-    void SetMode(Mode mode)
+    void SetMode(int mode)
     {
-        nextMode = mode;
+        print("モード" + mode + "にセット");
+        nextMode = (Mode)mode;
     }
 
     //ターンを終了する関数
@@ -813,6 +845,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             myturn = false;
             punTurnManager.SendMove(null, true); //trueで手番終了を送信
         }
+    }
+
+    //selectUnitをセットする関数
+    [PunRPC]
+    void SetSelectUnit(int[] unitpos)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+        selectUnit = units[unitpos[0], unitpos[1]];
     }
 
     //リザルト再戦
@@ -870,30 +910,36 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         // MasterClientが先手とする
         if (PhotonNetwork.IsMasterClient)
         {
-            if (nowPlayer == 0) return;
+            //if (nowPlayer == 0) return;
             myturn = true;
             //nextMode = Mode.TurnChange;
-            photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.TurnChange);
+            photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.TurnChange);
         }
     }
 
     //あるプレイヤーがターンを終了したとき全員に呼ばれる関数
     void IPunTurnManagerCallbacks.OnPlayerFinished(Photon.Realtime.Player player, int turn, object move)
     {
+        print(player.NickName + "終了");
         // 自分が MasterClient ではない、かつ、現在のプレイヤーの次のプレイヤーの場合
         if (!PhotonNetwork.IsMasterClient && PhotonNetwork.LocalPlayer.ActorNumber == player.ActorNumber + 1)
         {
             myturn = true;
-            photonView.RPC(nameof(SetMode), RpcTarget.All, Mode.TurnChange);
+            photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.TurnChange);
         }
     }
 
     void IPunTurnManagerCallbacks.OnPlayerMove(Photon.Realtime.Player player, int turn, object move) //SendMove関数を受けて読まれる関数
     {
         object[] data = (object[])move;
-        UnitController unit = (UnitController)data[0];
-        Vector2Int pos = (Vector2Int)data[1];
-        Mode mode = moveUnit(unit, pos);
+        int nextposx = (int)data[0];
+        int nextposy = (int)data[1];
+
+        Vector2Int nextpos = new Vector2Int();
+        nextpos.x = nextposx;
+        nextpos.y = nextposy;
+
+        Mode mode = moveUnit(selectUnit, nextpos);
         if (mode == Mode.TurnChange) FinishPlaying();
         else
         {
@@ -904,7 +950,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     void IPunTurnManagerCallbacks.OnTurnCompleted(int turn) //全員の手番が終わったら読まれる関数
     {
         print("全員のターン終了！");
-        punTurnManager.BeginTurn();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            punTurnManager.BeginTurn();
+        }
     }
 
     void IPunTurnManagerCallbacks.OnTurnTimeEnds(int turn) //ターンの制限時間が0になったら読まれる関数
