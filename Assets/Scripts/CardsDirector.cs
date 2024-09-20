@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,14 +11,21 @@ public class CardsDirector : MonoBehaviour
 
     public Transform canvas;
 
-    //ƒvƒŒƒCƒ„[‚ª‚Á‚Ä‚¢‚éƒJ[ƒh
+    [SerializeField] public Button buttonUseCard;
+
+    [SerializeField] GameSceneDirector gameSceneDirector;
+
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæŒã£ã¦ã„ã‚‹ã‚«ãƒ¼ãƒ‰
     public List<CardController>[] playerCards;
 
-    //Œ»İ‘I‘ğ’†‚ÌƒJ[ƒh
+    //ç¾åœ¨é¸æŠä¸­ã®ã‚«ãƒ¼ãƒ‰
     CardController selectCard;
 
-    //‘I‘ğ’†‚É‰E‘¤‚É•\¦‚³‚ê‚éƒJ[ƒh
+    //é¸æŠä¸­ã«å³å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚«ãƒ¼ãƒ‰
     GameObject sampleCard;
+
+    //ã‚«ãƒ¼ãƒ‰ã‚’ä½¿ç”¨ã—ãŸã‹ã©ã†ã‹
+    public bool usedFlag;
 
     // Start is called before the first frame update
     void Start()
@@ -32,10 +39,10 @@ public class CardsDirector : MonoBehaviour
         
     }
 
-    //ƒJ[ƒh‚ğ5–‡‚Ü‚Å”z‚éŠÖ”
+    //ã‚«ãƒ¼ãƒ‰ã‚’5æšã¾ã§é…ã‚‹é–¢æ•°
     public void DealCards(int player)
     {
-        //player‚ÌŒ»İ‚ÌƒJ[ƒh–‡”
+        //playerã®ç¾åœ¨ã®ã‚«ãƒ¼ãƒ‰æšæ•°
         int cardcount = playerCards[player].Count;
 
         for (int i = 0; i < 5 - cardcount; i++)
@@ -49,10 +56,10 @@ public class CardsDirector : MonoBehaviour
         }
     }
 
-    //è‚¿‚ÌƒJ[ƒh‚ğÀ‘Ì‰»‚·‚éŠÖ”
+    //æ‰‹æŒã¡ã®ã‚«ãƒ¼ãƒ‰ã‚’å®Ÿä½“åŒ–ã™ã‚‹é–¢æ•°
     public void InstantiateCards(int player)
     {
-        //‰ŠúˆÊ’u
+        //åˆæœŸä½ç½®
         float x = -CardController.Width * 2;
 
         for (int i = 0; i < 5; i++)
@@ -61,16 +68,16 @@ public class CardsDirector : MonoBehaviour
             int type = (int)cardctrl.CardType;
             GameObject card = Instantiate(prefabCards[type], canvas);
             RectTransform rectTransform = card.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = new Vector2(x, -40); // À•W‚ğİ’è
+            rectTransform.anchoredPosition = new Vector2(x, -40); // åº§æ¨™ã‚’è¨­å®š
 
-            //card‚ÉCardController‚ğƒAƒ^ƒbƒ`
+            //cardã«CardControllerã‚’ã‚¢ã‚¿ãƒƒãƒ
             CardController Cardctrl = card.AddComponent<CardController>();
 
-            //ButtonƒRƒ“ƒ|[ƒlƒ“ƒg‚ğƒAƒ^ƒbƒ`
+            //Buttonã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’ã‚¢ã‚¿ãƒƒãƒ
             Button button = card.AddComponent<Button>();
             void OnCardClick()
             {
-                //selectCard‚ª©•ª©g‚¾‚Á‚½‚çfalse•Ê‚ÌƒJ[ƒh‚¾‚Á‚½‚çtrue
+                //selectCardãŒè‡ªåˆ†è‡ªèº«ã ã£ãŸã‚‰falseåˆ¥ã®ã‚«ãƒ¼ãƒ‰ã ã£ãŸã‚‰true
                 bool selectFlg = selectCard != Cardctrl;
 
                 if (selectCard)
@@ -81,6 +88,7 @@ public class CardsDirector : MonoBehaviour
                     {
                         Destroy(sampleCard);
                     }
+                    buttonUseCard.gameObject.SetActive(false);
                 }
                 if (selectFlg)
                 {
@@ -89,8 +97,13 @@ public class CardsDirector : MonoBehaviour
                     int type = (int)selectCard.CardType;
                     sampleCard = Instantiate(prefabCards[type], canvas);
                     RectTransform rectTransform = sampleCard.GetComponent<RectTransform>();
-                    rectTransform.anchoredPosition = new Vector2(300, 200); // À•W‚ğİ’è
-                    rectTransform.sizeDelta = new Vector2(150, 225);
+                    rectTransform.anchoredPosition = new Vector2(300, 200); // åº§æ¨™ã‚’è¨­å®š
+                    rectTransform.sizeDelta = new Vector2(150, 225);//ã‚µã‚¤ã‚ºã‚’è¨­å®š
+                    
+                    if (gameSceneDirector.nowPlayer == player && !usedFlag)
+                    {
+                        buttonUseCard.gameObject.SetActive(true);
+                    }
                 }
             }
             button.onClick.AddListener(OnCardClick);
@@ -99,5 +112,12 @@ public class CardsDirector : MonoBehaviour
 
             x += CardController.Width;
         }
+    }
+
+    public void OnClickButtonUseCard()
+    {
+        usedFlag = true;
+        buttonUseCard.gameObject.SetActive(false);
+        gameSceneDirector.UseCard(selectCard.CardType);
     }
 }

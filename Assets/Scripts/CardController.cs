@@ -73,4 +73,9 @@ public class CardController : MonoBehaviour
             bool zyunbantobashi = true;
         }
     }
+
+    void OnClickUseCard()
+    {
+
+    }
 }

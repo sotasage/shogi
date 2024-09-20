@@ -63,7 +63,7 @@ public class GameSceneDirector : MonoBehaviour
     List<GameObject> cursors;
 
     //プレイヤーとターン
-    int nowPlayer;
+    public int nowPlayer;
     int turnCount;
     bool isCpu;
 
@@ -131,6 +131,7 @@ public class GameSceneDirector : MonoBehaviour
         buttonRematch.gameObject.SetActive(false);
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
+        cardsDirector.buttonUseCard.gameObject.SetActive(false);
         textResultInfo.text = "";
 
         //ボードサイズ
@@ -233,17 +234,6 @@ public class GameSceneDirector : MonoBehaviour
         }
 
         //カードの作成
-        /*for (int i = 0; i < 1; i++)
-        {
-            int type = 0;
-            int player = 0;
-            GameObject prefab = prefabCards[type];
-            GameObject card = Instantiate(prefab);
-            card.transform.SetParent (canvas.transform, false);
-
-            CardController cardctrl = card.AddComponent<CardController>();
-            cardctrl.Init(player, type);
-        }*/
         cardsDirector.playerCards = new List<CardController>[4];
 
         for (int i = 0; i < 4; i++)
@@ -680,6 +670,9 @@ public class GameSceneDirector : MonoBehaviour
         setSelectCursors();
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
+        cardsDirector.buttonUseCard.gameObject.SetActive(false);
+
+        cardsDirector.usedFlag = false;
 
         //CPU状態解除
         isCpu = false;
@@ -881,6 +874,16 @@ public class GameSceneDirector : MonoBehaviour
         }
 
         return ret;
+    }
+
+
+    //カードを使用
+    public void UseCard(CardType cardType)
+    {
+        if (CardType.Zyunbantobashi == cardType)
+        {
+
+        }
     }
 
     //リザルト再戦
