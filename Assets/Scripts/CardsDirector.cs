@@ -16,7 +16,7 @@ public class CardsDirector : MonoBehaviour
     [SerializeField] GameSceneDirector gameSceneDirector;
 
     //プレイヤーが持っているカード
-    public List<CardController>[] playerCards;
+    public List<CardController>[] playerCards = new List<CardController>[4];
 
     //現在選択中のカード
     public CardController selectCard;
@@ -26,6 +26,9 @@ public class CardsDirector : MonoBehaviour
 
     //カードを使用したかどうか
     public bool usedFlag;
+
+    //所持枚数
+    public int[] cardNums = new int[] {0,0,0,0};
 
     // Start is called before the first frame update
     void Start()
@@ -39,13 +42,14 @@ public class CardsDirector : MonoBehaviour
         
     }
 
-    //カードを5枚まで配る関数
-    public void DealCards(int player)
+    //カードを指定枚数加える関数
+    public void AddCards(int player,int num,bool hoju=false)
     {
-        //playerの現在のカード枚数
-        int cardcount = playerCards[player].Count;
-
-        for (int i = 0; i < 5 - cardcount; i++)
+        if (player == 0)
+        {
+            DestroyCards(player);
+        }
+        for (int i = 0; i < num; i++)
         {
             int type = Random.Range(0, prefabCards.Count);
 
@@ -54,15 +58,31 @@ public class CardsDirector : MonoBehaviour
 
             playerCards[player].Add(cardctrl);
         }
+        if (player == 0)
+        {
+            InstantiateCards(0);
+        }
+        if (!hoju)
+        {
+            cardNums[player] += num;
+        }
+    }
+    //カードを使った分だけ配る関数
+    public void DealCards(int player)
+    {
+        //playerの現在のカード枚数
+        int cardcount = playerCards[player].Count;
+
+        AddCards(player, cardNums[player]-cardcount,true);
     }
 
-    //手持ちのカードを実体化する関数
+    //手持ちのカードを実体化する関数(左から詰めていき、七枚でちょうどいい）
     public void InstantiateCards(int player)
     {
         //初期位置
-        float x = -CardController.Width * 2;
+        float x = -CardController.Width * 3;
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < playerCards[player].Count; i++)
         {
             CardController cardctrl = playerCards[player][0];
             playerCards[player].Remove(cardctrl);
@@ -116,7 +136,7 @@ public class CardsDirector : MonoBehaviour
         }
     }
 
-    //手持ちのカードを削除
+    //手持ちのカードのオブジェクトを削除
     public void DestroyCards(int player)
     {
         for (int i = 0; i < playerCards[player].Count; i++)

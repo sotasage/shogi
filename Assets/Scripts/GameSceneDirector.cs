@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -247,9 +248,10 @@ public class GameSceneDirector : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            cardsDirector.DealCards(i);
+            cardsDirector.AddCards(i,3);//初期枚数の設定
+
         }
-        cardsDirector.InstantiateCards(0);
+        
 
         //TurnChangeから始める場合-1
         nowPlayer = -1;
@@ -533,7 +535,7 @@ public class GameSceneDirector : MonoBehaviour
         bool gyoku_survive = false;
         foreach (var item in getUnits(nowPlayer))
         {
-            if (UnitType.Gyoku == item.UnitType)
+            if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
             {
                 gyoku_survive = true;
             };
@@ -683,17 +685,22 @@ public class GameSceneDirector : MonoBehaviour
         //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
 
-        //カードが５枚に満たなかったらカードを補充
-        if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
-        {
-            if (nowPlayer == 0) cardsDirector.DestroyCards(0);
-            cardsDirector.DealCards(nowPlayer);
-            if  (nowPlayer == 0)
-            {
-                cardsDirector.InstantiateCards(nowPlayer);
-            }
-        }
+        ////カードが５枚に満たなかったらカードを補充
+        //if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
+        //{
+        //    if (nowPlayer == 0) cardsDirector.DestroyCards(0);
+        //    cardsDirector.DealCards(nowPlayer);
+        //    if  (nowPlayer == 0)
+        //    {
+        //        cardsDirector.InstantiateCards(nowPlayer);
+        //    }
+        //}
 
+        //使用した枚数返す
+        if (nowPlayer >= 0)
+        {
+            cardsDirector.DealCards(nowPlayer);
+        }
         //CPU状態解除
         isCpu = false;
 
@@ -743,10 +750,12 @@ public class GameSceneDirector : MonoBehaviour
         {
             captureUnits.Add(unit); 
         }
-        else
+        else//玉を獲ったら
         {
-            Destroy(unit.gameObject);
-            //TODO:王を採ったときの処理を書く
+            Destroy(unit.gameObject);//玉のオブジェクトを削除
+
+            //手札を二枚追加
+            cardsDirector.AddCards(player, 2);
 
         }
         units[tileindex.x, tileindex.y] = null;
