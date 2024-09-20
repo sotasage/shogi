@@ -20,6 +20,10 @@ public class CardController : MonoBehaviour
     //カードの種類
     public CardType CardType;
 
+    //ユニットの選択/非選択のy座標
+    public const float SelectUnitY = -30;
+    public const float UnSelectUnitY = -40;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +49,21 @@ public class CardController : MonoBehaviour
     public void Show()
     {
         this.gameObject.SetActive(true);
+    }
+
+    public void Select(bool select = true)
+    {
+        Vector3 pos = transform.position;
+
+        if (select)
+        {
+            pos.y = SelectUnitY;
+        }
+        else
+        {
+            pos.y = UnSelectUnitY;
+        }
+        transform.position = pos;
     }
 
     //カードを使用
