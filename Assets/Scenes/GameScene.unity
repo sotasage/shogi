@@ -306,6 +306,7 @@ MonoBehaviour:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
   sound: {fileID: 1780197189}
   canvas: {fileID: 1795245983}
+  cardsDirector: {fileID: 948704314}
 --- !u!4 &413897292
 Transform:
   m_ObjectHideFlags: 0
@@ -882,6 +883,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 818451925}
   m_CullTransparentMesh: 1
+--- !u!1 &948704313
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 948704315}
+  - component: {fileID: 948704314}
+  m_Layer: 0
+  m_Name: CardsDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &948704314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948704313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1848bb0a19f1a746a5aa97205fe046e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabCards:
+  - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
+  canvas: {fileID: 1795245986}
+--- !u!4 &948704315
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948704313}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1710,3 +1758,4 @@ SceneRoots:
   - {fileID: 468203279}
   - {fileID: 413897292}
   - {fileID: 1780197191}
+  - {fileID: 948704315}

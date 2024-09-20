@@ -11,6 +11,9 @@ public enum CardType
 
 public class CardController : MonoBehaviour
 {
+    //カードサイズ
+    public const float Width = 100;
+
     //カードのプレイヤー番号 1P: 0, 2P: 1, 3P: 2, 4P: 3
     public int Player;
     //カードの種類

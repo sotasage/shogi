@@ -95,6 +95,9 @@ public class GameSceneDirector : MonoBehaviour
     //カードデータ
     CardController[,] cards;
 
+    //手持ちのカード
+    List<CardController> mycards;
+
     //現在選択中のカード
     CardController selectCard;
 
@@ -116,6 +119,9 @@ public class GameSceneDirector : MonoBehaviour
 
     //canvas
     public GameObject canvas;
+
+    //CardsDirector
+    [SerializeField] CardsDirector cardsDirector;
 
     // Start is called before the first frame update
     void Start()
@@ -230,7 +236,7 @@ public class GameSceneDirector : MonoBehaviour
         }
 
         //カードの作成
-        for (int i = 0; i < 1; i++)
+        /*for (int i = 0; i < 1; i++)
         {
             int type = 0;
             int player = 0;
@@ -240,7 +246,8 @@ public class GameSceneDirector : MonoBehaviour
 
             CardController cardctrl = card.AddComponent<CardController>();
             cardctrl.Init(player, type);
-        }
+        }*/
+        mycards = cardsDirector.DealCards();
 
         //TurnChangeから始める場合-1
         nowPlayer = -1;
