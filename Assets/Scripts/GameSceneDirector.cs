@@ -101,6 +101,7 @@ public class GameSceneDirector : MonoBehaviour
 
     //カードのフラグ初期化
     bool zyunbantobashi = false;
+    public static bool reverse = false;
 
 
     //敵陣設定
@@ -726,7 +727,14 @@ public class GameSceneDirector : MonoBehaviour
     //次のプレイヤー番号を返す
     public static int GetNextPlayer(int player)
     {
-        int next = player + 1;
+        int next;
+        if (reverse)
+        {
+            next = player - 1;
+            if (next < 0) next = 3;
+            return next;
+        }
+        next = player + 1;
         if (PlayerMax <= next) next = 0;
 
         return next;
@@ -913,11 +921,23 @@ public class GameSceneDirector : MonoBehaviour
 
 
     //カードを使用
-    public void UseCard(CardType cardType)
+    public void UseCard(CardType cardType,int player)
     {
         if (CardType.Zyunbantobashi == cardType)
         {
             zyunbantobashi = true;
+        }
+
+        else if (CardType.ichimaituika == cardType)
+        {
+            cardsDirector.AddCards(player, 1);
+        }
+
+        else if (CardType.reverse == cardType)
+        {
+            if(!reverse) reverse = true;
+            else reverse = false;
+
         }
     }
 

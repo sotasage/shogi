@@ -7,6 +7,8 @@ using UnityEngine.Scripting.APIUpdating;
 public enum CardType
 {
     Zyunbantobashi,
+    ichimaituika,
+    reverse,
 }
 
 public class CardController : MonoBehaviour
