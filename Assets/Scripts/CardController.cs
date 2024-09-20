@@ -7,6 +7,7 @@ using UnityEngine.Scripting.APIUpdating;
 public enum CardType
 {
     Zyunbantobashi,
+    Nikaikoudou,
 }
 
 public class CardController : MonoBehaviour
@@ -52,6 +53,10 @@ public class CardController : MonoBehaviour
         if (CardType.Zyunbantobashi == CardType)
         {
             
+        }
+        else if (CardType.Nikaikoudou == CardType)
+        {
+            ;
         }
     }
 }
