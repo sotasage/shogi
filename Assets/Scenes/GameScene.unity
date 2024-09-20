@@ -914,7 +914,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabCards:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
-  canvas: {fileID: 1795245986}
+  canvas: {fileID: 1795245987}
 --- !u!4 &948704315
 Transform:
   m_ObjectHideFlags: 0
@@ -1016,7 +1016,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5735764, y: 0, z: 0, w: 0.8191521}
-  m_LocalPosition: {x: 0, y: 10, z: -4}
+  m_LocalPosition: {x: 0, y: 11, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

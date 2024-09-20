@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public class CardsDirector : MonoBehaviour
 {
-    [SerializeField] List<GameObject> prefabCards;
+    [SerializeField] public List<GameObject> prefabCards;
 
-    public Canvas canvas;
+    public Transform canvas;
 
     //プレイヤーが持っているカード
     public List<CardController>[] playerCards;
 
     //現在選択中のカード
-    public CardController selectCard;
+    CardController selectCard;
+
+    //選択中に右側に表示されるカード
+    GameObject sampleCard;
 
     // Start is called before the first frame update
     void Start()
@@ -55,9 +59,9 @@ public class CardsDirector : MonoBehaviour
         {
             CardController cardctrl = playerCards[player][i];
             int type = (int)cardctrl.CardType;
-            Vector3 pos = new Vector3(x, -40, 0);
-            GameObject card = Instantiate(prefabCards[type], pos, Quaternion.identity);
-            card.transform.SetParent(canvas.transform, false);
+            GameObject card = Instantiate(prefabCards[type], canvas);
+            RectTransform rectTransform = card.GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = new Vector2(x, -40); // 座標を設定
 
             //cardにCardControllerをアタッチ
             CardController Cardctrl = card.AddComponent<CardController>();
@@ -66,12 +70,28 @@ public class CardsDirector : MonoBehaviour
             Button button = card.AddComponent<Button>();
             void OnCardClick()
             {
+                //selectCardが自分自身だったらfalse別のカードだったらtrue
+                bool selectFlg = selectCard != Cardctrl;
+
                 if (selectCard)
                 {
                     selectCard.Select(false);
+                    selectCard = null;
+                    if (sampleCard)
+                    {
+                        Destroy(sampleCard);
+                    }
                 }
-                Cardctrl.Select();
-                selectCard = Cardctrl;
+                if (selectFlg)
+                {
+                    Cardctrl.Select(selectFlg);
+                    selectCard = Cardctrl;
+                    int type = (int)selectCard.CardType;
+                    sampleCard = Instantiate(prefabCards[type], canvas);
+                    RectTransform rectTransform = sampleCard.GetComponent<RectTransform>();
+                    rectTransform.anchoredPosition = new Vector2(300, 200); // 座標を設定
+                    rectTransform.sizeDelta = new Vector2(150, 225);
+                }
             }
             button.onClick.AddListener(OnCardClick);
 
