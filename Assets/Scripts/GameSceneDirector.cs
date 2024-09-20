@@ -484,6 +484,10 @@ public class GameSceneDirector : MonoBehaviour
     //ターン開始
     void startMode()
     {
+        if (nowPlayer == 0 && cardsDirector.selectCard)
+        {
+            cardsDirector.buttonUseCard.gameObject.SetActive(true);
+        }
 
         //勝敗がついていなければ通常モード
         nextMode = Mode.Select;
@@ -676,7 +680,19 @@ public class GameSceneDirector : MonoBehaviour
         buttonEvolutionCancel.gameObject.SetActive(false);
         cardsDirector.buttonUseCard.gameObject.SetActive(false);
 
+        //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
+
+        //カードが５枚に満たなかったらカードを補充
+        if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
+        {
+            if (nowPlayer == 0) cardsDirector.DestroyCards(0);
+            cardsDirector.DealCards(nowPlayer);
+            if  (nowPlayer == 0)
+            {
+                cardsDirector.InstantiateCards(nowPlayer);
+            }
+        }
 
         //CPU状態解除
         isCpu = false;
