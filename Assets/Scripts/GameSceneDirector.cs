@@ -482,8 +482,17 @@ public class GameSceneDirector : MonoBehaviour
     //ターン開始
     void startMode()
     {
+
         //勝敗がついていなければ通常モード
         nextMode = Mode.Select;
+
+        //順番飛ばし処理
+        if (zyunbantobashi)
+        {
+            nextMode = Mode.TurnChange;
+            zyunbantobashi = false;
+            return;
+        }
 
         //Info更新
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
@@ -717,6 +726,7 @@ public class GameSceneDirector : MonoBehaviour
         {
             Destroy(unit.gameObject);
             //TODO:王を採ったときの処理を書く
+
         }
         units[tileindex.x, tileindex.y] = null;
     }

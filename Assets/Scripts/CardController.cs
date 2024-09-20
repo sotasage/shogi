@@ -51,7 +51,7 @@ public class CardController : MonoBehaviour
     {
         if (CardType.Zyunbantobashi == CardType)
         {
-            
+            bool zyunbantobashi = true;
         }
     }
 }
