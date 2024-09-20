@@ -78,4 +78,9 @@ public class CardController : MonoBehaviour
             ;
         }
     }
+
+    void OnClickUseCard()
+    {
+
+    }
 }
