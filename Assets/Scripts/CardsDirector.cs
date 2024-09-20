@@ -28,7 +28,7 @@ public class CardsDirector : MonoBehaviour
     public bool usedFlag;
 
     //所持枚数
-    public int[] cardNums = new int[] {0,0,0,0};
+    public int[] cardMaxNums = new int[] {0,0,0,0};
 
     // Start is called before the first frame update
     void Start()
@@ -64,7 +64,12 @@ public class CardsDirector : MonoBehaviour
         }
         if (!hoju)
         {
-            cardNums[player] += num;
+           if (cardMaxNums[player] + num > 5)
+            {
+                cardMaxNums[player] = 5;
+                return;
+            }
+            cardMaxNums[player] += num;
         }
     }
     //カードを使った分だけ配る関数
@@ -73,7 +78,7 @@ public class CardsDirector : MonoBehaviour
         //playerの現在のカード枚数
         int cardcount = playerCards[player].Count;
 
-        AddCards(player, cardNums[player]-cardcount,true);
+        AddCards(player, cardMaxNums[player]-cardcount,true);
     }
 
     //手持ちのカードを実体化する関数(左から詰めていき、七枚でちょうどいい）

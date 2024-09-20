@@ -486,6 +486,34 @@ public class GameSceneDirector : MonoBehaviour
     //ターン開始
     void startMode()
     {
+        //脱落してたら即次の人へ
+        if (istumi[nowPlayer])
+        {
+            nextMode = Mode.TurnChange;
+            return;
+        }
+
+        //玉がとられているかどうか
+        bool gyoku_survive = false;
+        foreach (var item in getUnits(nowPlayer))
+        {
+            if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
+            {
+                gyoku_survive = true;
+            };
+        }
+
+
+        //王がとられていたら脱落
+        if (!gyoku_survive)
+        {
+            istumi[nowPlayer] = true;
+            tumicount++;
+            nextMode = Mode.TurnChange;
+            return ;
+        }
+
+
         if (nowPlayer == 0 && cardsDirector.selectCard)
         {
             cardsDirector.buttonUseCard.gameObject.SetActive(true);
@@ -531,29 +559,7 @@ public class GameSceneDirector : MonoBehaviour
         //    movablecount += getMovableTiles(item).Count;
         //}
 
-        //玉がとられているかどうか
-        bool gyoku_survive = false;
-        foreach (var item in getUnits(nowPlayer))
-        {
-            if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
-            {
-                gyoku_survive = true;
-            };
-        }
 
-
-        //詰み
-        if (istumi[nowPlayer]) nextMode = Mode.TurnChange;
-        else
-        {
-            if (!gyoku_survive)
-            {
-                istumi[nowPlayer] = true;
-                tumicount++;
-                nextMode = Mode.TurnChange;
-            }
-
-        }
 
         if (tumicount >= 3)
         {
