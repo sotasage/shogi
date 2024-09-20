@@ -19,7 +19,7 @@ public class CardsDirector : MonoBehaviour
     public List<CardController>[] playerCards;
 
     //現在選択中のカード
-    CardController selectCard;
+    public CardController selectCard;
 
     //選択中に右側に表示されるカード
     GameObject sampleCard;
@@ -64,7 +64,8 @@ public class CardsDirector : MonoBehaviour
 
         for (int i = 0; i < 5; i++)
         {
-            CardController cardctrl = playerCards[player][i];
+            CardController cardctrl = playerCards[player][0];
+            playerCards[player].Remove(cardctrl);
             int type = (int)cardctrl.CardType;
             GameObject card = Instantiate(prefabCards[type], canvas);
             RectTransform rectTransform = card.GetComponent<RectTransform>();
@@ -77,7 +78,7 @@ public class CardsDirector : MonoBehaviour
             Button button = card.AddComponent<Button>();
             void OnCardClick()
             {
-                //selectCardが自分自身だったらfalse別のカードだったらtrue
+                //selectCardが自分自身だったらfalse、別のカードだったらtrue
                 bool selectFlg = selectCard != Cardctrl;
 
                 if (selectCard)
@@ -109,8 +110,19 @@ public class CardsDirector : MonoBehaviour
             button.onClick.AddListener(OnCardClick);
 
             Cardctrl.Init(player, type);
+            playerCards[player].Add(Cardctrl);
 
             x += CardController.Width;
+        }
+    }
+
+    //手持ちのカードを削除
+    public void DestroyCards(int player)
+    {
+        for (int i = 0; i < playerCards[player].Count; i++)
+        {
+            GameObject card = playerCards[player][i].gameObject;
+            Destroy(card);
         }
     }
 
@@ -118,6 +130,11 @@ public class CardsDirector : MonoBehaviour
     {
         usedFlag = true;
         buttonUseCard.gameObject.SetActive(false);
+        Destroy(selectCard.gameObject);
+        Destroy(sampleCard);
+        bool isRemove = playerCards[0].Remove(selectCard);
+        print(isRemove);
         gameSceneDirector.UseCard(selectCard.CardType);
+        selectCard = null;
     }
 }
