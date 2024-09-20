@@ -915,7 +915,7 @@ MonoBehaviour:
   prefabCards:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
   - {fileID: 8583373011911532605, guid: d087b8bcd9b219344851a016190a429a, type: 3}
-  canvas: {fileID: 1795245986}
+  canvas: {fileID: 1795245987}
 --- !u!4 &948704315
 Transform:
   m_ObjectHideFlags: 0
