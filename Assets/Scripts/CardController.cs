@@ -65,14 +65,6 @@ public class CardController : MonoBehaviour
         transform.position = pos;
     }
 
-    //カードを使用
-    public void UseCard()
-    {
-        if (CardType.Zyunbantobashi == CardType)
-        {
-            bool zyunbantobashi = true;
-        }
-    }
 
     void OnClickUseCard()
     {

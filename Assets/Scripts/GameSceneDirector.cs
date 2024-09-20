@@ -98,6 +98,10 @@ public class GameSceneDirector : MonoBehaviour
     //現在選択中のカード
     CardController selectCard;
 
+    //カードのフラグ初期化
+    bool zyunbantobashi = false;
+
+
     //敵陣設定
     const int EnemyLine = 3;
     List<int>[] enemyLines;
@@ -882,7 +886,7 @@ public class GameSceneDirector : MonoBehaviour
     {
         if (CardType.Zyunbantobashi == cardType)
         {
-
+            zyunbantobashi = true;
         }
     }
 
