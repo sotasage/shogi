@@ -95,9 +95,6 @@ public class GameSceneDirector : MonoBehaviour
     //カードデータ
     CardController[,] cards;
 
-    //手持ちのカード
-    List<CardController> mycards;
-
     //現在選択中のカード
     CardController selectCard;
 
@@ -247,7 +244,18 @@ public class GameSceneDirector : MonoBehaviour
             CardController cardctrl = card.AddComponent<CardController>();
             cardctrl.Init(player, type);
         }*/
-        mycards = cardsDirector.DealCards();
+        cardsDirector.playerCards = new List<CardController>[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            cardsDirector.playerCards[i] = new List<CardController>();
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            cardsDirector.DealCards(i);
+        }
+        cardsDirector.InstantiateCards(0);
 
         //TurnChangeから始める場合-1
         nowPlayer = -1;
