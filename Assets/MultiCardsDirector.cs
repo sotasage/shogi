@@ -1,11 +1,11 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
-public class MultiCardsDirector : MonoBehaviour
+public class MultiCardsDirector : MonoBehaviourPunCallbacks
 {
     [SerializeField] public List<GameObject> prefabCards;
 
@@ -16,7 +16,7 @@ public class MultiCardsDirector : MonoBehaviour
     [SerializeField] MultiGameSceneDirector multiGameSceneDirector;
 
     //プレイヤーが持っているカード
-    public List<CardController>[] playerCards;
+    public List<CardController> playerCards;
 
     //現在選択中のカード
     public CardController selectCard;
@@ -26,6 +26,9 @@ public class MultiCardsDirector : MonoBehaviour
 
     //カードを使用したかどうか
     public bool usedFlag;
+
+    //所持枚数
+    public int cardMaxNums = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -39,33 +42,53 @@ public class MultiCardsDirector : MonoBehaviour
 
     }
 
-    //カードを5枚まで配る関数
-    public void DealCards(int player)
+    //カードを指定枚数加える関数
+    public void AddCards(int player, int num, bool hoju = false)
     {
-        //playerの現在のカード枚数
-        int cardcount = playerCards[player].Count;
+        DestroyCards();
 
-        for (int i = 0; i < 5 - cardcount; i++)
+        for (int i = 0; i < num; i++)
         {
             int type = Random.Range(0, prefabCards.Count);
 
             CardController cardctrl = gameObject.AddComponent<CardController>();
             cardctrl.Init(player, type);
 
-            playerCards[player].Add(cardctrl);
+            playerCards.Add(cardctrl);
+        }
+
+        InstantiateCards(player);
+
+        if (!hoju)
+        {
+            if (cardMaxNums + num > 5)
+            {
+                cardMaxNums = 5;
+                return;
+            }
+            cardMaxNums += num;
         }
     }
 
-    //手持ちのカードを実体化する関数
+    //カードを使った分だけ配る関数
+    public void DealCards(int player)
+    {
+        //playerの現在のカード枚数
+        int cardcount = playerCards.Count;
+
+        AddCards(player, cardMaxNums - cardcount, true);
+    }
+
+    //手持ちのカードを実体化する関数(左から詰めていき、七枚でちょうどいい）
     public void InstantiateCards(int player)
     {
         //初期位置
-        float x = -CardController.Width * 2;
+        float x = -CardController.Width * 3;
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < playerCards.Count; i++)
         {
-            CardController cardctrl = playerCards[player][0];
-            playerCards[player].Remove(cardctrl);
+            CardController cardctrl = playerCards[0];
+            playerCards.Remove(cardctrl);
             int type = (int)cardctrl.CardType;
             GameObject card = Instantiate(prefabCards[type], canvas);
             RectTransform rectTransform = card.GetComponent<RectTransform>();
@@ -101,7 +124,7 @@ public class MultiCardsDirector : MonoBehaviour
                     rectTransform.anchoredPosition = new Vector2(300, 200); // 座標を設定
                     rectTransform.sizeDelta = new Vector2(150, 225);//サイズを設定
 
-                    if (multiGameSceneDirector.nowPlayer == player && !usedFlag)
+                    if (multiGameSceneDirector.myturn && !usedFlag)
                     {
                         buttonUseCard.gameObject.SetActive(true);
                     }
@@ -110,18 +133,18 @@ public class MultiCardsDirector : MonoBehaviour
             button.onClick.AddListener(OnCardClick);
 
             Cardctrl.Init(player, type);
-            playerCards[player].Add(Cardctrl);
+            playerCards.Add(Cardctrl);
 
             x += CardController.Width;
         }
     }
 
     //手持ちのカードを削除
-    public void DestroyCards(int player)
+    public void DestroyCards()
     {
-        for (int i = 0; i < playerCards[player].Count; i++)
+        for (int i = 0; i < playerCards.Count; i++)
         {
-            GameObject card = playerCards[player][i].gameObject;
+            GameObject card = playerCards[i].gameObject;
             Destroy(card);
         }
     }
@@ -132,7 +155,7 @@ public class MultiCardsDirector : MonoBehaviour
         buttonUseCard.gameObject.SetActive(false);
         Destroy(selectCard.gameObject);
         Destroy(sampleCard);
-        bool isRemove = playerCards[0].Remove(selectCard);
+        bool isRemove = playerCards.Remove(selectCard);
         print(isRemove);
         multiGameSceneDirector.UseCard(selectCard.CardType);
         selectCard = null;

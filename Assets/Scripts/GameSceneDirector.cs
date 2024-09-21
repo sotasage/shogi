@@ -502,7 +502,7 @@ public class GameSceneDirector : MonoBehaviour
             return ;
         }
 
-
+        //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
         if (nowPlayer == 0 && cardsDirector.selectCard)
         {
             cardsDirector.buttonUseCard.gameObject.SetActive(true);

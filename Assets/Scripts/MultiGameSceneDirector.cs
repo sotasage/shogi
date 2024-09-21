@@ -67,7 +67,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     public int nowPlayer;
     int turnCount;
     bool isCpu;
-    bool myturn;
+    public bool myturn;
 
     //モード
     enum Mode
@@ -271,6 +271,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             }
         }
 
+        //カードの作成
+        multiCardsDirector.playerCards = new List<CardController>();
+
+        multiCardsDirector.AddCards(PhotonNetwork.LocalPlayer.ActorNumber - 1, 3);//初期枚数の設定
+
         //TurnChangeから始める場合-1
         nowPlayer = -1;
 
@@ -292,8 +297,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
 
         //初回モード
-        /*nowMode = Mode.None;
-        nextMode = Mode.TurnChange;*/
         nowMode = Mode.None;
         nextMode = Mode.None;
     }
@@ -489,7 +492,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        //王手されてしまうかチェック
+        /*//王手されてしまうかチェック
         UnitController[,] copyunits = GetCopyArray(units);
         if (FieldStatus.OnBoard == unit.FieldStatus)
         {
@@ -510,7 +513,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
                 if (1 > outecount) ret.Add(item);
             }
-        }
+        }*/
 
         return ret;
     }
@@ -519,9 +522,42 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     void startMode()
     {
         print("現在のプレイヤー" + (nowPlayer + 1) + "P");
+
+        //脱落してたら即次の人へ
+        if (istumi[nowPlayer])
+        {
+            StartCoroutine(FinishPlaying());
+            return;
+        }
+
+        //玉がとられているかどうか
+        bool gyoku_survive = false;
+        foreach (var item in getUnits(nowPlayer))
+        {
+            if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
+            {
+                gyoku_survive = true;
+            };
+        }
+
+
+        //王がとられていたら脱落
+        if (!gyoku_survive)
+        {
+            istumi[nowPlayer] = true;
+            tumicount++;
+            StartCoroutine(FinishPlaying());
+            return;
+        }
+
+        //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
+        if (myturn && multiCardsDirector.selectCard)
+        {
+            multiCardsDirector.buttonUseCard.gameObject.SetActive(true);
+        }
+
         //勝敗がついていなければ通常モード
         nextMode = Mode.Select;
-        //photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.Select);
 
         //Info更新
         textTurnInfo.text = "" + Players[nowPlayer] + "さんの番です";
@@ -535,35 +571,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (isoute)
         {
             textResultInfo.text = "王手";
-        }
-
-        //自軍が移動可能か調べる
-        int movablecount = 0;
-        foreach (var item in getUnits(nowPlayer))
-        {
-            movablecount += getMovableTiles(item).Count;
-        }
-
-        //詰み
-        if (istumi[nowPlayer])
-        {
-            print((nowPlayer + 1) + "P詰み！");
-            //nextMode = Mode.TurnChange;
-            //FinishPlaying();
-            StartCoroutine(FinishPlaying());
-        }
-        else
-        {
-            if (1 > movablecount && isoute)
-            {
-                print((nowPlayer + 1) + "P詰み！");
-                istumi[nowPlayer] = true;
-                tumicount++;
-
-                //nextMode = Mode.TurnChange;
-                //FinishPlaying();
-                StartCoroutine(FinishPlaying());
-            }
         }
 
         if (tumicount >= 3)
@@ -671,7 +678,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         nowPlayer = GetNextPlayer(nowPlayer);
 
         nextMode = Mode.Start;
-        //photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.Start);
     }
 
     //次のプレイヤー番号を返す
@@ -922,6 +928,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             myturn = false;
             yield return new WaitForSeconds(0.5f);
+            multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
+
+            //カード使用フラグを元に戻す
+            multiCardsDirector.usedFlag = false;
+
+            //使用した枚数返す
+            multiCardsDirector.DealCards(nowPlayer);
+
             punTurnManager.SendMove(null, true); //trueで手番終了を送信
         }
     }
@@ -950,12 +964,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
         }
     }
-
-    //リザルト再戦
-    /*    public void OnClickRematch()
-        {
-            SceneManager.LoadScene("GameScene");
-        }*/
 
     //リザルトタイトルへ
     public void OnClickTitle()
@@ -1004,9 +1012,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         // MasterClientが先手とする
         if (PhotonNetwork.IsMasterClient)
         {
-            //if (nowPlayer == 0) return;
             myturn = true;
-            //nextMode = Mode.TurnChange;
             photonView.RPC(nameof(SetMode), RpcTarget.All, (int)Mode.TurnChange);
         }
     }
