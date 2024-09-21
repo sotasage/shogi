@@ -89,15 +89,6 @@ public class GameSceneDirector : MonoBehaviour
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
-    //カードのプレハブ
-    [SerializeField] List<GameObject> prefabCards;
-
-    //カードデータ
-    CardController[,] cards;
-
-    //現在選択中のカード
-    CardController selectCard;
-
     //敵陣設定
     const int EnemyLine = 3;
     List<int>[] enemyLines;
@@ -113,9 +104,6 @@ public class GameSceneDirector : MonoBehaviour
     //プレイヤーの詰み状態
     bool[] istumi;
     int tumicount;
-
-    //canvas
-    public GameObject canvas;
 
     //CardsDirector
     [SerializeField] CardsDirector cardsDirector;

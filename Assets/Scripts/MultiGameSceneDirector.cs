@@ -64,7 +64,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     List<GameObject> cursors;
 
     //プレイヤーとターン
-    int nowPlayer;
+    public int nowPlayer;
     int turnCount;
     bool isCpu;
     bool myturn;
@@ -112,6 +112,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //カメラ
     [SerializeField]
     Camera Scenecamera;
+
+    [SerializeField] MultiCardsDirector multiCardsDirector;
 
     void SetupTurnManager()
     {
@@ -164,6 +166,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         buttonRematch.gameObject.SetActive(false);
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
+        multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
         textResultInfo.text = "";
 
         //ボードサイズ
@@ -937,6 +940,15 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         if (unitpos < 0 || captureUnits.Count <= unitpos) return;
         selectUnit = captureUnits[unitpos];
+    }
+
+    //カードを使用
+    public void UseCard(CardType cardType)
+    {
+        if (CardType.Zyunbantobashi == cardType)
+        {
+
+        }
     }
 
     //リザルト再戦
