@@ -102,6 +102,7 @@ public class GameSceneDirector : MonoBehaviour
     //カードのフラグ初期化
     bool zyunbantobashi = false;
     public static bool reverse = false;
+    bool nikaikoudou = false;
 
 
     //敵陣設定
@@ -689,6 +690,15 @@ public class GameSceneDirector : MonoBehaviour
         buttonEvolutionCancel.gameObject.SetActive(false);
         cardsDirector.buttonUseCard.gameObject.SetActive(false);
 
+        //2回行動
+        if (nikaikoudou)
+        {
+            //カード使用フラグは元に戻さない
+            nextMode = Mode.Select;
+            nikaikoudou = false;
+            return;
+        }
+
         //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
 
@@ -938,6 +948,10 @@ public class GameSceneDirector : MonoBehaviour
             if(!reverse) reverse = true;
             else reverse = false;
 
+        }
+        else if (CardType.nikaikoudou == cardType)
+        {
+            nikaikoudou = true;
         }
     }
 

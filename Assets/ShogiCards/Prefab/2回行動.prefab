@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 5897267526779365149}
   - component: {fileID: 7276474246099388106}
   m_Layer: 5
-  m_Name: PanelCard_1
+  m_Name: "2\u56DE\u884C\u52D5"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
