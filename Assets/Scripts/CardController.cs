@@ -9,6 +9,7 @@ public enum CardType
     Zyunbantobashi,
     ichimaituika,
     reverse,
+    komaget,
 }
 
 public class CardController : MonoBehaviour
@@ -22,8 +23,8 @@ public class CardController : MonoBehaviour
     public CardType CardType;
 
     //ユニットの選択/非選択のy座標
-    public const float SelectUnitY = -30;
-    public const float UnSelectUnitY = -40;
+    public const float SelectUnitY = -30f;
+    public const float UnSelectUnitY = -40f;
 
     // Start is called before the first frame update
     void Start()

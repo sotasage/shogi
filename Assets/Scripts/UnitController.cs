@@ -90,13 +90,13 @@ public class UnitController : MonoBehaviour
         OldUnitType = (UnitType)unittype;
         //場所の初期化
         FieldStatus = FieldStatus.OnBoard;
-        //確度と場所
+        //角度と場所
         transform.eulerAngles = getDefaultAngles(player);
         Move(tile, pos);
 
     }
     //指定されたプレイヤー番号の向きを返す
-    Vector3 getDefaultAngles(int player)
+    public Vector3 getDefaultAngles(int player)
     {
         return new Vector3(90, player * 90, 0);
     }

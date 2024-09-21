@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
+using UnityEngine.WSA;
 using Random = UnityEngine.Random;
 
 public class GameSceneDirector : MonoBehaviour
@@ -926,6 +928,24 @@ public class GameSceneDirector : MonoBehaviour
             if(!reverse) reverse = true;
             else reverse = false;
 
+        }
+
+        else if (CardType.komaget == cardType)
+        {
+            int unittype = Random.Range(1, 8);
+
+            GameObject prefab = prefabUnits[unittype - 1];
+            GameObject unit = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.Euler(90, player * 90, 0));
+            unit.AddComponent<Rigidbody>();
+            UnitController unitctrl = unit.AddComponent<UnitController>();
+            unitctrl.Player = player;
+            unitctrl.UnitType = (UnitType)unittype;
+            unitctrl.OldUnitType = (UnitType)unittype;
+            unitctrl.FieldStatus = FieldStatus.Captured;
+            unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(player);
+            unitctrl.Caputure(player);
+            captureUnits.Add(unitctrl);
+            alignCaptureUnits(player);
         }
     }
 
