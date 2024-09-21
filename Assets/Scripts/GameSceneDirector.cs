@@ -103,7 +103,7 @@ public class GameSceneDirector : MonoBehaviour
     bool zyunbantobashi = false;
     public static bool reverse = false;
     bool nikaikoudou = false;
-
+    bool ikusei = false;
 
     //敵陣設定
     const int EnemyLine = 3;
@@ -676,6 +676,18 @@ public class GameSceneDirector : MonoBehaviour
         //ユニット選択
         else if (unit)
         {
+            if (ikusei)
+            {
+                //指定したユニットを成らせる                
+                if (nowPlayer == unit.Player)
+                {
+                    unit.Evolution();
+                    textResultInfo.text = "";
+                    ikusei = false;
+                }
+                unit = null;
+                return;
+            }
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
         }
@@ -954,6 +966,11 @@ public class GameSceneDirector : MonoBehaviour
         else if (CardType.nikaikoudou == cardType)
         {
             nikaikoudou = true;
+        }
+        else if (CardType.ikusei == cardType)
+        {
+            ikusei = true;
+            textResultInfo.text = "成らせる自駒を選択";
         }
     }
 
