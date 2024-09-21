@@ -90,15 +90,6 @@ public class GameSceneDirector : MonoBehaviour
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
-    //カードのプレハブ
-    [SerializeField] List<GameObject> prefabCards;
-
-    //カードデータ
-    CardController[,] cards;
-
-    //現在選択中のカード
-    CardController selectCard;
-
     //カードのフラグ初期化
     bool zyunbantobashi = false;
     public static bool reverse = false;
