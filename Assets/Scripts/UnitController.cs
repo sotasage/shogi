@@ -112,7 +112,6 @@ public class UnitController : MonoBehaviour
         Pos = tileindex;
     }
 
-
     public void Select(bool select = true)
     {
         Vector3 pos = transform.position;
@@ -241,31 +240,32 @@ public class UnitController : MonoBehaviour
         //玉
         else if(UnitType.Gyoku == UnitType)
         {
+            //玉の移動範囲
             ret = GetMovableTiles(units, UnitType.Gyoku);
 
-            //相手の移動範囲を考慮しない
-            if (!checkotherunit) return ret;
+            ////相手の移動範囲を考慮しない
+            //if (!checkotherunit) return ret;
 
-            //削除対象のタイル
-            List<Vector2Int> removetiles = new List<Vector2Int>();
+            ////削除対象のタイル
+            //List<Vector2Int> removetiles = new List<Vector2Int>();
 
-            foreach (var item in ret)
-            {
-                //移動した状態を作って王手されているなら削除対象
-                UnitController[,] copyunits = GameSceneDirector.GetCopyArray(units);
-                copyunits[Pos.x, Pos.y] = null;
-                copyunits[item.x, item.y] = this;
+            //foreach (var item in ret)
+            //{
+            //    //移動した状態を作って王手されているなら削除対象
+            //    UnitController[,] copyunits = GameSceneDirector.GetCopyArray(units);
+            //    copyunits[Pos.x, Pos.y] = null;
+            //    copyunits[item.x, item.y] = this;
 
-                //王手しているユニット数
-                int outecount = GameSceneDirector.GetOuteUnitsUke(copyunits, Player, false).Count;
-                if (0 < outecount) removetiles.Add(item);
-            }
+            //    //王手しているユニット数
+            //    int outecount = GameSceneDirector.GetOuteUnitsUke(copyunits, Player, false).Count;
+            //    if (0 < outecount) removetiles.Add(item);
+            //}
 
-            //↑で取得したタイルを除外する
-            foreach (var item in removetiles)
-            {
-                ret.Remove(item);
-            }
+            ////↑で取得したタイルを除外する
+            //foreach (var item in removetiles)
+            //{
+            //    ret.Remove(item);
+            //}
         }
         //金と同じ動き
         else if (UnitType.Tokin == UnitType 

@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u9806\u756A\u98DB\u3070\u3057"
+  m_Text: "\u4E00\u679A\u8FFD\u52A0"
 --- !u!1 &5350506994278487319
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 1166984827279742840}
   - component: {fileID: 2109403878979420604}
   m_Layer: 5
-  m_Name: PanelCard_0
+  m_Name: "\u4E00\u679A\u8FFD\u52A0"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,4 +234,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6B21\u306E\u30D7\u30EC\u30A4\u30E4\u30FC\u306E\u756A\u3092\u98DB\u3070\u3059"
+  m_Text: "\u30AB\u30FC\u30C9\u306E\u6240\u6301\u679A\u6570\u3092\u4E00\u679A\u5897\u3084\u3059"
