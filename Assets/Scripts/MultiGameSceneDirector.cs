@@ -523,33 +523,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         print("現在のプレイヤー" + (nowPlayer + 1) + "P");
 
-        //脱落してたら即次の人へ
-        if (istumi[nowPlayer])
-        {
-            StartCoroutine(FinishPlaying());
-            return;
-        }
-
-        //玉がとられているかどうか
-        bool gyoku_survive = false;
-        foreach (var item in getUnits(nowPlayer))
-        {
-            if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
-            {
-                gyoku_survive = true;
-            };
-        }
-
-
-        //王がとられていたら脱落
-        if (!gyoku_survive)
-        {
-            istumi[nowPlayer] = true;
-            tumicount++;
-            StartCoroutine(FinishPlaying());
-            return;
-        }
-
         //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
         if (myturn && multiCardsDirector.selectCard)
         {
@@ -573,6 +546,34 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             textResultInfo.text = "王手";
         }
 
+        //脱落してたら即次の人へ
+        if (istumi[nowPlayer])
+        {
+            StartCoroutine(FinishPlaying());
+        }
+        else
+        {
+            //玉がとられているかどうか
+            bool gyoku_survive = false;
+            foreach (var item in getUnits(nowPlayer))
+            {
+                if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
+                {
+                    gyoku_survive = true;
+                };
+            }
+
+
+            //王がとられていたら脱落
+            if (!gyoku_survive)
+            {
+                print(nowPlayer + "P脱落");
+                istumi[nowPlayer] = true;
+                tumicount++;
+                StartCoroutine(FinishPlaying());
+            }
+        }
+
         if (tumicount >= 3)
         {
             for (int i = 0; i < 4; i++)
@@ -591,11 +592,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (Mode.Result == nextMode)
         {
             textTurnInfo.text = "";
-            //buttonRematch.gameObject.SetActive(true);
             buttonTitle.gameObject.SetActive(true);
         }
 
         print("startMode終了");
+        print(nextMode);
     }
 
     //ユニットとタイル選択
@@ -867,18 +868,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //成るボタン
     public void OnClickEvolutionApply()
     {
-        //nextMode = Mode.TurnChange;
         photonView.RPC(nameof(Evolution), RpcTarget.Others, 1);
-        //FinishPlaying();
         StartCoroutine(FinishPlaying());
     }
 
     //成らないボタン
     public void OnClickEvolutionCancel()
     {
-        //selectUnit.Evolution(false);
         photonView.RPC(nameof(EvolutionCancel), RpcTarget.All, 1);
-        //FinishPlaying();
         StartCoroutine(FinishPlaying());
     }
 
@@ -927,7 +924,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (myturn)
         {
             myturn = false;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
             multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
 
             //カード使用フラグを元に戻す
@@ -1031,6 +1028,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
     void IPunTurnManagerCallbacks.OnPlayerMove(Photon.Realtime.Player player, int turn, object move) //SendMove関数を受けて読まれる関数
     {
+        print("sendMove");
+
         object[] data = (object[])move;
         int nextposx = (int)data[0];
         int nextposy = (int)data[1];
@@ -1042,7 +1041,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         Mode mode = moveUnit(selectUnit, nextpos);
         if (mode == Mode.TurnChange)
         {
-            //FinishPlaying();
             StartCoroutine(FinishPlaying());
         }
         else
