@@ -335,6 +335,7 @@ MonoBehaviour:
   prefabUnitTile: {fileID: 4048784332414518758, guid: 1ae7a1fa8823cf94ca445d8070597dff, type: 3}
   sound: {fileID: 1780197189}
   Scenecamera: {fileID: 963194227}
+  multiCardsDirector: {fileID: 567653044}
 --- !u!114 &413897295
 MonoBehaviour:
   m_ObjectHideFlags: 0
