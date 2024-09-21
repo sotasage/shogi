@@ -10,6 +10,8 @@ public enum CardType
     ichimaituika,
     reverse,
     komaget,
+    nikaikoudou,
+    ikusei,
 }
 
 public class CardController : MonoBehaviour

@@ -95,7 +95,8 @@ public class GameSceneDirector : MonoBehaviour
     //カードのフラグ初期化
     bool zyunbantobashi = false;
     public static bool reverse = false;
-
+    bool nikaikoudou = false;
+    bool ikusei = false;
 
     //敵陣設定
     const int EnemyLine = 3;
@@ -665,6 +666,18 @@ public class GameSceneDirector : MonoBehaviour
         //ユニット選択
         else if (unit)
         {
+            if (ikusei)
+            {
+                //指定したユニットを成らせる                
+                if (nowPlayer == unit.Player)
+                {
+                    unit.Evolution();
+                    textResultInfo.text = "";
+                    ikusei = false;
+                }
+                unit = null;
+                return;
+            }
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
         }
@@ -678,6 +691,17 @@ public class GameSceneDirector : MonoBehaviour
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
         cardsDirector.buttonUseCard.gameObject.SetActive(false);
+
+        //2回行動
+        if (nikaikoudou)
+        {
+            //カード使用フラグは元に戻さない
+            nextMode = Mode.Select;
+            nikaikoudou = false;
+            //「成りますか？」を非表示に
+            textResultInfo.text = "";
+            return;
+        }
 
         //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
@@ -946,6 +970,17 @@ public class GameSceneDirector : MonoBehaviour
             unitctrl.Caputure(player);
             captureUnits.Add(unitctrl);
             alignCaptureUnits(player);
+        }
+
+        else if (CardType.nikaikoudou == cardType)
+        {
+            nikaikoudou = true;
+        }
+        
+        else if (CardType.ikusei == cardType)
+        {
+            ikusei = true;
+            textResultInfo.text = "成らせる自駒を選択";
         }
     }
 
