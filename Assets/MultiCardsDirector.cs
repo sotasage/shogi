@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -157,7 +158,7 @@ public class MultiCardsDirector : MonoBehaviourPunCallbacks
         Destroy(sampleCard);
         bool isRemove = playerCards.Remove(selectCard);
         print(isRemove);
-        multiGameSceneDirector.UseCard(selectCard.CardType);
+        multiGameSceneDirector.photonView.RPC(nameof(multiGameSceneDirector.UseCard), RpcTarget.All, selectCard.CardType);
         selectCard = null;
     }
 }

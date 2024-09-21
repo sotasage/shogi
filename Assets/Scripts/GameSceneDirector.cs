@@ -9,8 +9,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
-using UnityEngine.WSA;
 using Random = UnityEngine.Random;
 
 public class GameSceneDirector : MonoBehaviour

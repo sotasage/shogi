@@ -91,8 +91,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //キャプチャされたユニット
     List<UnitController> captureUnits;
 
+    //敵陣設定
     const int EnemyLine = 3;
     List<int>[] enemyLines;
+
+    //カードのフラグ初期化
+    bool zyunbantobashi = false;
 
     //サウンド制御
     [SerializeField] SoundController sound;
@@ -492,29 +496,6 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        /*//王手されてしまうかチェック
-        UnitController[,] copyunits = GetCopyArray(units);
-        if (FieldStatus.OnBoard == unit.FieldStatus)
-        {
-            copyunits[unit.Pos.x, unit.Pos.y] = null;
-        }
-        int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
-
-        //王手を回避できる場所を返す
-        if (0 < outecount)
-        {
-            ret = new List<Vector2Int>();
-            List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
-            foreach (var item in movabletiles)
-            {
-                //移動した状態を作る
-                UnitController[,] copyunits2 = GetCopyArray(copyunits);
-                copyunits2[item.x, item.y] = unit;
-                outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
-                if (1 > outecount) ret.Add(item);
-            }
-        }*/
-
         return ret;
     }
 
@@ -523,33 +504,22 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     {
         print("現在のプレイヤー" + (nowPlayer + 1) + "P");
 
-        //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
-        if (myturn && multiCardsDirector.selectCard)
-        {
-            multiCardsDirector.buttonUseCard.gameObject.SetActive(true);
-        }
-
         //勝敗がついていなければ通常モード
         nextMode = Mode.Select;
 
-        //Info更新
-        textTurnInfo.text = "" + Players[nowPlayer] + "さんの番です";
-        textResultInfo.text = "";
-
-        //勝敗チェック
-
-        //王手しているユニット
-        List<UnitController> outeunits = GetOuteUnitsUke(units, nowPlayer);
-        bool isoute = 0 < outeunits.Count;
-        if (isoute)
+        //順番飛ばし処理
+        if (zyunbantobashi)
         {
-            textResultInfo.text = "王手";
+            photonView.RPC(nameof(SkipFalse), RpcTarget.All, 1);
+            StartCoroutine(FinishPlaying());
+            return;
         }
 
         //脱落してたら即次の人へ
         if (istumi[nowPlayer])
         {
             StartCoroutine(FinishPlaying());
+            return;
         }
         else
         {
@@ -571,8 +541,30 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 istumi[nowPlayer] = true;
                 tumicount++;
                 StartCoroutine(FinishPlaying());
+                return;
             }
         }
+
+        //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
+        if (myturn && multiCardsDirector.selectCard)
+        {
+            multiCardsDirector.buttonUseCard.gameObject.SetActive(true);
+        }
+
+        //Info更新
+        textTurnInfo.text = "" + Players[nowPlayer] + "さんの番です";
+        textResultInfo.text = "";
+
+        //勝敗チェック
+
+        //王手しているユニット
+        List<UnitController> outeunits = GetOuteUnitsUke(units, nowPlayer);
+        bool isoute = 0 < outeunits.Count;
+        if (isoute)
+        {
+            textResultInfo.text = "王手";
+        }
+
 
         if (tumicount >= 3)
         {
@@ -921,6 +913,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //ターンを終了する関数 一瞬時間を空ける
     IEnumerator FinishPlaying()
     {
+        print("FinishPlayingコール");
         if (myturn)
         {
             myturn = false;
@@ -954,18 +947,18 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     }
 
     //カードを使用
+    [PunRPC]
     public void UseCard(CardType cardType)
     {
         if (CardType.Zyunbantobashi == cardType)
         {
-
+            zyunbantobashi = true;
         }
     }
 
     //リザルトタイトルへ
     public void OnClickTitle()
     {
-        //SceneManager.LoadScene("TitleScene");
         PhotonNetwork.LeaveRoom(); //ルームから出る
     }
 
@@ -976,6 +969,13 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             Players[p.ActorNumber - 1] = p.NickName;
         }
+    }
+
+    //順番飛ばしのフラグをfalseにする関数
+    [PunRPC]
+    public void SkipFalse(int t)
+    {
+        zyunbantobashi = false;
     }
 
     //ルームを出たときに呼ばれる関数
