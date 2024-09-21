@@ -696,6 +696,8 @@ public class GameSceneDirector : MonoBehaviour
             //カード使用フラグは元に戻さない
             nextMode = Mode.Select;
             nikaikoudou = false;
+            //「成りますか？」を非表示に
+            textResultInfo.text = "";
             return;
         }
 
