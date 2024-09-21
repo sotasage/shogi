@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -88,6 +89,20 @@ public class GameSceneDirector : MonoBehaviour
 
     //キャプチャされたユニット
     List<UnitController> captureUnits;
+
+    //カードのプレハブ
+    [SerializeField] List<GameObject> prefabCards;
+
+    //カードデータ
+    CardController[,] cards;
+
+    //現在選択中のカード
+    CardController selectCard;
+
+    //カードのフラグ初期化
+    bool zyunbantobashi = false;
+    public static bool reverse = false;
+
 
     //敵陣設定
     const int EnemyLine = 3;
@@ -231,9 +246,10 @@ public class GameSceneDirector : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            cardsDirector.DealCards(i);
+            cardsDirector.AddCards(i,3);//初期枚数の設定
+
         }
-        cardsDirector.InstantiateCards(0);
+        
 
         //TurnChangeから始める場合-1
         nowPlayer = -1;
@@ -439,28 +455,28 @@ public class GameSceneDirector : MonoBehaviour
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        //王手されてしまうかチェック
-        UnitController[,] copyunits = GetCopyArray(units);
-        if (FieldStatus.OnBoard == unit.FieldStatus)
-        {
-            copyunits[unit.Pos.x, unit.Pos.y] = null;
-        }
-        int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
+        ////王手されてしまうかチェック
+        //UnitController[,] copyunits = GetCopyArray(units);
+        //if (FieldStatus.OnBoard == unit.FieldStatus)
+        //{
+        //    copyunits[unit.Pos.x, unit.Pos.y] = null;
+        //}
+        //int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
 
-        //王手を回避できる場所を返す
-        if (0 < outecount)
-        {
-            ret = new List<Vector2Int>();
-            List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
-            foreach (var item in movabletiles)
-            {
-                //移動した状態を作る
-                UnitController[,] copyunits2 = GetCopyArray(copyunits);
-                copyunits2[item.x, item.y] = unit;
-                outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
-                if (1 > outecount) ret.Add(item);
-            }
-        }
+        ////王手を回避できる場所を返す
+        //if (0 < outecount)
+        //{
+        //    ret = new List<Vector2Int>();
+        //    List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
+        //    foreach (var item in movabletiles)
+        //    {
+        //        //移動した状態を作る
+        //        UnitController[,] copyunits2 = GetCopyArray(copyunits);
+        //        copyunits2[item.x, item.y] = unit;
+        //        outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
+        //        if (1 > outecount) ret.Add(item);
+        //    }
+        //}
 
         return ret;
     }
@@ -468,6 +484,34 @@ public class GameSceneDirector : MonoBehaviour
     //ターン開始
     void startMode()
     {
+        //脱落してたら即次の人へ
+        if (istumi[nowPlayer])
+        {
+            nextMode = Mode.TurnChange;
+            return;
+        }
+
+        //玉がとられているかどうか
+        bool gyoku_survive = false;
+        foreach (var item in getUnits(nowPlayer))
+        {
+            if (UnitType.Gyoku == item.UnitType && FieldStatus.OnBoard == item.FieldStatus)
+            {
+                gyoku_survive = true;
+            };
+        }
+
+
+        //王がとられていたら脱落
+        if (!gyoku_survive)
+        {
+            istumi[nowPlayer] = true;
+            tumicount++;
+            nextMode = Mode.TurnChange;
+            return ;
+        }
+
+
         if (nowPlayer == 0 && cardsDirector.selectCard)
         {
             cardsDirector.buttonUseCard.gameObject.SetActive(true);
@@ -476,9 +520,18 @@ public class GameSceneDirector : MonoBehaviour
         //勝敗がついていなければ通常モード
         nextMode = Mode.Select;
 
+        //順番飛ばし処理
+        if (zyunbantobashi)
+        {
+            nextMode = Mode.TurnChange;
+            zyunbantobashi = false;
+            return;
+        }
+
         //Info更新
         textTurnInfo.text = "" + (nowPlayer + 1) + "Pの番です";
         textResultInfo.text = "";
+
 
         //勝敗チェック
 
@@ -490,25 +543,21 @@ public class GameSceneDirector : MonoBehaviour
             textResultInfo.text = "王手";
         }
 
-        //自軍が移動可能か調べる
-        int movablecount = 0;
-        foreach (var item in getUnits(nowPlayer))
+        //５００手ルール
+        /*if (500 < turnCount)
         {
-            movablecount += getMovableTiles(item).Count;
+            textResultInfo.text = "500手ルール！\n" + "ひきわけ";
         }
+        */
 
-        //詰み
-        if (istumi[nowPlayer]) nextMode = Mode.TurnChange;
-        else
-        {
-            if (1 > movablecount && isoute)
-            {
-                istumi[nowPlayer] = true;
-                tumicount++;
+        ////自軍が移動可能か調べる
+        //int movablecount = 0;
+        //foreach (var item in getUnits(nowPlayer))
+        //{
+        //    movablecount += getMovableTiles(item).Count;
+        //}
 
-                nextMode = Mode.TurnChange;
-            }
-        }
+
 
         if (tumicount >= 3)
         {
@@ -539,6 +588,7 @@ public class GameSceneDirector : MonoBehaviour
             buttonTitle.gameObject.SetActive(true);
         }
     }
+
 
     //ユニットとタイル選択
     void selectMode()
@@ -639,17 +689,22 @@ public class GameSceneDirector : MonoBehaviour
         //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
 
-        //カードが５枚に満たなかったらカードを補充
-        if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
-        {
-            if (nowPlayer == 0) cardsDirector.DestroyCards(0);
-            cardsDirector.DealCards(nowPlayer);
-            if  (nowPlayer == 0)
-            {
-                cardsDirector.InstantiateCards(nowPlayer);
-            }
-        }
+        ////カードが５枚に満たなかったらカードを補充
+        //if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
+        //{
+        //    if (nowPlayer == 0) cardsDirector.DestroyCards(0);
+        //    cardsDirector.DealCards(nowPlayer);
+        //    if  (nowPlayer == 0)
+        //    {
+        //        cardsDirector.InstantiateCards(nowPlayer);
+        //    }
+        //}
 
+        //使用した枚数返す
+        if (nowPlayer >= 0)
+        {
+            cardsDirector.DealCards(nowPlayer);
+        }
         //CPU状態解除
         isCpu = false;
 
@@ -669,7 +724,14 @@ public class GameSceneDirector : MonoBehaviour
     //次のプレイヤー番号を返す
     public static int GetNextPlayer(int player)
     {
-        int next = player + 1;
+        int next;
+        if (reverse)
+        {
+            next = player - 1;
+            if (next < 0) next = 3;
+            return next;
+        }
+        next = player + 1;
         if (PlayerMax <= next) next = 0;
 
         return next;
@@ -689,12 +751,24 @@ public class GameSceneDirector : MonoBehaviour
         return ret;
     }
 
+    //敵の駒を獲る
     void captureUnit(int player, Vector2Int tileindex)
     {
         UnitController unit = units[tileindex.x, tileindex.y];
         if (!unit) return;
         unit.Caputure(player);
-        captureUnits.Add(unit);
+        if (unit.UnitType != UnitType.Gyoku) 
+        {
+            captureUnits.Add(unit); 
+        }
+        else//玉を獲ったら
+        {
+            Destroy(unit.gameObject);//玉のオブジェクトを削除
+
+            //手札を二枚追加
+            cardsDirector.AddCards(player, 2);
+
+        }
         units[tileindex.x, tileindex.y] = null;
     }
 
@@ -844,10 +918,22 @@ public class GameSceneDirector : MonoBehaviour
 
 
     //カードを使用
-    public void UseCard(CardType cardType)
+    public void UseCard(CardType cardType,int player)
     {
         if (CardType.Zyunbantobashi == cardType)
         {
+            zyunbantobashi = true;
+        }
+
+        else if (CardType.ichimaituika == cardType)
+        {
+            cardsDirector.AddCards(player, 1);
+        }
+
+        else if (CardType.reverse == cardType)
+        {
+            if(!reverse) reverse = true;
+            else reverse = false;
 
         }
     }

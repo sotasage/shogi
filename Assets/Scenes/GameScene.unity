@@ -1048,10 +1048,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabCards:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
+  - {fileID: 5350506994278487319, guid: 6ba722e72dd956649ba73cf8fb64434d, type: 3}
+  - {fileID: 5350506994278487319, guid: 82cabf4efe94363489e491949258a4a5, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 318547723}
   gameSceneDirector: {fileID: 413897291}
+  selectCard: {fileID: 0}
   usedFlag: 0
+  cardMaxNums: 00000000000000000000000000000000
 --- !u!4 &948704315
 Transform:
   m_ObjectHideFlags: 0

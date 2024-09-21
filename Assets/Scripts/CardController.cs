@@ -7,6 +7,8 @@ using UnityEngine.Scripting.APIUpdating;
 public enum CardType
 {
     Zyunbantobashi,
+    ichimaituika,
+    reverse,
 }
 
 public class CardController : MonoBehaviour
@@ -65,14 +67,6 @@ public class CardController : MonoBehaviour
         transform.position = pos;
     }
 
-    //カードを使用
-    public void UseCard()
-    {
-        if (CardType.Zyunbantobashi == CardType)
-        {
-            
-        }
-    }
 
     void OnClickUseCard()
     {
