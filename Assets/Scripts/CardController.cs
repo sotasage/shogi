@@ -15,6 +15,7 @@ public enum CardType
     ikusei,
     uragiri,
     huninare,
+    henshin
 }
 
 public class CardController : MonoBehaviour
