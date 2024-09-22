@@ -1000,6 +1000,11 @@ public class GameSceneDirector : MonoBehaviour
                 };
             }
         }
+
+        else if (CardType.huninare == cardType)
+        {
+
+        }
     }
 
         //リザルト再戦
