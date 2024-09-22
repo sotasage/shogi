@@ -947,12 +947,16 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     }
 
     //カードを使用
-    [PunRPC]
-    public void UseCard(CardType cardType)
+    public void UseCard(CardType cardType, int player)
     {
         if (CardType.Zyunbantobashi == cardType)
         {
-            zyunbantobashi = true;
+            photonView.RPC(nameof(SkipTrue), RpcTarget.All, 1);
+        }
+
+        else if (CardType.ichimaituika == cardType)
+        {
+            multiCardsDirector.AddCards(player, 1);
         }
     }
 
@@ -976,6 +980,13 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     public void SkipFalse(int t)
     {
         zyunbantobashi = false;
+    }
+
+    //順番飛ばしのフラグをtrueにする関数
+    [PunRPC]
+    public void SkipTrue(int t)
+    {
+        zyunbantobashi = true;
     }
 
     //ルームを出たときに呼ばれる関数

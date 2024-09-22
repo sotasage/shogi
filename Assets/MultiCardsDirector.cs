@@ -50,7 +50,7 @@ public class MultiCardsDirector : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < num; i++)
         {
-            int type = Random.Range(0, prefabCards.Count);
+            int type = Random.Range(1, prefabCards.Count);
 
             CardController cardctrl = gameObject.AddComponent<CardController>();
             cardctrl.Init(player, type);
@@ -158,7 +158,7 @@ public class MultiCardsDirector : MonoBehaviourPunCallbacks
         Destroy(sampleCard);
         bool isRemove = playerCards.Remove(selectCard);
         print(isRemove);
-        multiGameSceneDirector.photonView.RPC(nameof(multiGameSceneDirector.UseCard), RpcTarget.All, selectCard.CardType);
+        multiGameSceneDirector.UseCard(selectCard.CardType, multiGameSceneDirector.nowPlayer);
         selectCard = null;
     }
 }

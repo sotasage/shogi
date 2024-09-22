@@ -6,9 +6,10 @@ using UnityEngine.Scripting.APIUpdating;
 //カードのタイプ
 public enum CardType
 {
+
+    reverse,
     Zyunbantobashi,
     ichimaituika,
-    reverse,
     komaget,
     nikaikoudou,
     ikusei,
