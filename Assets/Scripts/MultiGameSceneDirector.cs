@@ -137,8 +137,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
         if (PhotonNetwork.LocalPlayer.ActorNumber == 2)
         {
-            cameraPos.x = -4.0f;
-            cameraPos.y = 10.0f;
+            cameraPos.x = -5.0f;
+            cameraPos.y = 11.0f;
             cameraPos.z = 0.0f;
             Scenecamera.transform.position = cameraPos;
 
@@ -147,16 +147,16 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         if (PhotonNetwork.LocalPlayer.ActorNumber == 3)
         {
             cameraPos.x = 0.0f;
-            cameraPos.y = 10.0f;
-            cameraPos.z = 4.0f;
+            cameraPos.y = 11.0f;
+            cameraPos.z = 5.0f;
             Scenecamera.transform.position = cameraPos;
 
             Scenecamera.gameObject.transform.rotation = Quaternion.Euler(70, -180, 0);
         }
         if (PhotonNetwork.LocalPlayer.ActorNumber == 4)
         {
-            cameraPos.x = 4.0f;
-            cameraPos.y = 10.0f;
+            cameraPos.x = 5.0f;
+            cameraPos.y = 11.0f;
             cameraPos.z = 0.0f;
             Scenecamera.transform.position = cameraPos;
 
