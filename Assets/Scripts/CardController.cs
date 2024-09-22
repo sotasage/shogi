@@ -9,6 +9,7 @@ public enum CardType
     Zyunbantobashi,
     ichimaituika,
     reverse,
+    isseikyouka
 }
 
 public class CardController : MonoBehaviour

@@ -96,7 +96,7 @@ public class UnitController : MonoBehaviour
 
     }
     //指定されたプレイヤー番号の向きを返す
-    Vector3 getDefaultAngles(int player)
+    public Vector3 getDefaultAngles(int player)
     {
         return new Vector3(90, player * 90, 0);
     }
@@ -631,7 +631,7 @@ public class UnitController : MonoBehaviour
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    //成
+    //成り
     public void Evolution(bool evolution = true)
     {
         Vector3 angle = transform.eulerAngles;

@@ -102,6 +102,12 @@ public class GameSceneDirector : MonoBehaviour
     //カードのフラグ初期化
     bool zyunbantobashi = false;
     public static bool reverse = false;
+    bool isseikyouka = false;
+
+    //一斉強化カードの管理
+    public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
+    public int[] isseikyoukaTurn = new int[] {0,0,0,0};
+
 
 
     //敵陣設定
@@ -249,10 +255,10 @@ public class GameSceneDirector : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            cardsDirector.AddCards(i,3);//初期枚数の設定
+            cardsDirector.AddCards(i, 3);//初期枚数の設定
 
         }
-        
+
 
         //TurnChangeから始める場合-1
         nowPlayer = -1;
@@ -277,10 +283,16 @@ public class GameSceneDirector : MonoBehaviour
         //初回モード
         nowMode = Mode.None;
         nextMode = Mode.TurnChange;
+
+        //isseikyouktyuのリストの初期化
+        for (int i = 0; i < isseikyoukatyu.Length; i++)
+        {
+            isseikyoukatyu[i] = new List<UnitController>();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+        // Update is called once per frame
+        void Update()
     {
         if (Mode.Start == nowMode)
         {
@@ -720,7 +732,42 @@ public class GameSceneDirector : MonoBehaviour
         {
             turnCount++;
         }
+        //一斉強化の残りターン管理
+        if (isseikyouka)
+        {
+            isseikyouka = false;
+            for (int i = 0; i < 4; i++)
+            {
+                //今終わった人の成りを戻してリストを初期化する
+                if (nowPlayer == i && isseikyoukaTurn[i] == 1)
+                {
+                    foreach (var koma in isseikyoukatyu[i])
+                    {
+                        //TODO駒をひっくり返して元の状態に戻す
+                        Vector3 angle = koma.transform.eulerAngles;
+                        koma.UnitType = koma.OldUnitType;
+                        angle.x = 90;
+                        angle.y = 90 * nowPlayer;
+                        angle.z = 0;
+                        koma.transform.eulerAngles = angle;
 
+
+                    }
+                    isseikyoukatyu[i].Clear();
+                }
+
+                    //自分の番が回ってくるごとにターンを減らす
+                    if (nowPlayer == i && isseikyoukaTurn[i]>0)
+                {
+                    isseikyoukaTurn[i]--;
+                }
+                //一人でも継続中ならフラグを立てる
+                if (isseikyoukaTurn[i] != 0)
+                {
+                    isseikyouka = true;
+                }
+            }
+        }
         nextMode = Mode.Start;
     }
 
@@ -921,7 +968,7 @@ public class GameSceneDirector : MonoBehaviour
 
 
     //カードを使用
-    public void UseCard(CardType cardType,int player)
+    public void UseCard(CardType cardType)
     {
         if (CardType.Zyunbantobashi == cardType)
         {
@@ -930,19 +977,33 @@ public class GameSceneDirector : MonoBehaviour
 
         else if (CardType.ichimaituika == cardType)
         {
-            cardsDirector.AddCards(player, 1);
+            cardsDirector.AddCards(nowPlayer, 1);
         }
 
         else if (CardType.reverse == cardType)
         {
-            if(!reverse) reverse = true;
+            if (!reverse) reverse = true;
             else reverse = false;
 
         }
+
+        else if (CardType.isseikyouka == cardType)
+        {
+            isseikyouka = true;
+            foreach (var item in getUnits(nowPlayer))
+            {
+                if (item.isEvolution() && FieldStatus.OnBoard == item.FieldStatus)
+                {
+                    isseikyoukatyu[nowPlayer].Add(item);
+                    item.Evolution();
+                    isseikyoukaTurn[nowPlayer] = 3;
+                };
+            }
+        }
     }
 
-    //リザルト再戦
-    public void OnClickRematch()
+        //リザルト再戦
+        public void OnClickRematch()
     {
         SceneManager.LoadScene("GameScene");
     }

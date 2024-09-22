@@ -438,6 +438,7 @@ MonoBehaviour:
   prefabUnitTile: {fileID: 4048784332414518758, guid: 1ae7a1fa8823cf94ca445d8070597dff, type: 3}
   prefabCards:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
+  isseikyoukaTurn: 00000000000000000000000000000000
   sound: {fileID: 1780197189}
   canvas: {fileID: 1795245983}
   cardsDirector: {fileID: 948704314}
@@ -1048,10 +1049,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabCards:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
+  - {fileID: 5350506994278487319, guid: 82cabf4efe94363489e491949258a4a5, type: 3}
+  - {fileID: 5350506994278487319, guid: 6ba722e72dd956649ba73cf8fb64434d, type: 3}
+  - {fileID: 5350506994278487319, guid: c0468f8326a363b448ec39f8e157bdf0, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 318547723}
   gameSceneDirector: {fileID: 413897291}
+  selectCard: {fileID: 0}
   usedFlag: 0
+  cardMaxNums: 00000000000000000000000000000000
 --- !u!4 &948704315
 Transform:
   m_ObjectHideFlags: 0
