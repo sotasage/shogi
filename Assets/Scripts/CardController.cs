@@ -14,6 +14,8 @@ public enum CardType
     nikaikoudou,
     ikusei,
     uragiri,
+    isseikyouka,
+    huninare,
 }
 
 public class CardController : MonoBehaviour

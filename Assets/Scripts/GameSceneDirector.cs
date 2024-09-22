@@ -1010,7 +1010,7 @@ public class GameSceneDirector : MonoBehaviour
 
 
     //カードを使用
-    public void UseCard(CardType cardType)
+    public void UseCard(CardType cardType, int player)
     {
         if (CardType.Zyunbantobashi == cardType)
         {

@@ -51,7 +51,6 @@ public class CardsDirector : MonoBehaviour
         for (int i = 0; i < num; i++)
         {
             int type = Random.Range(0, prefabCards.Count);
-            Debug.Log(type);
 
             CardController cardctrl = gameObject.AddComponent<CardController>();
             cardctrl.Init(player, type);
@@ -159,7 +158,7 @@ public class CardsDirector : MonoBehaviour
         Destroy(sampleCard);
         bool isRemove = playerCards[0].Remove(selectCard);
         print(isRemove);
-        gameSceneDirector.UseCard(selectCard.CardType);
+        gameSceneDirector.UseCard(selectCard.CardType, gameSceneDirector.nowPlayer);
         selectCard = null;
     }
 }
