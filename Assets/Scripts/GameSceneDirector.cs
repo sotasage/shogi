@@ -669,6 +669,10 @@ public class GameSceneDirector : MonoBehaviour
                 //指定したユニットを成らせる                
                 if (nowPlayer == unit.Player)
                 {
+                    if (!unit.isEvolution() || unit.FieldStatus == FieldStatus.Captured)
+                    {
+                        return;
+                    }
                     unit.Evolution();
                     textResultInfo.text = "";
                     ikusei = false;
