@@ -1050,14 +1050,10 @@ MonoBehaviour:
   - {fileID: 5350506994278487319, guid: 6ba722e72dd956649ba73cf8fb64434d, type: 3}
   - {fileID: 6977688590995115284, guid: df7c74c185d1b9e438082bfb11e1b43a, type: 3}
   - {fileID: 8583373011911532605, guid: d087b8bcd9b219344851a016190a429a, type: 3}
-<<<<<<< HEAD
   - {fileID: 2162976757244010085, guid: fce47bc620042f44f813b655e337021d, type: 3}
   - {fileID: 3503105866546655491, guid: 0c9fe8d303b7cf347b01e06d253babef, type: 3}
   - {fileID: 5350506994278487319, guid: c0468f8326a363b448ec39f8e157bdf0, type: 3}
   - {fileID: 5350506994278487319, guid: 478f0918235f8ba42b2763ff952d9c44, type: 3}
-=======
-  - {fileID: 5350506994278487319, guid: c0468f8326a363b448ec39f8e157bdf0, type: 3}
->>>>>>> main
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 318547723}
   gameSceneDirector: {fileID: 413897291}
