@@ -686,6 +686,10 @@ public class GameSceneDirector : MonoBehaviour
                 //敵駒を自駒に変える
                 if (nowPlayer != unit.Player)
                 {
+                    if (UnitType.Gyoku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                    {
+                        return;
+                    }
                     unit.Player = nowPlayer;
                     unit.transform.eulerAngles = unit.getDefaultAngles(nowPlayer);
                     textResultInfo.text = "";
