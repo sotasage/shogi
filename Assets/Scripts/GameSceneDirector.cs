@@ -97,6 +97,7 @@ public class GameSceneDirector : MonoBehaviour
     bool ikusei = false;
     bool uragiri = false;
     bool isseikyouka = false;
+    bool huninare = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -718,6 +719,17 @@ public class GameSceneDirector : MonoBehaviour
                 unit = null;
                 return;
             }
+            else if (huninare)
+            {
+                //指定した駒を歩にする
+                if (UnitType.Gyoku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //TODO:歩に変える処理(内部データもオブジェクトも
+                return;
+            }
+
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
         }
@@ -1080,6 +1092,8 @@ public class GameSceneDirector : MonoBehaviour
 
         else if (CardType.huninare == cardType)
         {
+            huninare = true;
+            textResultInfo.text = "歩に変える敵駒を選択";
 
         }
     }
