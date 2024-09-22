@@ -727,6 +727,7 @@ MonoBehaviour:
   - {fileID: 5350506994278487319, guid: 82cabf4efe94363489e491949258a4a5, type: 3}
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
   - {fileID: 5350506994278487319, guid: 6ba722e72dd956649ba73cf8fb64434d, type: 3}
+  - {fileID: 6977688590995115284, guid: df7c74c185d1b9e438082bfb11e1b43a, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 1571813410}
   multiGameSceneDirector: {fileID: 413897294}
