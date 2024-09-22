@@ -629,6 +629,12 @@ public class GameSceneDirector : MonoBehaviour
                 return;
             }
 
+            //カード使用
+            int cardnum = Random.Range(0, cardsDirector.playerCards[nowPlayer].Count);
+            CardController card = cardsDirector.playerCards[nowPlayer][cardnum];
+            UseCard(card.CardType, nowPlayer);
+            bool isRemove = cardsDirector.playerCards[nowPlayer].Remove(card);
+
             //ユニット選択
             if (!selectUnit)
             {
