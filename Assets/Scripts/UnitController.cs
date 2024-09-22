@@ -631,7 +631,7 @@ public class UnitController : MonoBehaviour
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    //成
+    //成り
     public void Evolution(bool evolution = true)
     {
         Vector3 angle = transform.eulerAngles;
