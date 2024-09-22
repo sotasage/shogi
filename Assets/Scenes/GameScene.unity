@@ -436,8 +436,6 @@ MonoBehaviour:
   prefabCursor: {fileID: 6027442990332178381, guid: 6621dd9c0594660478210baed98412d2, type: 3}
   nowPlayer: 0
   prefabUnitTile: {fileID: 4048784332414518758, guid: 1ae7a1fa8823cf94ca445d8070597dff, type: 3}
-  prefabCards:
-  - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
   isseikyoukaTurn: 00000000000000000000000000000000
   sound: {fileID: 1780197189}
   cardsDirector: {fileID: 948704314}
@@ -1054,6 +1052,7 @@ MonoBehaviour:
   - {fileID: 8583373011911532605, guid: d087b8bcd9b219344851a016190a429a, type: 3}
   - {fileID: 2162976757244010085, guid: fce47bc620042f44f813b655e337021d, type: 3}
   - {fileID: 3503105866546655491, guid: 0c9fe8d303b7cf347b01e06d253babef, type: 3}
+  - {fileID: 5350506994278487319, guid: 6ba722e72dd956649ba73cf8fb64434d, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 318547723}
   gameSceneDirector: {fileID: 413897291}
