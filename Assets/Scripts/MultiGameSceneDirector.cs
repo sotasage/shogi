@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Photon.Realtime;
+using Random = UnityEngine.Random;
 
 public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
@@ -958,6 +959,13 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             multiCardsDirector.AddCards(player, 1);
         }
+
+        else if (CardType.komaget == cardType)
+        {
+            int unittype = Random.Range(1, 8);
+
+            photonView.RPC(nameof(GetKoma), RpcTarget.All, unittype, nowPlayer);
+        }
     }
 
     //リザルトタイトルへ
@@ -987,6 +995,24 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     public void SkipTrue(int t)
     {
         zyunbantobashi = true;
+    }
+
+    //駒を獲得する関数
+    [PunRPC]
+    public void GetKoma(int unittype, int player)
+    {
+        GameObject prefab = prefabUnits[unittype - 1];
+        GameObject unit = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.Euler(90, player * 90, 0));
+        unit.AddComponent<Rigidbody>();
+        UnitController unitctrl = unit.AddComponent<UnitController>();
+        unitctrl.Player = player;
+        unitctrl.UnitType = (UnitType)unittype;
+        unitctrl.OldUnitType = (UnitType)unittype;
+        unitctrl.FieldStatus = FieldStatus.Captured;
+        unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(player);
+        unitctrl.Caputure(player);
+        captureUnits.Add(unitctrl);
+        alignCaptureUnits(player);
     }
 
     //ルームを出たときに呼ばれる関数
