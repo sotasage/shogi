@@ -644,10 +644,14 @@ public class GameSceneDirector : MonoBehaviour
             }
 
             //カード使用
-            int cardnum = Random.Range(0, cardsDirector.playerCards[nowPlayer].Count);
-            CardController card = cardsDirector.playerCards[nowPlayer][cardnum];
-            UseCard(card.CardType, nowPlayer);
-            bool isRemove = cardsDirector.playerCards[nowPlayer].Remove(card);
+            if (!cardsDirector.usedFlag)
+            {
+                cardsDirector.usedFlag = true;
+                int cardnum = Random.Range(0, cardsDirector.playerCards[nowPlayer].Count);
+                CardController card = cardsDirector.playerCards[nowPlayer][cardnum];
+                UseCard(card.CardType, nowPlayer);
+                bool isRemove = cardsDirector.playerCards[nowPlayer].Remove(card);
+            }
 
             //ユニット選択
             if (!selectUnit)
@@ -1012,6 +1016,8 @@ public class GameSceneDirector : MonoBehaviour
     //カードを使用
     public void UseCard(CardType cardType, int player)
     {
+        print((player + 1) + "Pが" + cardType + "使用");
+
         if (CardType.Zyunbantobashi == cardType)
         {
             zyunbantobashi = true;
