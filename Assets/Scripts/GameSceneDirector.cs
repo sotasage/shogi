@@ -95,6 +95,7 @@ public class GameSceneDirector : MonoBehaviour
     public static bool reverse = false;
     bool nikaikoudou = false;
     bool ikusei = false;
+    bool uragiri = false;
 
     //敵陣設定
     const int EnemyLine = 3;
@@ -680,6 +681,20 @@ public class GameSceneDirector : MonoBehaviour
                 unit = null;
                 return;
             }
+            else if (uragiri)
+            {
+                //敵駒を自駒に変える
+                if (nowPlayer != unit.Player)
+                {
+                    unit.Player = nowPlayer;
+                    unit.transform.eulerAngles = unit.getDefaultAngles(nowPlayer);
+                    textResultInfo.text = "";
+                    uragiri = false;
+                    nextMode = Mode.TurnChange;
+                }
+                unit = null;
+                return;
+            }
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
         }
@@ -983,6 +998,12 @@ public class GameSceneDirector : MonoBehaviour
         {
             ikusei = true;
             textResultInfo.text = "成らせる自駒を選択";
+        }
+
+        else if (CardType.uragiri == cardType)
+        {
+            uragiri = true;
+            textResultInfo.text = "自駒に変える敵駒を選択";
         }
     }
 
