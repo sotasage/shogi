@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 using Random = UnityEngine.Random;
 
 public class GameSceneDirector : MonoBehaviour
@@ -102,6 +103,7 @@ public class GameSceneDirector : MonoBehaviour
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
     public int[] isseikyoukaTurn = new int[] {0,0,0,0};
+    UnitType checkSameUnit;
 
 
 
@@ -722,11 +724,36 @@ public class GameSceneDirector : MonoBehaviour
             else if (huninare)
             {
                 //指定した駒を歩にする
-                if (UnitType.Gyoku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Hu == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
                 {
                     return;
                 }
-                //TODO:歩に変える処理(内部データもオブジェクトも
+                //歩に変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+
+                GameObject prefabHu = prefabUnits[0];
+                GameObject hu = Instantiate(prefabHu, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                hu.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = hu.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = UnitType.Hu;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = UnitType.Hu;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl. getDefaultAngles(unit.Player);
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                unit=null;
+                huninare= false;
+                textResultInfo.text = "";
+
+
                 return;
             }
 
@@ -797,14 +824,18 @@ public class GameSceneDirector : MonoBehaviour
                 {
                     foreach (var koma in isseikyoukatyu[i])
                     {
-                        //TODO駒をひっくり返して元の状態に戻す
-                        Vector3 angle = koma.transform.eulerAngles;
-                        koma.UnitType = koma.OldUnitType;
-                        angle.x = 90;
-                        angle.y = 90 * nowPlayer;
-                        angle.z = 0;
-                        koma.transform.eulerAngles = angle;
+                        if (checkSameUnit == koma.UnitType)
+                        {
+                            //駒をひっくり返して元の状態に戻す
+                            Vector3 angle = koma.transform.eulerAngles;
+                            koma.UnitType = koma.OldUnitType;
+                            angle.x = 90;
+                            angle.y = 90 * nowPlayer;
+                            angle.z = 0;
+                            koma.transform.eulerAngles = angle;
 
+
+                        }
 
                     }
                     isseikyoukatyu[i].Clear();
@@ -1085,6 +1116,7 @@ public class GameSceneDirector : MonoBehaviour
                 {
                     isseikyoukatyu[nowPlayer].Add(item);
                     item.Evolution();
+                    checkSameUnit = item.UnitType;
                     isseikyoukaTurn[nowPlayer] = 3;
                 };
             }
