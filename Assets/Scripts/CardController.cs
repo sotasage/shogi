@@ -6,15 +6,14 @@ using UnityEngine.Scripting.APIUpdating;
 //カードのタイプ
 public enum CardType
 {
-
     reverse,
     Zyunbantobashi,
     ichimaituika,
     komaget,
     nikaikoudou,
+    isseikyouka,
     ikusei,
     uragiri,
-    isseikyouka,
     huninare,
 }
 
