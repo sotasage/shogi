@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
+using static UnityEngine.UI.CanvasScaler;
 using Random = UnityEngine.Random;
 
 public class GameSceneDirector : MonoBehaviour
@@ -100,11 +101,16 @@ public class GameSceneDirector : MonoBehaviour
     bool isseikyouka = false;
     bool huninare = false;
     bool henshin = false;
+    bool irekae = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
     public int[] isseikyoukaTurn = new int[] {0,0,0,0};
     UnitType checkSameUnit;
+
+    //入れ替えカードの変数
+    UnitController unit1 = null;
+    bool firstSelected = false;
 
 
 
@@ -792,14 +798,70 @@ public class GameSceneDirector : MonoBehaviour
                 //ユニットデータセット
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
-                Debug.Log(units[unit.Pos.x, unit.Pos.y].Player);
-                Debug.Log(units[unit.Pos.x, unit.Pos.y].UnitType);
-                Debug.Log(units[unit.Pos.x, unit.Pos.y].Pos);
 
                 unit = null;
                 henshin = false;
                 textResultInfo.text = "";
 
+
+                return;
+            }
+            //入れ替え
+            else if (irekae)
+            {
+
+                if (!firstSelected)
+                {
+                    if (unit.Player != nowPlayer || unit.FieldStatus == FieldStatus.Captured)
+                    {
+                        return;
+                    }
+                    unit1 = unit;
+
+                    firstSelected = true;
+                    textResultInfo.text = "入れ替える駒を選択(1/2)";
+
+
+                }
+
+                else
+                {
+                    if (unit.Player != nowPlayer || unit.FieldStatus == FieldStatus.Captured)
+                    {
+                        return;
+                    }
+
+                    UnitController unit2 = unit;
+
+                    if ( unit2 != null )
+                    {
+                        //位置交換
+                        units[unit1.Pos.x,unit1.Pos.y] = unit2;
+                        units[unit2.Pos.x, unit2.Pos.y] = unit1;
+
+                        Vector2Int tempPos1 = unit1.Pos;
+                        Vector2Int tempPos2 = unit2.Pos;
+
+                        units[unit1.Pos.x, unit1.Pos.y].Pos= tempPos1;
+                        Debug.Log(units[unit1.Pos.x, unit1.Pos.y].Pos);
+                        units[unit2.Pos.x, unit2.Pos.y].Pos = tempPos2;
+                        Debug.Log(units[unit2.Pos.x, unit2.Pos.y].Pos);
+
+
+
+
+                        //ゲームオブジェクトの交換
+                        Vector3 tempObjectPos = unit1.gameObject.transform.position;
+                        unit1.gameObject.transform.position = unit2.gameObject.transform.position;
+                        unit2.gameObject.transform.position = tempObjectPos;
+
+                        irekae = false;
+                        textResultInfo.text = "";
+                        unit1 = null;
+                        firstSelected = false;
+                    }
+
+                }
 
                 return;
             }
@@ -1186,6 +1248,13 @@ public class GameSceneDirector : MonoBehaviour
         {
             henshin = true;
             textResultInfo.text = "変身する駒を選択";
+
+        }
+
+        else if (CardType.irekae == cardType)
+        {
+            irekae = true;
+            textResultInfo.text = "入れ替える駒を選択(0/2)";
 
         }
 
