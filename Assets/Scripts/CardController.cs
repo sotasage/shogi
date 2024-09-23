@@ -12,9 +12,10 @@ public enum CardType
     komaget,
     nikaikoudou,
     isseikyouka,
+    huninare,
+
     ikusei,
     uragiri,
-    huninare,
     henshin,
     irekae,
     hishaninare,
