@@ -1,4 +1,5 @@
-﻿using Photon.Realtime;
+﻿using Photon.Pun;
+using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1003,6 +1004,21 @@ public class GameSceneDirector : MonoBehaviour
         {
             cardsDirector.DealCards(nowPlayer);
         }
+
+        //一斉強化カード処理
+        if (nowPlayer >= 0 && isseikyoukaTurn[nowPlayer] > 0)
+        {
+            isseikyoukaTurn[nowPlayer]--;
+            if (isseikyoukaTurn[nowPlayer] == 0)
+            {
+                foreach (var item in isseikyoukatyu[nowPlayer])
+                {
+                    item.Evolution(false);
+                }
+                isseikyoukatyu[nowPlayer].Clear();
+            }
+        }
+
         //CPU状態解除
         isCpu = false;
 
@@ -1014,46 +1030,6 @@ public class GameSceneDirector : MonoBehaviour
         if (0 == nowPlayer)
         {
             turnCount++;
-        }
-        //一斉強化の残りターン管理
-        if (isseikyouka)
-        {
-            isseikyouka = false;
-            for (int i = 0; i < 4; i++)
-            {
-                //今終わった人の成りを戻してリストを初期化する
-                if (nowPlayer == i && isseikyoukaTurn[i] == 1)
-                {
-                    foreach (var koma in isseikyoukatyu[i])
-                    {
-                        if (checkSameUnit == koma.UnitType)
-                        {
-                            //駒をひっくり返して元の状態に戻す
-                            Vector3 angle = koma.transform.eulerAngles;
-                            koma.UnitType = koma.OldUnitType;
-                            angle.x = 90;
-                            angle.y = 90 * nowPlayer;
-                            angle.z = 0;
-                            koma.transform.eulerAngles = angle;
-
-
-                        }
-
-                    }
-                    isseikyoukatyu[i].Clear();
-                }
-
-                    //自分の番が回ってくるごとにターンを減らす
-                    if (nowPlayer == i && isseikyoukaTurn[i]>0)
-                {
-                    isseikyoukaTurn[i]--;
-                }
-                //一人でも継続中ならフラグを立てる
-                if (isseikyoukaTurn[i] != 0)
-                {
-                    isseikyouka = true;
-                }
-            }
         }
         nextMode = Mode.Start;
     }
@@ -1312,17 +1288,16 @@ public class GameSceneDirector : MonoBehaviour
 
         else if (CardType.isseikyouka == cardType)
         {
-            isseikyouka = true;
-            isseikyoukaTurn[nowPlayer] = 3;
-            foreach (var item in getUnits(nowPlayer))
+            //一斉強化ターンを更新
+            isseikyoukaTurn[player] = 3;
+            //対象の駒を成らせてリストに入れる
+            foreach (var item in getUnits(player))
             {
                 if (item.isEvolution() && FieldStatus.OnBoard == item.FieldStatus)
                 {
-                    isseikyoukatyu[nowPlayer].Add(item);
                     item.Evolution();
-                    checkSameUnit = item.UnitType;
-                    isseikyoukaTurn[nowPlayer] = 3;
-                };
+                    isseikyoukatyu[player].Add(item);
+                }
             }
         }
 
