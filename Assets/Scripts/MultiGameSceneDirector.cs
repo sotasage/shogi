@@ -862,6 +862,9 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //成るボタン
     public void OnClickEvolutionApply()
     {
+        textResultInfo.text = "";
+        buttonEvolutionApply.gameObject.SetActive(false);
+        buttonEvolutionCancel.gameObject.SetActive(false);
         photonView.RPC(nameof(Evolution), RpcTarget.Others, 1);
         StartCoroutine(FinishPlaying());
     }
@@ -869,6 +872,9 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //成らないボタン
     public void OnClickEvolutionCancel()
     {
+        textResultInfo.text = "";
+        buttonEvolutionApply.gameObject.SetActive(false);
+        buttonEvolutionCancel.gameObject.SetActive(false);
         photonView.RPC(nameof(EvolutionCancel), RpcTarget.All, 1);
         StartCoroutine(FinishPlaying());
     }
@@ -918,17 +924,26 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         print("FinishPlayingコール");
         if (myturn)
         {
-            myturn = false;
-            yield return new WaitForSeconds(0.2f);
-            multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
+            if (nikaikoudou)
+            {
+                setSelectCursors();
+                multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
+                photonView.RPC(nameof(NikaikoudouFalse), RpcTarget.All, 1);
+            }
+            else
+            {
+                myturn = false;
+                yield return new WaitForSeconds(0.2f);
+                multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
 
-            //カード使用フラグを元に戻す
-            multiCardsDirector.usedFlag = false;
+                //カード使用フラグを元に戻す
+                multiCardsDirector.usedFlag = false;
 
-            //使用した枚数返す
-            multiCardsDirector.DealCards(nowPlayer);
+                //使用した枚数返す
+                multiCardsDirector.DealCards(nowPlayer);
 
-            punTurnManager.SendMove(null, true); //trueで手番終了を送信
+                punTurnManager.SendMove(null, true); //trueで手番終了を送信
+            }
         }
     }
 
@@ -967,6 +982,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
             photonView.RPC(nameof(GetKoma), RpcTarget.All, unittype, nowPlayer);
         }
+
+        else if (CardType.nikaikoudou == cardType)
+        {
+            photonView.RPC(nameof(NikaikoudouTrue), RpcTarget.All, 1);
+        }
     }
 
     //リザルトタイトルへ
@@ -996,6 +1016,20 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     public void SkipTrue(int t)
     {
         zyunbantobashi = true;
+    }
+
+    //二回行動のフラグをfalseにする関数
+    [PunRPC]
+    public void NikaikoudouFalse(int t)
+    {
+        nikaikoudou = false;
+    }
+
+    //二回行動のフラグをtrueにする関数
+    [PunRPC]
+    public void NikaikoudouTrue(int t)
+    {
+        nikaikoudou = true;
     }
 
     //駒を獲得する関数
