@@ -285,7 +285,7 @@ public class GameSceneDirector : MonoBehaviour
         nowMode = Mode.None;
         nextMode = Mode.TurnChange;
 
-        //isseikyouktyuのリストの初期化
+        //isseikyoukatyuのリストの初期化
         for (int i = 0; i < isseikyoukatyu.Length; i++)
         {
             isseikyoukatyu[i] = new List<UnitController>();
@@ -1139,6 +1139,7 @@ public class GameSceneDirector : MonoBehaviour
     //成るボタン
     public void OnClickEvolutionApply()
     {
+        textResultInfo.text = "";
         nextMode = Mode.TurnChange;
     }
 
@@ -1225,6 +1226,7 @@ public class GameSceneDirector : MonoBehaviour
         else if (CardType.isseikyouka == cardType)
         {
             isseikyouka = true;
+            isseikyoukaTurn[nowPlayer] = 3;
             foreach (var item in getUnits(nowPlayer))
             {
                 if (item.isEvolution() && FieldStatus.OnBoard == item.FieldStatus)

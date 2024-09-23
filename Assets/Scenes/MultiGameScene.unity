@@ -334,6 +334,7 @@ MonoBehaviour:
   nowPlayer: 0
   myturn: 0
   prefabUnitTile: {fileID: 4048784332414518758, guid: 1ae7a1fa8823cf94ca445d8070597dff, type: 3}
+  isseikyoukaTurn: 0
   sound: {fileID: 1780197189}
   Scenecamera: {fileID: 963194227}
   multiCardsDirector: {fileID: 567653044}
@@ -728,6 +729,8 @@ MonoBehaviour:
   - {fileID: 5350506994278487319, guid: 2693aca41236615488196ea98d566d39, type: 3}
   - {fileID: 5350506994278487319, guid: 6ba722e72dd956649ba73cf8fb64434d, type: 3}
   - {fileID: 6977688590995115284, guid: df7c74c185d1b9e438082bfb11e1b43a, type: 3}
+  - {fileID: 8583373011911532605, guid: d087b8bcd9b219344851a016190a429a, type: 3}
+  - {fileID: 5350506994278487319, guid: c0468f8326a363b448ec39f8e157bdf0, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 1571813410}
   multiGameSceneDirector: {fileID: 413897294}
