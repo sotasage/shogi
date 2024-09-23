@@ -104,6 +104,7 @@ public class GameSceneDirector : MonoBehaviour
     bool irekae = false;
     bool hishaninare = false;
     bool kakuninare = false;
+    bool saiminjutu = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -386,9 +387,9 @@ public class GameSceneDirector : MonoBehaviour
             units[oldpos.x, oldpos.y] = null;
 
             //成
-            if (nowPlayer == 0 || nowPlayer == 2)
+            if (unit.Player == 0 || unit.Player == 2)
             {
-                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
+                if (unit.isEvolution() && (enemyLines[unit.Player].Contains(tileindex.y) || enemyLines[unit.Player].Contains(oldpos.y)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -691,6 +692,9 @@ public class GameSceneDirector : MonoBehaviour
         if (tile && selectUnit && movableTiles.ContainsKey(tile))
         {
             nextMode = moveUnit(selectUnit, movableTiles[tile]);
+            //催眠術カードフラグ
+            saiminjutu = false;
+
         }
 
         //ユニット選択
@@ -942,7 +946,13 @@ public class GameSceneDirector : MonoBehaviour
 
                 return;
             }
+            //催眠術
+            else if (saiminjutu)
+            {
+                setSelectCursors(unit, true);
 
+                return;
+            }
 
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
@@ -1347,6 +1357,10 @@ public class GameSceneDirector : MonoBehaviour
         {
             kakuninare = true;
             textResultInfo.text = "角に変える駒を選択";
+        }
+        else if (CardType.saiminjutu == cardType)
+        {
+            saiminjutu = true;
         }
 
     }

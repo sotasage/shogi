@@ -50,7 +50,7 @@ public class CardsDirector : MonoBehaviour
         }
         for (int i = 0; i < num; i++)
         {
-            int type = Random.Range(11, 13);
+            int type = Random.Range(11, 14);
 
             CardController cardctrl = gameObject.AddComponent<CardController>();
             cardctrl.Init(player, type);
