@@ -98,6 +98,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
     //カードのフラグ初期化
     bool zyunbantobashi = false;
+    bool nikaikoudou = false;
 
     //サウンド制御
     [SerializeField] SoundController sound;
