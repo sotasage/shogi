@@ -520,6 +520,8 @@ public class GameSceneDirector : MonoBehaviour
         //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
         if (nowPlayer == 0 && cardsDirector.selectCard)
         {
+            //カードの効果を使えない場合ボタンを押せない状態にして表示
+            cardsDirector.buttonUseCard.interactable = isCanUseCard(cardsDirector.selectCard.CardType);
             cardsDirector.buttonUseCard.gameObject.SetActive(true);
         }
 
