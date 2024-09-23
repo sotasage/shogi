@@ -649,20 +649,33 @@ public class GameSceneDirector : MonoBehaviour
                 cardsDirector.usedFlag = true;
                 int cardnum = Random.Range(0, cardsDirector.playerCards[nowPlayer].Count);
                 CardController card = cardsDirector.playerCards[nowPlayer][cardnum];
-                UseCard(card.CardType, nowPlayer);
-                bool isRemove = cardsDirector.playerCards[nowPlayer].Remove(card);
+                if (isCanUseCard(card.CardType))
+                {
+                    UseCard(card.CardType, nowPlayer);
+                    bool isRemove = cardsDirector.playerCards[nowPlayer].Remove(card);
+                }
             }
 
             //ユニット選択
             if (!selectUnit)
             {
-                //全ユニット取得してランダムで選択
-                List<UnitController> allunits = getUnits(nowPlayer);
-                unit = allunits[Random.Range(0, allunits.Count)];
-                //移動できないならやり直し
-                if (1 > getMovableTiles(unit).Count)
+                if (ikusei)
                 {
-                    unit = null;
+                    //成らせる自駒をランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.ikusei);
+                    unit = ret[Random.Range(0, ret.Count)];
+                }
+                else
+                {
+                    //全ユニット取得してランダムで選択
+                    List<UnitController> allunits;
+                    allunits = getUnits(nowPlayer);
+                    unit = allunits[Random.Range(0, allunits.Count)];
+                    //移動できないならやり直し
+                    if (1 > getMovableTiles(unit).Count)
+                    {
+                        unit = null;
+                    }
                 }
             }
             //タイル選択
@@ -1012,6 +1025,28 @@ public class GameSceneDirector : MonoBehaviour
         return ret;
     }
 
+    //カードの対象として選択できるユニットを取得する
+    public List<UnitController> GetUnitsForCard(CardType cardType)
+    {
+        List<UnitController> ret = new List<UnitController>();
+        foreach (var item in units)
+        {
+            if (CardType.ikusei == cardType && !item || nowPlayer != item.Player || !item.isEvolution()) continue;
+            //if (CardType.uragiri == cardType && !item || nowPlayer != item.Player || !item.isEvolution()) continue;
+            ret.Add(item);
+        }
+        return ret;
+    }
+
+    //カードが使用可能か調べる
+    public bool isCanUseCard(CardType cardType)
+    {
+        if (CardType.ikusei == cardType)
+        {
+            if (GetUnitsForCard(cardType).Count == 0) return false;
+        }
+        return true;
+    } 
 
     //カードを使用
     public void UseCard(CardType cardType, int player)

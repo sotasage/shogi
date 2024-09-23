@@ -127,6 +127,7 @@ public class CardsDirector : MonoBehaviour
                     
                     if (gameSceneDirector.nowPlayer == player && !usedFlag)
                     {
+                        buttonUseCard.interactable = gameSceneDirector.isCanUseCard(selectCard.CardType);
                         buttonUseCard.gameObject.SetActive(true);
                     }
                 }
