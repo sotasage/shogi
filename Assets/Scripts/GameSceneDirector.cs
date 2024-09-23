@@ -1114,12 +1114,14 @@ public class GameSceneDirector : MonoBehaviour
         else if (CardType.ikusei == cardType)
         {
             ikusei = true;
+            setSelectCursors();
             textResultInfo.text = "成らせる自駒を選択";
         }
 
         else if (CardType.uragiri == cardType)
         {
             uragiri = true;
+            setSelectCursors();
             textResultInfo.text = "自駒に変える敵駒を選択";
         }
 
