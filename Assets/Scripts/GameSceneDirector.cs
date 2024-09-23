@@ -840,12 +840,9 @@ public class GameSceneDirector : MonoBehaviour
                         units[unit2.Pos.x, unit2.Pos.y] = unit1;
 
                         Vector2Int tempPos1 = unit1.Pos;
-                        Vector2Int tempPos2 = unit2.Pos;
 
-                        units[unit1.Pos.x, unit1.Pos.y].Pos= tempPos1;
-                        Debug.Log(units[unit1.Pos.x, unit1.Pos.y].Pos);
-                        units[unit2.Pos.x, unit2.Pos.y].Pos = tempPos2;
-                        Debug.Log(units[unit2.Pos.x, unit2.Pos.y].Pos);
+                        units[unit2.Pos.x, unit2.Pos.y].Pos = unit2.Pos;
+                        units[tempPos1.x, tempPos1.y].Pos = tempPos1;
 
 
 

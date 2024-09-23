@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u5165\u308C\u66FF\u3048"
+  m_Text: "\u5909\u6570"
 --- !u!1 &6977688590995115284
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 7943013534592223111}
   - component: {fileID: 8886800862987436859}
   m_Layer: 5
-  m_Name: "\u5165\u308C\u66FF\u3048 1"
+  m_Name: "\u5909\u8EAB"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,4 +234,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u9078\u629E\u3057\u305F\u4E8C\u3064\u306E\u99D2\u306E\u4F4D\u7F6E\u3092\u5165\u308C\u66FF\u3048\u308B"
+  m_Text: "\u9078\u629E\u3057\u305F\u99D2\u3092\u30E9\u30F3\u30C0\u30E0\u306A\u99D2\u306B\u5909\u8EAB\u3055\u305B\u308B"
