@@ -665,6 +665,12 @@ public class GameSceneDirector : MonoBehaviour
                     List<UnitController> ret = GetUnitsForCard(CardType.ikusei);
                     unit = ret[Random.Range(0, ret.Count)];
                 }
+                else if (uragiri)
+                {
+                    //自駒にする敵駒をランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.uragiri);
+                    unit = ret[Random.Range(0, ret.Count)];
+                }
                 else
                 {
                     //全ユニット取得してランダムで選択
@@ -1031,8 +1037,14 @@ public class GameSceneDirector : MonoBehaviour
         List<UnitController> ret = new List<UnitController>();
         foreach (var item in units)
         {
-            if (CardType.ikusei == cardType && !item || nowPlayer != item.Player || !item.isEvolution()) continue;
-            //if (CardType.uragiri == cardType && !item || nowPlayer != item.Player || !item.isEvolution()) continue;
+            if (CardType.ikusei == cardType) 
+            {
+                if (!item || nowPlayer != item.Player || !item.isEvolution()) continue;
+            }
+            else if (CardType.uragiri == cardType)
+            {
+                if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType) continue;
+            }
             ret.Add(item);
         }
         return ret;
@@ -1043,7 +1055,11 @@ public class GameSceneDirector : MonoBehaviour
     {
         if (CardType.ikusei == cardType)
         {
-            if (GetUnitsForCard(cardType).Count == 0) return false;
+            if (GetUnitsForCard(CardType.ikusei).Count == 0) return false;
+        }
+        else if (CardType.uragiri == cardType)
+        {
+            if (GetUnitsForCard(CardType.uragiri).Count == 0) return false;
         }
         return true;
     } 
