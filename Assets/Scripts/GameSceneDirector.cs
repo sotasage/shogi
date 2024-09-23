@@ -102,6 +102,8 @@ public class GameSceneDirector : MonoBehaviour
     bool huninare = false;
     bool henshin = false;
     bool irekae = false;
+    bool hishaninare = false;
+    bool kakuninare = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -768,6 +770,84 @@ public class GameSceneDirector : MonoBehaviour
 
                 return;
             }
+            //飛車になれ
+            else if (hishaninare)
+            {
+                //指定した駒を飛車にする
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Hisha == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //飛車に変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+
+                GameObject prefabHisha = prefabUnits[2];
+                GameObject hisha = Instantiate(prefabHisha, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                hisha.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = hisha.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = UnitType.Hisha;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = UnitType.Hisha;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+                unitctrl.Pos = unit.Pos;
+
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                unit = null;
+                hishaninare = false;
+                textResultInfo.text = "";
+
+
+                return;
+            }
+            //角になれ
+            else if (kakuninare)
+            {
+                //指定した駒を角にする
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Kaku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //角に変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+
+                GameObject prefabKaku = prefabUnits[1];
+                GameObject kaku = Instantiate(prefabKaku, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                kaku.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = kaku.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = UnitType.Kaku;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = UnitType.Kaku;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+                unitctrl.Pos = unit.Pos;
+
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                unit = null;
+                kakuninare = false;
+                textResultInfo.text = "";
+
+
+                return;
+            }
+
+
             //変身
             else if (henshin)
             {
@@ -1255,6 +1335,18 @@ public class GameSceneDirector : MonoBehaviour
             irekae = true;
             textResultInfo.text = "入れ替える駒を選択(0/2)";
 
+        }
+
+        else if (CardType.hishaninare == cardType)
+        {
+            hishaninare = true;
+            textResultInfo.text = "飛車に変える駒を選択";
+        }
+
+        else if (CardType.kakuninare == cardType)
+        {
+            kakuninare = true;
+            textResultInfo.text = "角に変える駒を選択";
         }
 
     }

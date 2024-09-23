@@ -1056,6 +1056,8 @@ MonoBehaviour:
   - {fileID: 5350506994278487319, guid: 478f0918235f8ba42b2763ff952d9c44, type: 3}
   - {fileID: 6977688590995115284, guid: 647f58cb1a8a4ed448402cd39ba19eb4, type: 3}
   - {fileID: 6977688590995115284, guid: 9aeda76710f8eff40b5ee72e69107ec8, type: 3}
+  - {fileID: 5350506994278487319, guid: f997af725a76c6f4ea6c0a3644475652, type: 3}
+  - {fileID: 5350506994278487319, guid: e3b7833fc33d8344f9aeb459c3653b39, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 318547723}
   gameSceneDirector: {fileID: 413897291}

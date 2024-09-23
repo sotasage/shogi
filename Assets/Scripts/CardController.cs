@@ -17,6 +17,8 @@ public enum CardType
     huninare,
     henshin,
     irekae,
+    hishaninare,
+    kakuninare,
 }
 
 public class CardController : MonoBehaviour
