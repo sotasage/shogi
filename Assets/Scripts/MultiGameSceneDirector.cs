@@ -100,6 +100,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool zyunbantobashi = false;
     bool nikaikoudou = false;
 
+    //一斉強化カードの管理
+    public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
+    public int isseikyoukaTurn = 0;
+
     //サウンド制御
     [SerializeField] SoundController sound;
 
@@ -300,6 +304,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             {
                 enemyLines[i].Add(rangemin + j);
             }
+        }
+
+        //isseikyoukatyuのリストの初期化
+        for (int i = 0; i < isseikyoukatyu.Length; i++)
+        {
+            isseikyoukatyu[i] = new List<UnitController>();
         }
 
         //初回モード
@@ -942,6 +952,16 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 //使用した枚数返す
                 multiCardsDirector.DealCards(nowPlayer);
 
+                //一斉強化カード処理
+                if (isseikyoukaTurn > 0)
+                {
+                    isseikyoukaTurn--;
+                    if (isseikyoukaTurn == 0)
+                    {
+                        photonView.RPC(nameof(IsseikyoukaCancel), RpcTarget.All, nowPlayer);
+                    }
+                }
+
                 punTurnManager.SendMove(null, true); //trueで手番終了を送信
             }
         }
@@ -987,6 +1007,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             photonView.RPC(nameof(NikaikoudouTrue), RpcTarget.All, 1);
         }
+
+        else if (CardType.isseikyouka == cardType)
+        {
+            //一斉強化ターンを更新
+            isseikyoukaTurn = 3;
+            //対象の駒を成らせてリストに入れる
+            photonView.RPC(nameof(Isseikyouka), RpcTarget.All, nowPlayer);
+        }
     }
 
     //リザルトタイトルへ
@@ -1030,6 +1058,31 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     public void NikaikoudouTrue(int t)
     {
         nikaikoudou = true;
+    }
+
+    //一斉強化カード使用時に対象の駒を成らせてリストに入れる関数
+    [PunRPC]
+    public void Isseikyouka(int player)
+    {
+        foreach (var item in getUnits(player))
+        {
+            if (item.isEvolution() && FieldStatus.OnBoard == item.FieldStatus)
+            {
+                item.Evolution();
+                isseikyoukatyu[player].Add(item);
+            }
+        }
+    }
+
+    //一斉強化された駒の成りを解除しリストを殻にする関数
+    [PunRPC]
+    public void IsseikyoukaCancel(int player)
+    {
+        foreach (var item in isseikyoukatyu[player])
+        {
+            item.Evolution(false);
+        }
+        isseikyoukatyu[player].Clear();
     }
 
     //駒を獲得する関数
