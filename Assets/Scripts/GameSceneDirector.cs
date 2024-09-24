@@ -10,6 +10,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.UI.CanvasScaler;
 using Random = UnityEngine.Random;
 
 public class GameSceneDirector : MonoBehaviour
@@ -97,10 +99,21 @@ public class GameSceneDirector : MonoBehaviour
     bool nikaikoudou = false;
     bool ikusei = false;
     bool uragiri = false;
+    bool huninare = false;
+    bool henshin = false;
+    bool irekae = false;
+    bool hishaninare = false;
+    bool kakuninare = false;
+    bool saiminjutu = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
     public int[] isseikyoukaTurn = new int[] {0,0,0,0};
+    UnitType checkSameUnit;
+
+    //入れ替えカードの変数
+    UnitController unit1 = null;
+    bool firstSelected = false;
 
 
 
@@ -374,9 +387,9 @@ public class GameSceneDirector : MonoBehaviour
             units[oldpos.x, oldpos.y] = null;
 
             //成
-            if (nowPlayer == 0 || nowPlayer == 2)
+            if (unit.Player == 0 || unit.Player == 2)
             {
-                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
+                if (unit.isEvolution() && (enemyLines[unit.Player].Contains(tileindex.y) || enemyLines[unit.Player].Contains(oldpos.y)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -461,29 +474,6 @@ public class GameSceneDirector : MonoBehaviour
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        ////王手されてしまうかチェック
-        //UnitController[,] copyunits = GetCopyArray(units);
-        //if (FieldStatus.OnBoard == unit.FieldStatus)
-        //{
-        //    copyunits[unit.Pos.x, unit.Pos.y] = null;
-        //}
-        //int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
-
-        ////王手を回避できる場所を返す
-        //if (0 < outecount)
-        //{
-        //    ret = new List<Vector2Int>();
-        //    List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
-        //    foreach (var item in movabletiles)
-        //    {
-        //        //移動した状態を作る
-        //        UnitController[,] copyunits2 = GetCopyArray(copyunits);
-        //        copyunits2[item.x, item.y] = unit;
-        //        outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
-        //        if (1 > outecount) ret.Add(item);
-        //    }
-        //}
-
         return ret;
     }
 
@@ -550,22 +540,6 @@ public class GameSceneDirector : MonoBehaviour
         {
             textResultInfo.text = "王手";
         }
-
-        //５００手ルール
-        /*if (500 < turnCount)
-        {
-            textResultInfo.text = "500手ルール！\n" + "ひきわけ";
-        }
-        */
-
-        ////自軍が移動可能か調べる
-        //int movablecount = 0;
-        //foreach (var item in getUnits(nowPlayer))
-        //{
-        //    movablecount += getMovableTiles(item).Count;
-        //}
-
-
 
         if (tumicount >= 3)
         {
@@ -704,11 +678,15 @@ public class GameSceneDirector : MonoBehaviour
         if (tile && selectUnit && movableTiles.ContainsKey(tile))
         {
             nextMode = moveUnit(selectUnit, movableTiles[tile]);
+            //催眠術カードフラグ
+            saiminjutu = false;
+
         }
 
         //ユニット選択
         else if (unit)
         {
+            //育成
             if (ikusei)
             {
                 //指定したユニットを成らせる                
@@ -718,6 +696,12 @@ public class GameSceneDirector : MonoBehaviour
                     {
                         return;
                     }
+                    //強化中リストから除外
+                    if (isseikyoukatyu[unit.Player].Contains(unit))
+                    {
+                        isseikyoukatyu[unit.Player].Remove(unit);
+                    }
+
                     unit.Evolution();
                     textResultInfo.text = "";
                     ikusei = false;
@@ -725,7 +709,8 @@ public class GameSceneDirector : MonoBehaviour
                 unit = null;
                 return;
             }
-            else if (uragiri)
+            //裏切り
+            else if (uragiri)　
             {
                 //敵駒を自駒に変える
                 if (nowPlayer != unit.Player)
@@ -743,6 +728,241 @@ public class GameSceneDirector : MonoBehaviour
                 unit = null;
                 return;
             }
+            //歩になれ
+            else if (huninare) 
+            {
+                //指定した駒を歩にする
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Hu == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //歩に変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+
+                GameObject prefabHu = prefabUnits[0];
+                GameObject hu = Instantiate(prefabHu, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                hu.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = hu.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = UnitType.Hu;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = UnitType.Hu;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl. getDefaultAngles(unit.Player);
+                unitctrl.Pos = unit.Pos;
+
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                //強化中リストから除外
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
+
+                unit =null;
+                huninare= false;
+                textResultInfo.text = "";
+
+
+                return;
+            }
+            //飛車になれ
+            else if (hishaninare)
+            {
+                //指定した駒を飛車にする
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Hisha == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //飛車に変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+
+                GameObject prefabHisha = prefabUnits[2];
+                GameObject hisha = Instantiate(prefabHisha, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                hisha.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = hisha.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = UnitType.Hisha;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = UnitType.Hisha;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+                unitctrl.Pos = unit.Pos;
+
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                //強化中リストから除外
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
+
+                unit = null;
+                hishaninare = false;
+                textResultInfo.text = "";
+
+
+                return;
+            }
+            //角になれ
+            else if (kakuninare)
+            {
+                //指定した駒を角にする
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Kaku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //角に変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+
+                GameObject prefabKaku = prefabUnits[1];
+                GameObject kaku = Instantiate(prefabKaku, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                kaku.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = kaku.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = UnitType.Kaku;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = UnitType.Kaku;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+                unitctrl.Pos = unit.Pos;
+
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                //強化中リストから除外
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
+
+                unit = null;
+                kakuninare = false;
+                textResultInfo.text = "";
+
+                return;
+            }
+
+
+            //変身
+            else if (henshin)
+            {
+                //指定した駒をランダムな駒にする
+                if (UnitType.Gyoku == unit.UnitType  || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+                //駒を変える処理(内部データもオブジェクトも
+                Destroy(unit.gameObject);
+                Vector3 pos = unit.gameObject.transform.position;
+                int randomNum = Random.Range(0,7);
+                GameObject prefabRandom = prefabUnits[randomNum];
+                GameObject randomUnit = Instantiate(prefabRandom, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+                randomUnit.AddComponent<Rigidbody>();
+
+                UnitController unitctrl = randomUnit.AddComponent<UnitController>();
+                unitctrl.Player = unit.Player;
+                unitctrl.UnitType = (UnitType)randomNum+1;
+                //獲られたときもとにもどるよう
+                unitctrl.OldUnitType = unit.UnitType;
+                //場所の初期化
+                unitctrl.FieldStatus = FieldStatus.OnBoard;
+                //角度と場所
+                unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+                unitctrl.Pos = unit.Pos;
+
+                //ユニットデータセット
+                units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                //強化中リストから除外
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
+
+                unit = null;
+                henshin = false;
+                textResultInfo.text = "";
+
+
+                return;
+            }
+            //入れ替え
+            else if (irekae)
+            {
+
+                if (!firstSelected)
+                {
+                    if (unit.Player != nowPlayer || unit.FieldStatus == FieldStatus.Captured)
+                    {
+                        return;
+                    }
+                    unit1 = unit;
+
+                    firstSelected = true;
+                    textResultInfo.text = "入れ替える駒を選択(1/2)";
+                }
+
+                else
+                {
+                    if (unit.Player != nowPlayer || unit.FieldStatus == FieldStatus.Captured)
+                    {
+                        return;
+                    }
+
+                    UnitController unit2 = unit;
+
+                    if ( unit2 != null )
+                    {
+                        //位置交換
+                        units[unit1.Pos.x,unit1.Pos.y] = unit2;
+                        units[unit2.Pos.x, unit2.Pos.y] = unit1;
+
+                        Vector2Int tempPos1 = unit1.Pos;
+
+                        units[unit2.Pos.x, unit2.Pos.y].Pos = unit2.Pos;
+                        units[tempPos1.x, tempPos1.y].Pos = tempPos1;
+
+                        //ゲームオブジェクトの交換
+                        Vector3 tempObjectPos = unit1.gameObject.transform.position;
+                        unit1.gameObject.transform.position = unit2.gameObject.transform.position;
+                        unit2.gameObject.transform.position = tempObjectPos;
+
+                        irekae = false;
+                        textResultInfo.text = "";
+                        unit1 = null;
+                        firstSelected = false;
+                    }
+
+                }
+
+                return;
+            }
+            //催眠術
+            else if (saiminjutu)
+            {
+                setSelectCursors(unit, true);
+
+                return;
+            }
+
             bool isPlayer = nowPlayer == unit.Player;
             setSelectCursors(unit, isPlayer);
         }
@@ -763,6 +983,8 @@ public class GameSceneDirector : MonoBehaviour
             //カード使用フラグは元に戻さない
             nextMode = Mode.Select;
             nikaikoudou = false;
+            //「成りますか？」を非表示に
+            textResultInfo.text = "";
             //コンピューターの思考時間をリセット
             if (isCpu)
             {
@@ -773,17 +995,6 @@ public class GameSceneDirector : MonoBehaviour
 
         //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
-
-        ////カードが５枚に満たなかったらカードを補充
-        //if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
-        //{
-        //    if (nowPlayer == 0) cardsDirector.DestroyCards(0);
-        //    cardsDirector.DealCards(nowPlayer);
-        //    if  (nowPlayer == 0)
-        //    {
-        //        cardsDirector.InstantiateCards(nowPlayer);
-        //    }
-        //}
 
         //使用した枚数返す
         if (nowPlayer >= 0)
@@ -1053,7 +1264,6 @@ public class GameSceneDirector : MonoBehaviour
     public void UseCard(CardType cardType, int player)
     {
         print((player + 1) + "Pが" + cardType + "使用");
-
         if (CardType.Zyunbantobashi == cardType)
         {
             zyunbantobashi = true;
@@ -1125,12 +1335,45 @@ public class GameSceneDirector : MonoBehaviour
 
         else if (CardType.huninare == cardType)
         {
+            huninare = true;
+            textResultInfo.text = "歩に変える駒を選択";
 
         }
+
+        else if (CardType.henshin == cardType)
+        {
+            henshin = true;
+            textResultInfo.text = "変身する駒を選択";
+
+        }
+
+        else if (CardType.irekae == cardType)
+        {
+            irekae = true;
+            textResultInfo.text = "入れ替える駒を選択(0/2)";
+
+        }
+
+        else if (CardType.hishaninare == cardType)
+        {
+            hishaninare = true;
+            textResultInfo.text = "飛車に変える駒を選択";
+        }
+
+        else if (CardType.kakuninare == cardType)
+        {
+            kakuninare = true;
+            textResultInfo.text = "角に変える駒を選択";
+        }
+        else if (CardType.saiminjutu == cardType)
+        {
+            saiminjutu = true;
+        }
+
     }
 
-        //リザルト再戦
-        public void OnClickRematch()
+    //リザルト再戦
+    public void OnClickRematch()
     {
         SceneManager.LoadScene("GameScene");
     }

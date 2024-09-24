@@ -50,7 +50,7 @@ public class CardsDirector : MonoBehaviour
         }
         for (int i = 0; i < num; i++)
         {
-            int type = Random.Range(0, prefabCards.Count);
+            int type = Random.Range(0,prefabCards.Count);
 
             CardController cardctrl = gameObject.AddComponent<CardController>();
             cardctrl.Init(player, type);
