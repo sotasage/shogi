@@ -166,29 +166,29 @@ public class UnitController : MonoBehaviour
                 //歩
                 if (UnitType.Hu == UnitType)
                 {
-                    //二歩
-                    if (Player == 0 || Player == 2)
-                    {
-                        for (int i = 0; i < units.GetLength(1); i++)
-                        {
-                            if (units[checkpos.x, i] && UnitType.Hu == units[checkpos.x, i].UnitType && Player == units[checkpos.x, i].Player)
-                            {
-                                ismovable = false;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < units.GetLength(0); i++)
-                        {
-                            if (units[i, checkpos.y] && UnitType.Hu == units[i, checkpos.y].UnitType && Player == units[i, checkpos.y].Player)
-                            {
-                                ismovable = false;
-                                break;
-                            }
-                        }
-                    }
+                    ////二歩
+                    //if (Player == 0 || Player == 2)
+                    //{
+                    //    for (int i = 0; i < units.GetLength(1); i++)
+                    //    {
+                    //        if (units[checkpos.x, i] && UnitType.Hu == units[checkpos.x, i].UnitType && Player == units[checkpos.x, i].Player)
+                    //        {
+                    //            ismovable = false;
+                    //            break;
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    for (int i = 0; i < units.GetLength(0); i++)
+                    //    {
+                    //        if (units[i, checkpos.y] && UnitType.Hu == units[i, checkpos.y].UnitType && Player == units[i, checkpos.y].Player)
+                    //        {
+                    //            ismovable = false;
+                    //            break;
+                    //        }
+                    //    }
+                    //}
 
  /*                   //うち歩詰め
                     //今回打ったことにして、王手になる場合

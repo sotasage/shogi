@@ -12,9 +12,15 @@ public enum CardType
     komaget,
     nikaikoudou,
     isseikyouka,
+    huninare,
+
     ikusei,
     uragiri,
-    huninare,
+    henshin,
+    irekae,
+    hishaninare,
+    kakuninare,
+    saiminjutu,
 }
 
 public class CardController : MonoBehaviour
