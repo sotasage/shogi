@@ -474,29 +474,6 @@ public class GameSceneDirector : MonoBehaviour
     {
         List<Vector2Int> ret = unit.GetMovableTiles(units);
 
-        ////王手されてしまうかチェック
-        //UnitController[,] copyunits = GetCopyArray(units);
-        //if (FieldStatus.OnBoard == unit.FieldStatus)
-        //{
-        //    copyunits[unit.Pos.x, unit.Pos.y] = null;
-        //}
-        //int outecount = GetOuteUnitsUke(copyunits, unit.Player).Count;
-
-        ////王手を回避できる場所を返す
-        //if (0 < outecount)
-        //{
-        //    ret = new List<Vector2Int>();
-        //    List<Vector2Int> movabletiles = unit.GetMovableTiles(units);
-        //    foreach (var item in movabletiles)
-        //    {
-        //        //移動した状態を作る
-        //        UnitController[,] copyunits2 = GetCopyArray(copyunits);
-        //        copyunits2[item.x, item.y] = unit;
-        //        outecount = GetOuteUnitsUke(copyunits2, unit.Player, false).Count;
-        //        if (1 > outecount) ret.Add(item);
-        //    }
-        //}
-
         return ret;
     }
 
@@ -563,22 +540,6 @@ public class GameSceneDirector : MonoBehaviour
         {
             textResultInfo.text = "王手";
         }
-
-        //５００手ルール
-        /*if (500 < turnCount)
-        {
-            textResultInfo.text = "500手ルール！\n" + "ひきわけ";
-        }
-        */
-
-        ////自軍が移動可能か調べる
-        //int movablecount = 0;
-        //foreach (var item in getUnits(nowPlayer))
-        //{
-        //    movablecount += getMovableTiles(item).Count;
-        //}
-
-
 
         if (tumicount >= 3)
         {
@@ -736,12 +697,9 @@ public class GameSceneDirector : MonoBehaviour
                         return;
                     }
                     //強化中リストから除外
-                    foreach (var item in isseikyoukatyu[unit.Player])
+                    if (isseikyoukatyu[unit.Player].Contains(unit))
                     {
-                        if (item == unit)
-                        {
-                            isseikyoukatyu[unit.Player].Remove(item);
-                        }
+                        isseikyoukatyu[unit.Player].Remove(unit);
                     }
 
                     unit.Evolution();
@@ -802,7 +760,10 @@ public class GameSceneDirector : MonoBehaviour
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
                 //強化中リストから除外
-                isseikyoukatyu[unit.Player].RemoveAll(item => item==unit);
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
 
                 unit =null;
                 huninare= false;
@@ -843,8 +804,10 @@ public class GameSceneDirector : MonoBehaviour
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
                 //強化中リストから除外
-                isseikyoukatyu[unit.Player].RemoveAll(item => item == unit);
-
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
 
                 unit = null;
                 hishaninare = false;
@@ -884,14 +847,15 @@ public class GameSceneDirector : MonoBehaviour
                 //ユニットデータセット
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
+                //強化中リストから除外
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
+
                 unit = null;
                 kakuninare = false;
                 textResultInfo.text = "";
-
-                //強化中リストから除外
-                isseikyoukatyu[unit.Player].RemoveAll(item => item == unit);
-
-
 
                 return;
             }
@@ -928,9 +892,10 @@ public class GameSceneDirector : MonoBehaviour
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
                 //強化中リストから除外
-                isseikyoukatyu[unit.Player].RemoveAll(item => item == unit);
-
-
+                if (isseikyoukatyu[unit.Player].Contains(unit))
+                {
+                    isseikyoukatyu[unit.Player].Remove(unit);
+                }
 
                 unit = null;
                 henshin = false;
@@ -953,8 +918,6 @@ public class GameSceneDirector : MonoBehaviour
 
                     firstSelected = true;
                     textResultInfo.text = "入れ替える駒を選択(1/2)";
-
-
                 }
 
                 else
@@ -976,9 +939,6 @@ public class GameSceneDirector : MonoBehaviour
 
                         units[unit2.Pos.x, unit2.Pos.y].Pos = unit2.Pos;
                         units[tempPos1.x, tempPos1.y].Pos = tempPos1;
-
-
-
 
                         //ゲームオブジェクトの交換
                         Vector3 tempObjectPos = unit1.gameObject.transform.position;
@@ -1035,17 +995,6 @@ public class GameSceneDirector : MonoBehaviour
 
         //カード使用フラグを元に戻す
         cardsDirector.usedFlag = false;
-
-        ////カードが５枚に満たなかったらカードを補充
-        //if (nowPlayer >= 0 && cardsDirector.playerCards[nowPlayer].Count < 5)
-        //{
-        //    if (nowPlayer == 0) cardsDirector.DestroyCards(0);
-        //    cardsDirector.DealCards(nowPlayer);
-        //    if  (nowPlayer == 0)
-        //    {
-        //        cardsDirector.InstantiateCards(nowPlayer);
-        //    }
-        //}
 
         //使用した枚数返す
         if (nowPlayer >= 0)

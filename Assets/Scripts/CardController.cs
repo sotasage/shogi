@@ -13,7 +13,6 @@ public enum CardType
     nikaikoudou,
     isseikyouka,
     huninare,
-
     ikusei,
     uragiri,
     henshin,
