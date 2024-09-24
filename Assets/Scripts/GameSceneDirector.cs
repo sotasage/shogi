@@ -782,15 +782,9 @@ public class GameSceneDirector : MonoBehaviour
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
                 //強化中リストから除外
-                foreach(var item in isseikyoukatyu[unit.Player])
-                {
-                    if (item == unit)
-                    {
-                        isseikyoukatyu[unit.Player].Remove(item);
-                    }
-                }
+                isseikyoukatyu[unit.Player].RemoveAll(item => item==unit);
 
-                unit=null;
+                unit =null;
                 huninare= false;
                 textResultInfo.text = "";
 
@@ -829,13 +823,7 @@ public class GameSceneDirector : MonoBehaviour
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
                 //強化中リストから除外
-                foreach (var item in isseikyoukatyu[unit.Player])
-                {
-                    if (item == unit)
-                    {
-                        isseikyoukatyu[unit.Player].Remove(item);
-                    }
-                }
+                isseikyoukatyu[unit.Player].RemoveAll(item => item == unit);
 
 
                 unit = null;
@@ -881,13 +869,7 @@ public class GameSceneDirector : MonoBehaviour
                 textResultInfo.text = "";
 
                 //強化中リストから除外
-                foreach (var item in isseikyoukatyu[unit.Player])
-                {
-                    if (item == unit)
-                    {
-                        isseikyoukatyu[unit.Player].Remove(item);
-                    }
-                }
+                isseikyoukatyu[unit.Player].RemoveAll(item => item == unit);
 
 
 
@@ -926,13 +908,7 @@ public class GameSceneDirector : MonoBehaviour
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
                 //強化中リストから除外
-                foreach (var item in isseikyoukatyu[unit.Player])
-                {
-                    if (item == unit)
-                    {
-                        isseikyoukatyu[unit.Player].Remove(item);
-                    }
-                }
+                isseikyoukatyu[unit.Player].RemoveAll(item => item == unit);
 
 
 
