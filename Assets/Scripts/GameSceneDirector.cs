@@ -23,6 +23,8 @@ public class GameSceneDirector : MonoBehaviour
     [SerializeField] Button buttonRematch;
     [SerializeField] Button buttonEvolutionApply;
     [SerializeField] Button buttonEvolutionCancel;
+    [SerializeField] GameObject parentObj;
+    [SerializeField] GameObject textUsedCardLog;
 
     //ゲーム設定
     const int PlayerMax = 4;
@@ -135,6 +137,26 @@ public class GameSceneDirector : MonoBehaviour
 
     //CardsDirector
     [SerializeField] CardsDirector cardsDirector;
+
+    //カード名
+    Dictionary<CardType, string> CardName = new Dictionary<CardType, string>()
+    {
+        { CardType.reverse, "リバース" },
+        { CardType.Zyunbantobashi, "順番飛ばし" },
+        { CardType.ichimaituika, "一枚追加" },
+        { CardType.komaget, "駒ゲット" },
+        { CardType.nikaikoudou, "二回行動" },
+        { CardType.isseikyouka, "一斉強化" },
+        { CardType.huninare, "歩になれ！" },
+        { CardType.ikusei, "育成" },
+        { CardType.uragiri, "裏切り" },
+        { CardType.henshin, "変身" },
+        { CardType.irekae, "入れ替え" },
+        { CardType.hishaninare, "飛車になれ！" },
+        { CardType.kakuninare, "リ角になれ！" },
+        { CardType.saiminjutu, "催眠術" },
+
+    };
 
     // Start is called before the first frame update
     void Start()
@@ -1263,7 +1285,11 @@ public class GameSceneDirector : MonoBehaviour
     //カードを使用
     public void UseCard(CardType cardType, int player)
     {
-        print((player + 1) + "Pが" + cardType + "使用");
+        string str = (player + 1) + "Pが" + CardName[cardType] + "使用";
+        print(str);
+        GameObject obj = Instantiate(textUsedCardLog, parentObj.transform);
+        obj.GetComponent<Text>().text = str;
+
         if (CardType.Zyunbantobashi == cardType)
         {
             zyunbantobashi = true;
