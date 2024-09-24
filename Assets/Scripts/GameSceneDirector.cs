@@ -99,7 +99,6 @@ public class GameSceneDirector : MonoBehaviour
     bool nikaikoudou = false;
     bool ikusei = false;
     bool uragiri = false;
-    bool isseikyouka = false;
     bool huninare = false;
     bool henshin = false;
     bool irekae = false;
@@ -716,6 +715,15 @@ public class GameSceneDirector : MonoBehaviour
                     {
                         return;
                     }
+                    //強化中リストから除外
+                    foreach (var item in isseikyoukatyu[unit.Player])
+                    {
+                        if (item == unit)
+                        {
+                            isseikyoukatyu[unit.Player].Remove(item);
+                        }
+                    }
+
                     unit.Evolution();
                     textResultInfo.text = "";
                     ikusei = false;
@@ -773,6 +781,15 @@ public class GameSceneDirector : MonoBehaviour
                 //ユニットデータセット
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
 
+                //強化中リストから除外
+                foreach(var item in isseikyoukatyu[unit.Player])
+                {
+                    if (item == unit)
+                    {
+                        isseikyoukatyu[unit.Player].Remove(item);
+                    }
+                }
+
                 unit=null;
                 huninare= false;
                 textResultInfo.text = "";
@@ -810,6 +827,16 @@ public class GameSceneDirector : MonoBehaviour
 
                 //ユニットデータセット
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                //強化中リストから除外
+                foreach (var item in isseikyoukatyu[unit.Player])
+                {
+                    if (item == unit)
+                    {
+                        isseikyoukatyu[unit.Player].Remove(item);
+                    }
+                }
+
 
                 unit = null;
                 hishaninare = false;
@@ -853,6 +880,16 @@ public class GameSceneDirector : MonoBehaviour
                 kakuninare = false;
                 textResultInfo.text = "";
 
+                //強化中リストから除外
+                foreach (var item in isseikyoukatyu[unit.Player])
+                {
+                    if (item == unit)
+                    {
+                        isseikyoukatyu[unit.Player].Remove(item);
+                    }
+                }
+
+
 
                 return;
             }
@@ -887,6 +924,16 @@ public class GameSceneDirector : MonoBehaviour
 
                 //ユニットデータセット
                 units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+                //強化中リストから除外
+                foreach (var item in isseikyoukatyu[unit.Player])
+                {
+                    if (item == unit)
+                    {
+                        isseikyoukatyu[unit.Player].Remove(item);
+                    }
+                }
+
 
 
                 unit = null;
