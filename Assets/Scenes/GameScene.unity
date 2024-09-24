@@ -1688,7 +1688,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 708858302}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9993189
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1775,6 +1775,7 @@ MonoBehaviour:
   - {fileID: 5350506994278487319, guid: f997af725a76c6f4ea6c0a3644475652, type: 3}
   - {fileID: 5350506994278487319, guid: e3b7833fc33d8344f9aeb459c3653b39, type: 3}
   - {fileID: 5350506994278487319, guid: ff2919076ea10504fbff2fda3b895157, type: 3}
+  - {fileID: 5350506994278487319, guid: 4387beb05dffa064c8fc91cf95eabf2d, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 318547723}
   gameSceneDirector: {fileID: 413897291}

@@ -159,7 +159,6 @@ public class CardsDirector : MonoBehaviour
         Destroy(selectCard.gameObject);
         Destroy(sampleCard);
         bool isRemove = playerCards[0].Remove(selectCard);
-        print(isRemove);
         gameSceneDirector.UseCard(selectCard.CardType, gameSceneDirector.nowPlayer);
         selectCard = null;
     }

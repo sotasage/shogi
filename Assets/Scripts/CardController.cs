@@ -20,6 +20,7 @@ public enum CardType
     hishaninare,
     kakuninare,
     saiminjutu,
+    cardReset,
 }
 
 public class CardController : MonoBehaviour

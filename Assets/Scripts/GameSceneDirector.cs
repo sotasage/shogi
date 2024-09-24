@@ -155,6 +155,7 @@ public class GameSceneDirector : MonoBehaviour
         { CardType.hishaninare, "飛車になれ！" },
         { CardType.kakuninare, "リ角になれ！" },
         { CardType.saiminjutu, "催眠術" },
+        { CardType.cardReset, "カードリセット" },
 
     };
 
@@ -1395,7 +1396,13 @@ public class GameSceneDirector : MonoBehaviour
         {
             saiminjutu = true;
         }
-
+        else if (CardType.cardReset == cardType)
+        {
+            int cardnum = cardsDirector.playerCards[player].Count;
+            if (player == 0) cardsDirector.DestroyCards(player);
+            cardsDirector.playerCards[player].Clear();
+            cardsDirector.AddCards(player, cardnum, true);
+        }
     }
 
     //リザルト再戦
