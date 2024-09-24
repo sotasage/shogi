@@ -22,6 +22,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     [SerializeField] Button buttonRematch;
     [SerializeField] Button buttonEvolutionApply;
     [SerializeField] Button buttonEvolutionCancel;
+    [SerializeField] GameObject parentObj;
+    [SerializeField] GameObject textUsedCardLog;
 
     //ゲーム設定
     const int PlayerMax = 4;
@@ -112,7 +114,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
     int tumicount;
 
-    //プレイヤー
+    //プレイヤー名
     string[] Players;
 
     //PUN
@@ -124,6 +126,26 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     Camera Scenecamera;
 
     [SerializeField] MultiCardsDirector multiCardsDirector;
+
+    //カード名
+    Dictionary<CardType, string> CardName = new Dictionary<CardType, string>()
+    {
+        { CardType.reverse, "リバース" },
+        { CardType.Zyunbantobashi, "順番飛ばし" },
+        { CardType.ichimaituika, "一枚追加" },
+        { CardType.komaget, "駒ゲット" },
+        { CardType.nikaikoudou, "二回行動" },
+        { CardType.isseikyouka, "一斉強化" },
+        { CardType.huninare, "歩になれ！" },
+        { CardType.ikusei, "育成" },
+        { CardType.uragiri, "裏切り" },
+        { CardType.henshin, "変身" },
+        { CardType.irekae, "入れ替え" },
+        { CardType.hishaninare, "飛車になれ！" },
+        { CardType.kakuninare, "角になれ！" },
+        { CardType.saiminjutu, "催眠術" },
+        { CardType.cardReset, "カードリセット" },
+    };
 
     void SetupTurnManager()
     {
@@ -986,6 +1008,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //カードを使用
     public void UseCard(CardType cardType, int player)
     {
+        string str = Players[player] + "さんが" + CardName[cardType] + "使用";
+        print(str);
+        photonView.RPC(nameof(DisplayUsedCardLog), RpcTarget.All, str);
+
         if (CardType.Zyunbantobashi == cardType)
         {
             photonView.RPC(nameof(SkipTrue), RpcTarget.All, 1);
@@ -1101,6 +1127,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         unitctrl.Caputure(player);
         captureUnits.Add(unitctrl);
         alignCaptureUnits(player);
+    }
+
+    //カード使用ログに表示する関数
+    [PunRPC]
+    public void DisplayUsedCardLog(string str)
+    {
+        GameObject obj = Instantiate(textUsedCardLog, parentObj.transform);
+        obj.GetComponent<Text>().text = str;
     }
 
     //ルームを出たときに呼ばれる関数

@@ -10,7 +10,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 using static UnityEngine.UI.CanvasScaler;
 using Random = UnityEngine.Random;
 
@@ -153,10 +152,9 @@ public class GameSceneDirector : MonoBehaviour
         { CardType.henshin, "変身" },
         { CardType.irekae, "入れ替え" },
         { CardType.hishaninare, "飛車になれ！" },
-        { CardType.kakuninare, "リ角になれ！" },
+        { CardType.kakuninare, "角になれ！" },
         { CardType.saiminjutu, "催眠術" },
         { CardType.cardReset, "カードリセット" },
-
     };
 
     // Start is called before the first frame update
