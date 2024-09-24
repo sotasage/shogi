@@ -127,6 +127,8 @@ public class CardsDirector : MonoBehaviour
                     
                     if (gameSceneDirector.nowPlayer == player && !usedFlag)
                     {
+                        //カードの効果を使えない場合ボタンを押せない状態にして表示
+                        buttonUseCard.interactable = gameSceneDirector.isCanUseCard(selectCard.CardType);
                         buttonUseCard.gameObject.SetActive(true);
                     }
                 }
