@@ -670,6 +670,42 @@ public class GameSceneDirector : MonoBehaviour
                     List<UnitController> ret = GetUnitsForCard(CardType.uragiri);
                     unit = ret[Random.Range(0, ret.Count)];
                 }
+                else if (huninare)
+                {
+                    //歩にする駒を敵駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.huninare);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (hishaninare)
+                {
+                    //飛車にする駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.hishaninare);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (kakuninare)
+                {
+                    //角にする駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.kakuninare);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (henshin)
+                {
+                    //ランダムな駒にする駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.henshin);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (saiminjutu)
+                {
+                    //動かす敵の駒を選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.saiminjutu);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+
                 else
                 {
                     //全ユニット取得してランダムで選択
@@ -1256,14 +1292,28 @@ public class GameSceneDirector : MonoBehaviour
         List<UnitController> ret = new List<UnitController>();
         foreach (var item in units)
         {
+            //自駒かつ成り可能駒
             if (CardType.ikusei == cardType) 
             {
                 if (!item || nowPlayer != item.Player || !item.isEvolution()) continue;
             }
-            else if (CardType.uragiri == cardType)
+            //敵駒かつ玉以外
+            else if (CardType.uragiri == cardType || CardType.saiminjutu== cardType)
             {
                 if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType) continue;
             }
+            //敵駒かつ玉、雑魚駒以外
+            else if (CardType.huninare == cardType)
+            {
+                if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType || UnitType.Hu == item.UnitType || UnitType.Keima == item.UnitType || UnitType.Kyousha == item.UnitType ) continue;
+            }
+
+            //自駒かつ玉,強い駒以外
+            else if (CardType.kakuninare == cardType || CardType.hishaninare == cardType || CardType.henshin == cardType )
+            {
+                if (!item || nowPlayer != item.Player || UnitType.Gyoku == item.UnitType || UnitType.Kaku == item.UnitType || UnitType.Hisha == item.UnitType || UnitType.Uma == item.UnitType || UnitType.Ryu == item.UnitType) continue;
+            }
+
             ret.Add(item);
         }
         return ret;
@@ -1272,14 +1322,7 @@ public class GameSceneDirector : MonoBehaviour
     //カードが使用可能か調べる
     public bool isCanUseCard(CardType cardType)
     {
-        if (CardType.ikusei == cardType)
-        {
-            if (GetUnitsForCard(CardType.ikusei).Count == 0) return false;
-        }
-        else if (CardType.uragiri == cardType)
-        {
-            if (GetUnitsForCard(CardType.uragiri).Count == 0) return false;
-        }
+        if (GetUnitsForCard(cardType).Count == 0) return false;
         return true;
     } 
 
