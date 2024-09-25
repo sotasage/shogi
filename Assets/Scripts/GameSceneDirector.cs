@@ -1173,6 +1173,8 @@ public class GameSceneDirector : MonoBehaviour
             //手札を二枚追加
             cardsDirector.AddCards(player, 2);
 
+            print((player+1) + "Pが" + (unit.Player+1) + "Pを撃破！");
+
         }
         units[tileindex.x, tileindex.y] = null;
     }
