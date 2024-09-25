@@ -709,6 +709,12 @@ public class GameSceneDirector : MonoBehaviour
                         unit = null;
                     }
                 }
+                else if (irekae)
+                {
+                    //場所を入れ替える駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.irekae);
+                    unit = ret[Random.Range(0, ret.Count)];
+                }
 
                 else
                 {
@@ -1314,6 +1320,12 @@ public class GameSceneDirector : MonoBehaviour
             else if (CardType.kakuninare == cardType || CardType.hishaninare == cardType || CardType.henshin == cardType )
             {
                 if (!item || nowPlayer != item.Player || UnitType.Gyoku == item.UnitType || UnitType.Kaku == item.UnitType || UnitType.Hisha == item.UnitType || UnitType.Uma == item.UnitType || UnitType.Ryu == item.UnitType) continue;
+            }
+
+            //自駒(移動できない駒を含む)
+            if (CardType.irekae == cardType) 
+            {
+                if (!item || nowPlayer != item.Player) continue;
             }
 
             ret.Add(item);
