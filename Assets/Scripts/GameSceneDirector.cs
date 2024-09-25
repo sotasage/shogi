@@ -527,6 +527,18 @@ public class GameSceneDirector : MonoBehaviour
             istumi[nowPlayer] = true;
             tumicount++;
             nextMode = Mode.TurnChange;
+            foreach(var item in getUnits(nowPlayer))
+            {
+                Destroy(item.gameObject);
+                if (item.FieldStatus == FieldStatus.OnBoard)
+                {
+                    units[item.Pos.x, item.Pos.y]=null;
+                }
+                else
+                {
+                    captureUnits.Remove(item);
+                }
+            }
             return ;
         }
 
