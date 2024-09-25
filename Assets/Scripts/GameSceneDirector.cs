@@ -746,10 +746,11 @@ public class GameSceneDirector : MonoBehaviour
         //移動先選択
         if (tile && selectUnit && movableTiles.ContainsKey(tile))
         {
+            //カードの使用を制限
+            cardsDirector.usedFlag = true;
             nextMode = moveUnit(selectUnit, movableTiles[tile]);
             //催眠術カードフラグ
             saiminjutu = false;
-
         }
 
         //ユニット選択
