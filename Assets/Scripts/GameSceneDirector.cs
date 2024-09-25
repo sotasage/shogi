@@ -670,13 +670,58 @@ public class GameSceneDirector : MonoBehaviour
             //ユニット選択
             if (!selectUnit)
             {
-                //全ユニット取得してランダムで選択
-                List<UnitController> allunits = getUnits(nowPlayer);
-                unit = allunits[Random.Range(0, allunits.Count)];
-                //移動できないならやり直し
-                if (1 > getMovableTiles(unit).Count)
+                if (ikusei)
                 {
-                    unit = null;
+                    //成らせる自駒をランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.ikusei);
+                    unit = ret[Random.Range(0, ret.Count)];
+                }
+                else if (uragiri)
+                {
+                    //自駒にする敵駒をランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.uragiri);
+                    unit = ret[Random.Range(0, ret.Count)];
+                }
+                else if (huninare)
+                {
+                    //歩にする駒を敵駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.huninare);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (hishaninare)
+                {
+                    //飛車にする駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.hishaninare);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (kakuninare)
+                {
+                    //角にする駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.kakuninare);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+                else if (henshin)
+                {
+                    //ランダムな駒にする駒を自駒からランダムで選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.henshin);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
+
+                else
+                {
+                    //全ユニット取得してランダムで選択
+                    List<UnitController> allunits;
+                    allunits = getUnits(nowPlayer);
+                    unit = allunits[Random.Range(0, allunits.Count)];
+                    //移動できないならやり直し
+                    if (1 > getMovableTiles(unit).Count)
+                    {
+                        unit = null;
+                    }
                 }
             }
             //タイル選択
@@ -1258,6 +1303,45 @@ public class GameSceneDirector : MonoBehaviour
         return ret;
     }
 
+    //カードの対象として選択できるユニットを取得する
+    public List<UnitController> GetUnitsForCard(CardType cardType)
+    {
+        List<UnitController> ret = new List<UnitController>();
+        foreach (var item in units)
+        {
+            //自駒かつ成り可能駒
+            if (CardType.ikusei == cardType) 
+            {
+                if (!item || nowPlayer != item.Player || !item.isEvolution()) continue;
+            }
+            //敵駒かつ玉以外
+            else if (CardType.uragiri == cardType )
+            {
+                if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType) continue;
+            }
+            //敵駒かつ玉、雑魚駒以外
+            else if (CardType.huninare == cardType)
+            {
+                if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType || UnitType.Hu == item.UnitType || UnitType.Keima == item.UnitType || UnitType.Kyousha == item.UnitType ) continue;
+            }
+
+            //自駒かつ玉,強い駒以外
+            else if (CardType.kakuninare == cardType || CardType.hishaninare == cardType || CardType.henshin == cardType )
+            {
+                if (!item || nowPlayer != item.Player || UnitType.Gyoku == item.UnitType || UnitType.Kaku == item.UnitType || UnitType.Hisha == item.UnitType || UnitType.Uma == item.UnitType || UnitType.Ryu == item.UnitType) continue;
+            }
+
+            ret.Add(item);
+        }
+        return ret;
+    }
+
+    //カードが使用可能か調べる
+    public bool isCanUseCard(CardType cardType)
+    {
+        if (GetUnitsForCard(cardType).Count == 0) return false;
+        return true;
+    } 
 
     //カードを使用
     public void UseCard(CardType cardType, int player)
