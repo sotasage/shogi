@@ -56,7 +56,7 @@ public class GameSceneDirector : MonoBehaviour
     UnitController[,] units;
 
     //現在選択中のユニット
-    UnitController selectUnit;
+    public UnitController selectUnit;
 
     //移動可能範囲
     Dictionary<GameObject, Vector2Int> movableTiles;
@@ -341,7 +341,7 @@ public class GameSceneDirector : MonoBehaviour
     }
 
     //選択時
-    void setSelectCursors(UnitController unit = null, bool playerunit = true)
+    public void setSelectCursors(UnitController unit = null, bool playerunit = true)
     {
         //カーソル削除
         foreach (var item in cursors)
@@ -441,7 +441,7 @@ public class GameSceneDirector : MonoBehaviour
             }
             else
             {
-                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.x) || enemyLines[nowPlayer].Contains(oldpos.x)))
+                if (unit.isEvolution() && (enemyLines[unit.Player].Contains(tileindex.x) || enemyLines[unit.Player].Contains(oldpos.x)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -695,13 +695,21 @@ public class GameSceneDirector : MonoBehaviour
         //何も選択されていなければ処理をしない
         if (null == tile && null == unit) return;
 
+        /*if (selectUnit && unit)
+        {
+            if (selectUnit == unit)
+            {
+                setSelectCursors();
+                unit = null;
+            }
+        }*/
+
         //移動先選択
         if (tile && selectUnit && movableTiles.ContainsKey(tile))
         {
             nextMode = moveUnit(selectUnit, movableTiles[tile]);
             //催眠術カードフラグ
             saiminjutu = false;
-
         }
 
         //ユニット選択
@@ -1362,21 +1370,18 @@ public class GameSceneDirector : MonoBehaviour
         {
             huninare = true;
             textResultInfo.text = "歩に変える駒を選択";
-
         }
 
         else if (CardType.henshin == cardType)
         {
             henshin = true;
             textResultInfo.text = "変身する駒を選択";
-
         }
 
         else if (CardType.irekae == cardType)
         {
             irekae = true;
             textResultInfo.text = "入れ替える駒を選択(0/2)";
-
         }
 
         else if (CardType.hishaninare == cardType)

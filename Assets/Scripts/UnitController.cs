@@ -93,7 +93,6 @@ public class UnitController : MonoBehaviour
         //角度と場所
         transform.eulerAngles = getDefaultAngles(player);
         Move(tile, pos);
-
     }
     //指定されたプレイヤー番号の向きを返す
     public Vector3 getDefaultAngles(int player)

@@ -152,6 +152,7 @@ public class MultiCardsDirector : MonoBehaviourPunCallbacks
 
     public void OnClickButtonUseCard()
     {
+        multiGameSceneDirector.setSelectCursors();
         usedFlag = true;
         buttonUseCard.gameObject.SetActive(false);
         Destroy(selectCard.gameObject);
