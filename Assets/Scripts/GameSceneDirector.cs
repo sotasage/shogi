@@ -153,7 +153,7 @@ public class GameSceneDirector : MonoBehaviour
         { CardType.henshin, "変身" },
         { CardType.irekae, "入れ替え" },
         { CardType.hishaninare, "飛車になれ！" },
-        { CardType.kakuninare, "リ角になれ！" },
+        { CardType.kakuninare, "角になれ！" },
         { CardType.saiminjutu, "催眠術" },
         { CardType.cardReset, "カードリセット" },
 
@@ -703,7 +703,11 @@ public class GameSceneDirector : MonoBehaviour
                     //動かす敵の駒を選択
                     List<UnitController> ret = GetUnitsForCard(CardType.saiminjutu);
                     unit = ret[Random.Range(0, ret.Count)];
-
+                    //移動できないならやり直し
+                    if (1 > getMovableTiles(unit).Count)
+                    {
+                        unit = null;
+                    }
                 }
 
                 else
@@ -769,7 +773,7 @@ public class GameSceneDirector : MonoBehaviour
                 return;
             }
             //裏切り
-            else if (uragiri)　
+            else if (uragiri)
             {
                 //敵駒を自駒に変える
                 if (nowPlayer != unit.Player)
@@ -1042,8 +1046,6 @@ public class GameSceneDirector : MonoBehaviour
             //カード使用フラグは元に戻さない
             nextMode = Mode.Select;
             nikaikoudou = false;
-            //「成りますか？」を非表示に
-            textResultInfo.text = "";
             //コンピューターの思考時間をリセット
             if (isCpu)
             {
@@ -1334,6 +1336,9 @@ public class GameSceneDirector : MonoBehaviour
         GameObject obj = Instantiate(textUsedCardLog, parentObj.transform);
         obj.GetComponent<Text>().text = str;
 
+        //カード使用時、カーソルをリセット
+        setSelectCursors();
+
         if (CardType.Zyunbantobashi == cardType)
         {
             zyunbantobashi = true;
@@ -1377,14 +1382,12 @@ public class GameSceneDirector : MonoBehaviour
         else if (CardType.ikusei == cardType)
         {
             ikusei = true;
-            setSelectCursors();
             textResultInfo.text = "成らせる自駒を選択";
         }
 
         else if (CardType.uragiri == cardType)
         {
             uragiri = true;
-            setSelectCursors();
             textResultInfo.text = "自駒に変える敵駒を選択";
         }
 
