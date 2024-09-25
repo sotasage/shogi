@@ -102,6 +102,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool zyunbantobashi = false;
     bool nikaikoudou = false;
     bool huninare = false;
+    bool ikusei = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -583,6 +584,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //プレイヤーのターンかつカードを選択しているならカード選択ボタンを表示
         if (myturn && multiCardsDirector.selectCard)
         {
+            //カードの効果を使えない場合ボタンを押せない状態にして表示
+            multiCardsDirector.buttonUseCard.interactable = isCanUseCard(multiCardsDirector.selectCard.CardType);
             multiCardsDirector.buttonUseCard.gameObject.SetActive(true);
         }
 
@@ -707,6 +710,28 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
                 return;
             }
+
+            //育成
+            else if (ikusei)
+            {
+                //選択した駒が現在のプレイヤーの駒じゃなかったら終了
+                if (nowPlayer != unit.Player) return;
+                //選択した駒が進化できないまたは持ち駒だった場合終了
+                if (!unit.isEvolution() || unit.FieldStatus == FieldStatus.Captured) return;
+
+                //育成する駒の盤上の位置を取得
+                int[] unitpos = UnitPosition(unit);
+
+                //駒を成らせる処理
+                photonView.RPC(nameof(Ikusei), RpcTarget.All, unitpos);
+
+                unit = null;
+                ikusei = false;
+                textResultInfo.text = "";
+
+                return;
+            }
+
             bool isPlayer = false;
             if (myturn && nowPlayer == unit.Player) isPlayer = true;
             setSelectCursors(unit, isPlayer);
@@ -971,6 +996,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         nextMode = (Mode)mode;
     }
 
+    //歩になれ
     [PunRPC]
     void ChangeHu(int[] unitpos)
     {
@@ -1006,6 +1032,19 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             isseikyoukatyu[unit.Player].Remove(unit);
         }
     }
+
+    //育成
+    [PunRPC]
+    void Ikusei(int[] unitpos)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+
+        UnitController unit = units[unitpos[0], unitpos[1]];
+
+        //選択した駒を成らせる
+        unit.Evolution();
+    }
+
     //ターンを終了する関数 一瞬時間を空ける
     IEnumerator FinishPlaying()
     {
@@ -1102,6 +1141,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             huninare = true;
             textResultInfo.text = "歩に変える駒を選択";
         }
+
+        else if (CardType.ikusei == cardType)
+        {
+            ikusei = true;
+            textResultInfo.text = "成らせる自駒を選択";
+        }
     }
 
     //リザルトタイトルへ
@@ -1188,6 +1233,51 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         unitctrl.Caputure(player);
         captureUnits.Add(unitctrl);
         alignCaptureUnits(player);
+    }
+
+    public List<UnitController> GetUnitsForCard(CardType cardType)
+    {
+        List<UnitController> ret = new List<UnitController>();
+        foreach (var item in units)
+        {
+            //自駒かつ成り可能駒
+            if (CardType.ikusei == cardType)
+            {
+                if (!item || nowPlayer != item.Player || !item.isEvolution()) continue;
+            }
+            //敵駒かつ玉以外
+            else if (CardType.uragiri == cardType || CardType.saiminjutu == cardType)
+            {
+                if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType) continue;
+            }
+            //敵駒かつ玉、雑魚駒以外
+            else if (CardType.huninare == cardType)
+            {
+                if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType || UnitType.Hu == item.UnitType || UnitType.Keima == item.UnitType || UnitType.Kyousha == item.UnitType) continue;
+            }
+
+            //自駒かつ玉,強い駒以外
+            else if (CardType.kakuninare == cardType || CardType.hishaninare == cardType || CardType.henshin == cardType)
+            {
+                if (!item || nowPlayer != item.Player || UnitType.Gyoku == item.UnitType || UnitType.Kaku == item.UnitType || UnitType.Hisha == item.UnitType || UnitType.Uma == item.UnitType || UnitType.Ryu == item.UnitType) continue;
+            }
+
+            //自駒(移動できない駒を含む)
+            if (CardType.irekae == cardType)
+            {
+                if (!item || nowPlayer != item.Player) continue;
+            }
+
+            ret.Add(item);
+        }
+        return ret;
+    }
+
+    //カードが使用可能か調べる
+    public bool isCanUseCard(CardType cardType)
+    {
+        if (GetUnitsForCard(cardType).Count == 0) return false;
+        return true;
     }
 
     //カード使用ログに表示する関数

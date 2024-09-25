@@ -973,6 +973,7 @@ MonoBehaviour:
   - {fileID: 8583373011911532605, guid: d087b8bcd9b219344851a016190a429a, type: 3}
   - {fileID: 5350506994278487319, guid: c0468f8326a363b448ec39f8e157bdf0, type: 3}
   - {fileID: 5350506994278487319, guid: 478f0918235f8ba42b2763ff952d9c44, type: 3}
+  - {fileID: 2162976757244010085, guid: fce47bc620042f44f813b655e337021d, type: 3}
   canvas: {fileID: 1795245987}
   buttonUseCard: {fileID: 1571813410}
   multiGameSceneDirector: {fileID: 413897294}
@@ -1273,7 +1274,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1004495079}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99919134
+  m_Size: 0.9999728
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -127,6 +127,8 @@ public class MultiCardsDirector : MonoBehaviourPunCallbacks
 
                     if (multiGameSceneDirector.myturn && !usedFlag)
                     {
+                        //カードの効果を使えない場合ボタンを押せない状態にして表示
+                        buttonUseCard.interactable = multiGameSceneDirector.isCanUseCard(selectCard.CardType);
                         buttonUseCard.gameObject.SetActive(true);
                     }
                 }
