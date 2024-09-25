@@ -154,6 +154,7 @@ public class CardsDirector : MonoBehaviour
 
     public void OnClickButtonUseCard()
     {
+        gameSceneDirector.setSelectCursors();
         usedFlag = true;
         buttonUseCard.gameObject.SetActive(false);
         Destroy(selectCard.gameObject);

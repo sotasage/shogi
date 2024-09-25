@@ -238,7 +238,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -300, y: -5}
-  m_SizeDelta: {x: 160, y: 200}
+  m_SizeDelta: {x: 190, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &170098106
 MonoBehaviour:
@@ -786,6 +786,7 @@ MonoBehaviour:
   - {fileID: 666933454626375695, guid: 8ba66c9ab31e64a05a2e21ab8146320b, type: 3}
   - {fileID: 4803137593304980999, guid: 63fa7bbd37b954eb5ba1eb8de8775a76, type: 3}
   - {fileID: 7192563923468346473, guid: 1aa7de467965d401db003be33f83cda5, type: 3}
+  selectUnit: {fileID: 0}
   prefabCursor: {fileID: 6027442990332178381, guid: 6621dd9c0594660478210baed98412d2, type: 3}
   nowPlayer: 0
   prefabUnitTile: {fileID: 4048784332414518758, guid: 1ae7a1fa8823cf94ca445d8070597dff, type: 3}
@@ -1688,7 +1689,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 708858302}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9993189
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

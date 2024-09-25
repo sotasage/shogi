@@ -22,6 +22,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     [SerializeField] Button buttonRematch;
     [SerializeField] Button buttonEvolutionApply;
     [SerializeField] Button buttonEvolutionCancel;
+    [SerializeField] GameObject parentObj;
+    [SerializeField] GameObject textUsedCardLog;
 
     //ゲーム設定
     const int PlayerMax = 4;
@@ -99,6 +101,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //カードのフラグ初期化
     bool zyunbantobashi = false;
     bool nikaikoudou = false;
+    bool huninare = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -112,7 +115,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
     int tumicount;
 
-    //プレイヤー
+    //プレイヤー名
     string[] Players;
 
     //PUN
@@ -124,6 +127,26 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     Camera Scenecamera;
 
     [SerializeField] MultiCardsDirector multiCardsDirector;
+
+    //カード名
+    Dictionary<CardType, string> CardName = new Dictionary<CardType, string>()
+    {
+        { CardType.reverse, "リバース" },
+        { CardType.Zyunbantobashi, "順番飛ばし" },
+        { CardType.ichimaituika, "一枚追加" },
+        { CardType.komaget, "駒ゲット" },
+        { CardType.nikaikoudou, "二回行動" },
+        { CardType.isseikyouka, "一斉強化" },
+        { CardType.huninare, "歩になれ！" },
+        { CardType.ikusei, "育成" },
+        { CardType.uragiri, "裏切り" },
+        { CardType.henshin, "変身" },
+        { CardType.irekae, "入れ替え" },
+        { CardType.hishaninare, "飛車になれ！" },
+        { CardType.kakuninare, "角になれ！" },
+        { CardType.saiminjutu, "催眠術" },
+        { CardType.cardReset, "カードリセット" },
+    };
 
     void SetupTurnManager()
     {
@@ -342,7 +365,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     }
 
     //選択時
-    void setSelectCursors(UnitController unit = null, bool playerunit = true)
+    public void setSelectCursors(UnitController unit = null, bool playerunit = true)
     {
         //カーソル削除
         foreach (var item in cursors)
@@ -415,9 +438,9 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             units[oldpos.x, oldpos.y] = null;
 
             //成
-            if (nowPlayer == 0 || nowPlayer == 2)
+            if (unit.Player == 0 || unit.Player == 2)
             {
-                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.y) || enemyLines[nowPlayer].Contains(oldpos.y)))
+                if (unit.isEvolution() && (enemyLines[unit.Player].Contains(tileindex.y) || enemyLines[unit.Player].Contains(oldpos.y)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -451,7 +474,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             }
             else
             {
-                if (unit.isEvolution() && (enemyLines[nowPlayer].Contains(tileindex.x) || enemyLines[nowPlayer].Contains(oldpos.x)))
+                if (unit.isEvolution() && (enemyLines[unit.Player].Contains(tileindex.x) || enemyLines[unit.Player].Contains(oldpos.x)))
                 {
                     //次のターンに移動可能かどうか
                     UnitController[,] copyunits = new UnitController[boardWidth, boardHeight];
@@ -663,7 +686,27 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //ユニット選択
         else if (unit)
         {
-            //bool isPlayer = nowPlayer == unit.Player;
+            //歩になれ！
+            if (huninare)
+            {
+                //選択した駒が玉か歩または持ち駒だった場合は終了
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Hu == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+
+                //歩に変える駒の盤上の位置を取得
+                int[] unitpos = UnitPosition(unit);
+
+                //歩に変える処理
+                photonView.RPC(nameof(ChangeHu), RpcTarget.All, unitpos);
+
+                unit = null;
+                huninare = false;
+                textResultInfo.text = "";
+
+                return;
+            }
             bool isPlayer = false;
             if (myturn && nowPlayer == unit.Player) isPlayer = true;
             setSelectCursors(unit, isPlayer);
@@ -928,6 +971,41 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         nextMode = (Mode)mode;
     }
 
+    [PunRPC]
+    void ChangeHu(int[] unitpos)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+
+        UnitController unit = units[unitpos[0], unitpos[1]];
+        //歩に変える処理(内部データもオブジェクトも
+        Destroy(unit.gameObject);
+        Vector3 pos = unit.gameObject.transform.position;
+
+        GameObject prefabHu = prefabUnits[0];
+        GameObject hu = Instantiate(prefabHu, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+        Rigidbody rigidbody =  hu.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
+
+        UnitController unitctrl = hu.AddComponent<UnitController>();
+        unitctrl.Player = unit.Player;
+        unitctrl.UnitType = UnitType.Hu;
+        //獲られたときもとにもどるよう
+        unitctrl.OldUnitType = UnitType.Hu;
+        //場所の初期化
+        unitctrl.FieldStatus = FieldStatus.OnBoard;
+        //角度と場所
+        unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+        unitctrl.Pos = unit.Pos;
+
+        //ユニットデータセット
+        units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+        //強化中リストから除外
+        if (isseikyoukatyu[unit.Player].Contains(unit))
+        {
+            isseikyoukatyu[unit.Player].Remove(unit);
+        }
+    }
     //ターンを終了する関数 一瞬時間を空ける
     IEnumerator FinishPlaying()
     {
@@ -986,6 +1064,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     //カードを使用
     public void UseCard(CardType cardType, int player)
     {
+        string str = Players[player] + "さんが" + CardName[cardType] + "使用";
+        print(str);
+        photonView.RPC(nameof(DisplayUsedCardLog), RpcTarget.All, str);
+
         if (CardType.Zyunbantobashi == cardType)
         {
             photonView.RPC(nameof(SkipTrue), RpcTarget.All, 1);
@@ -1014,6 +1096,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             isseikyoukaTurn = 3;
             //対象の駒を成らせてリストに入れる
             photonView.RPC(nameof(Isseikyouka), RpcTarget.All, nowPlayer);
+        }
+
+        else if (CardType.huninare == cardType){
+            huninare = true;
+            textResultInfo.text = "歩に変える駒を選択";
         }
     }
 
@@ -1074,7 +1161,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
-    //一斉強化された駒の成りを解除しリストを殻にする関数
+    //一斉強化された駒の成りを解除しリストを空にする関数
     [PunRPC]
     public void IsseikyoukaCancel(int player)
     {
@@ -1101,6 +1188,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         unitctrl.Caputure(player);
         captureUnits.Add(unitctrl);
         alignCaptureUnits(player);
+    }
+
+    //カード使用ログに表示する関数
+    [PunRPC]
+    public void DisplayUsedCardLog(string str)
+    {
+        GameObject obj = Instantiate(textUsedCardLog, parentObj.transform);
+        obj.GetComponent<Text>().text = str;
     }
 
     //ルームを出たときに呼ばれる関数
