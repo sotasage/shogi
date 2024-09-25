@@ -710,6 +710,13 @@ public class GameSceneDirector : MonoBehaviour
                     unit = ret[Random.Range(0, ret.Count)];
 
                 }
+                else if (saiminjutu)
+                {
+                    //動かす敵の駒を選択
+                    List<UnitController> ret = GetUnitsForCard(CardType.saiminjutu);
+                    unit = ret[Random.Range(0, ret.Count)];
+
+                }
 
                 else
                 {
@@ -1315,7 +1322,7 @@ public class GameSceneDirector : MonoBehaviour
                 if (!item || nowPlayer != item.Player || !item.isEvolution()) continue;
             }
             //敵駒かつ玉以外
-            else if (CardType.uragiri == cardType )
+            else if (CardType.uragiri == cardType || CardType.saiminjutu== cardType)
             {
                 if (!item || nowPlayer == item.Player || UnitType.Gyoku == item.UnitType) continue;
             }
