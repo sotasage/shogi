@@ -644,10 +644,15 @@ public class GameSceneDirector : MonoBehaviour
             if (!cardsDirector.usedFlag)
             {
                 cardsDirector.usedFlag = true;
-                int cardnum = Random.Range(0, cardsDirector.playerCards[nowPlayer].Count);
-                CardController card = cardsDirector.playerCards[nowPlayer][cardnum];
-                if (isCanUseCard(card.CardType))
+                List<CardController> cards = new List<CardController>();
+                foreach (var item in cardsDirector.playerCards[nowPlayer])
                 {
+                    if (isCanUseCard(item.CardType)) cards.Add(item);
+                }
+                if (cards.Count > 0)
+                { 
+                    int cardnum = Random.Range(0, cards.Count);
+                    CardController card = cards[cardnum];
                     UseCard(card.CardType, nowPlayer);
                     bool isRemove = cardsDirector.playerCards[nowPlayer].Remove(card);
                 }
@@ -753,6 +758,8 @@ public class GameSceneDirector : MonoBehaviour
         //移動先選択
         if (tile && selectUnit && movableTiles.ContainsKey(tile))
         {
+            //カードの使用を制限
+            cardsDirector.usedFlag = true;
             nextMode = moveUnit(selectUnit, movableTiles[tile]);
             //催眠術カードフラグ
             saiminjutu = false;
