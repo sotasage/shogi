@@ -523,7 +523,8 @@ public class GameSceneDirector : MonoBehaviour
             istumi[nowPlayer] = true;
             tumicount++;
             nextMode = Mode.TurnChange;
-            foreach(var item in getUnits(nowPlayer))
+            //脱落したプレイヤーの駒を消去
+            foreach (var item in getUnits(nowPlayer))
             {
                 Destroy(item.gameObject);
                 if (item.FieldStatus == FieldStatus.OnBoard)
@@ -535,6 +536,15 @@ public class GameSceneDirector : MonoBehaviour
                     captureUnits.Remove(item);
                 }
             }
+            //脱落したプレイヤーの持ち駒タイルを削除
+            if (unitTiles[nowPlayer].Count > 0)
+            {
+                foreach (var item in unitTiles[nowPlayer])
+                {
+                    Destroy(item);
+                }
+            }
+
             return ;
         }
 

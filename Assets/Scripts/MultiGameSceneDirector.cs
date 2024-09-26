@@ -587,6 +587,30 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 print(nowPlayer + "P脱落");
                 istumi[nowPlayer] = true;
                 tumicount++;
+
+                //脱落したプレイヤーの駒を消去
+                foreach (var item in getUnits(nowPlayer))
+                {
+                    Destroy(item.gameObject);
+                    if (item.FieldStatus == FieldStatus.OnBoard)
+                    {
+                        units[item.Pos.x, item.Pos.y] = null;
+                    }
+                    else
+                    {
+                        captureUnits.Remove(item);
+                    }
+                }
+
+                //脱落したプレイヤーの持ち駒タイルを削除
+                if (unitTiles[nowPlayer].Count > 0)
+                {
+                    foreach (var item in unitTiles[nowPlayer])
+                    {
+                        Destroy(item);
+                    }
+                }
+
                 StartCoroutine(FinishPlaying());
                 return;
             }
