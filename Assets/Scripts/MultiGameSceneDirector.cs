@@ -109,6 +109,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool irekae = false;
     bool hishaninare = false;
     bool kakuninare = false;
+    bool saiminjutu = false;
 
     //入れ替える駒のリスト
     List<UnitController> IrekaiList = new List<UnitController>();
@@ -555,8 +556,9 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //順番飛ばし処理
         if (zyunbantobashi)
         {
-            photonView.RPC(nameof(SkipFalse), RpcTarget.All, 1);
+            //photonView.RPC(nameof(SkipFalse), RpcTarget.All, 1);
             StartCoroutine(FinishPlaying());
+            photonView.RPC(nameof(SkipFalse), RpcTarget.All, 1);
             return;
         }
 
@@ -681,6 +683,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //移動先選択
         if (myturn && tile && selectUnit && movableTiles.ContainsKey(tile))
         {
+            if (saiminjutu)
+            {
+                saiminjutu = false;
+            }
+
             if (selectUnit.FieldStatus == FieldStatus.Captured)
             {
                 int capturedunitpos = CapturedUnitPosition(selectUnit);
@@ -870,7 +877,16 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 return;
             }
 
-            bool isPlayer = false;
+            //催眠術
+            else if (saiminjutu)
+            {
+                setSelectCursors(unit, true);
+                unit = null;
+
+                return;
+            }
+
+                bool isPlayer = false;
             if (myturn && nowPlayer == unit.Player) isPlayer = true;
             setSelectCursors(unit, isPlayer);
         }
@@ -1466,6 +1482,11 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             kakuninare = true;
             textResultInfo.text = "角に変える駒を選択";
+        }
+
+        else if (CardType.saiminjutu == cardType)
+        {
+            saiminjutu = true;
         }
     }
 
