@@ -211,7 +211,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);
         multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
-        textResultInfo.text = "";
+        textResultInfo.text = "４人揃うまでお待ちください...";
 
         //ボードサイズ
         boardWidth = boardSetting.GetLength(0);
@@ -1487,6 +1487,14 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         else if (CardType.saiminjutu == cardType)
         {
             saiminjutu = true;
+        }
+
+        else if (CardType.cardReset == cardType)
+        {
+            int cardnum = multiCardsDirector.playerCards.Count;
+            multiCardsDirector.DestroyCards();
+            multiCardsDirector.playerCards.Clear();
+            multiCardsDirector.AddCards(player, cardnum, true);
         }
     }
 
