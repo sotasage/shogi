@@ -103,6 +103,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool nikaikoudou = false;
     bool huninare = false;
     bool ikusei = false;
+    bool uragiri = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -732,6 +733,27 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 return;
             }
 
+            //裏切り
+            else if (uragiri)
+            {
+                //選択した駒が現在のプレイヤーの駒だったら終了
+                if (nowPlayer == unit.Player) return;
+                //選択した駒が玉または持ち駒だった場合終了
+                if (UnitType.Gyoku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured) return;
+
+                //選択した駒の盤上の位置を取得
+                int[] unitpos = UnitPosition(unit);
+
+                //裏切りの処理
+                photonView.RPC(nameof(Uragiri), RpcTarget.All, unitpos);
+
+                unit = null;
+                uragiri = false;
+                textResultInfo.text = "";
+
+                StartCoroutine(FinishPlaying());
+            }
+
             bool isPlayer = false;
             if (myturn && nowPlayer == unit.Player) isPlayer = true;
             setSelectCursors(unit, isPlayer);
@@ -1045,6 +1067,18 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         unit.Evolution();
     }
 
+    //裏切り
+    [PunRPC]
+    public void Uragiri(int[] unitpos)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+
+        UnitController unit = units[unitpos[0], unitpos[1]];
+
+        unit.Player = nowPlayer;
+        unit.transform.eulerAngles = unit.getDefaultAngles(nowPlayer);
+    }
+
     //ターンを終了する関数 一瞬時間を空ける
     IEnumerator FinishPlaying()
     {
@@ -1146,6 +1180,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             ikusei = true;
             textResultInfo.text = "成らせる自駒を選択";
+        }
+
+        else if (CardType.uragiri == cardType)
+        {
+            uragiri = true;
+            textResultInfo.text = "自駒に変える敵駒を選択";
         }
     }
 
