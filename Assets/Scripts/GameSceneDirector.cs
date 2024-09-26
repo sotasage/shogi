@@ -823,6 +823,18 @@ public class GameSceneDirector : MonoBehaviour
                     }
                     unit.Player = nowPlayer;
                     unit.transform.eulerAngles = unit.getDefaultAngles(nowPlayer);
+
+                    //成り駒の場合
+                    if ((int)unit.UnitType >= 9)
+                    {
+                        Vector3 angle = unit.transform.eulerAngles;
+
+                        angle.x = 270;
+                        angle.y = 90 * (unit.Player - 2);
+                        angle.z = 0;
+                        unit.transform.eulerAngles = angle;
+                    }
+
                     textResultInfo.text = "";
                     uragiri = false;
                     nextMode = Mode.TurnChange;
@@ -870,7 +882,6 @@ public class GameSceneDirector : MonoBehaviour
                 unit =null;
                 huninare= false;
                 textResultInfo.text = "";
-
 
                 return;
             }
