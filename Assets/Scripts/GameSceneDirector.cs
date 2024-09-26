@@ -116,8 +116,6 @@ public class GameSceneDirector : MonoBehaviour
     UnitController unit1 = null;
     bool firstSelected = false;
 
-
-
     //敵陣設定
     const int EnemyLine = 3;
     List<int>[] enemyLines;
@@ -989,7 +987,6 @@ public class GameSceneDirector : MonoBehaviour
             //入れ替え
             else if (irekae)
             {
-
                 if (!firstSelected)
                 {
                     if (unit.Player != nowPlayer || unit.FieldStatus == FieldStatus.Captured)

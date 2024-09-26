@@ -12,6 +12,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Photon.Realtime;
 using Random = UnityEngine.Random;
+using static UnityEngine.UI.CanvasScaler;
 
 public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
@@ -105,6 +106,10 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool ikusei = false;
     bool uragiri = false;
     bool henshin = false;
+    bool irekae = false;
+
+    //入れ替える駒のリスト
+    List<UnitController> IrekaiList = new List<UnitController>();
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -782,6 +787,42 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 return;
             }
 
+            else if (irekae)
+            {
+                //選択した駒が敵の駒または持ち駒だった場合終了
+                if (unit.Player != nowPlayer || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+
+                if (IrekaiList.Count == 0)
+                {
+                    IrekaiList.Add(unit);
+                    unit = null;
+                    textResultInfo.text = "入れ替える駒を選択(1/2)";
+                }
+                else
+                {
+                    IrekaiList.Add(unit);
+                    UnitController unit1 = IrekaiList[0];
+                    UnitController unit2 = IrekaiList[1];
+
+                    //選択した駒の盤上の位置を取得
+                    int[] unitpos1 = UnitPosition(unit1);
+                    int[] unitpos2 = UnitPosition(unit2);
+
+                    //入れ替えの処理
+                    photonView.RPC(nameof(Irekae), RpcTarget.All, unitpos1, unitpos2);
+
+                    unit = null;
+                    irekae = false;
+                    IrekaiList.Clear();
+                    textResultInfo.text = "";
+                }
+
+                return;
+            }
+
             bool isPlayer = false;
             if (myturn && nowPlayer == unit.Player) isPlayer = true;
             setSelectCursors(unit, isPlayer);
@@ -1146,6 +1187,33 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         }
     }
 
+    //入れ替え
+    [PunRPC]
+    public void Irekae(int[] unitpos1, int[] unitpos2)
+    {
+        if (unitpos1[0] < 0 || boardWidth <= unitpos1[0] || unitpos1[1] < 0 || boardHeight <= unitpos1[1]) return;
+        if (unitpos2[0] < 0 || boardWidth <= unitpos2[0] || unitpos2[1] < 0 || boardHeight <= unitpos2[1]) return;
+
+        UnitController unit1 = units[unitpos1[0], unitpos1[1]];
+        UnitController unit2 = units[unitpos2[0], unitpos2[1]];
+
+        //盤上の位置をVector2Intに変換
+        Vector2Int pos1 = new Vector2Int(unitpos1[0], unitpos1[1]);
+        Vector2Int pos2 = new Vector2Int(unitpos2[0], unitpos2[1]);
+
+        //盤上の位置のタイルを取得
+        GameObject tile1 = tiles[pos1];
+        GameObject tile2 = tiles[pos2];
+
+        //位置を入れ替え
+        unit1.Move(tile2, pos2);
+        unit2.Move(tile1, pos1);
+
+        //ユニットデータセット
+        units[unit1.Pos.x, unit1.Pos.y] = unit1;
+        units[unit2.Pos.x, unit2.Pos.y] = unit2;
+    }
+
     //ターンを終了する関数 一瞬時間を空ける
     IEnumerator FinishPlaying()
     {
@@ -1259,6 +1327,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             henshin = true;
             textResultInfo.text = "変身する駒を選択";
+        }
+
+        else if (CardType.irekae == cardType)
+        {
+            irekae = true;
+            textResultInfo.text = "入れ替える駒を選択(0/2)";
         }
     }
 
