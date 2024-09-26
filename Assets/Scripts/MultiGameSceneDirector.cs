@@ -104,6 +104,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool huninare = false;
     bool ikusei = false;
     bool uragiri = false;
+    bool henshin = false;
 
     //一斉強化カードの管理
     public List<UnitController>[] isseikyoukatyu = new List<UnitController>[4];
@@ -752,6 +753,33 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 textResultInfo.text = "";
 
                 StartCoroutine(FinishPlaying());
+
+                return;
+            }
+
+            //変身
+            else if (henshin)
+            {
+                //指定した駒が玉または持ち駒だった場合終了
+                if (UnitType.Gyoku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+
+                //選択した駒の盤上の位置を取得
+                int[] unitpos = UnitPosition(unit);
+
+                //ランダムで駒のタイプを取得
+                int randomNum = Random.Range(0, 7);
+
+                //変身の処理
+                photonView.RPC(nameof(Henshin), RpcTarget.All, unitpos, randomNum);
+
+                unit = null;
+                henshin = false;
+                textResultInfo.text = "";
+
+                return;
             }
 
             bool isPlayer = false;
@@ -1075,8 +1103,47 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
 
         UnitController unit = units[unitpos[0], unitpos[1]];
 
+        //裏切りの処理
         unit.Player = nowPlayer;
         unit.transform.eulerAngles = unit.getDefaultAngles(nowPlayer);
+    }
+
+    //変身
+    [PunRPC]
+    public void Henshin(int[] unitpos, int randomNum)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+
+        UnitController unit = units[unitpos[0], unitpos[1]];
+
+        //変身の処理
+        Destroy(unit.gameObject);
+        Vector3 pos = unit.gameObject.transform.position;
+
+        GameObject prefabRandom = prefabUnits[randomNum];
+        GameObject randomUnit = Instantiate(prefabRandom, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+        Rigidbody rigidbody = randomUnit.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
+
+        UnitController unitctrl = randomUnit.AddComponent<UnitController>();
+        unitctrl.Player = unit.Player;
+        unitctrl.UnitType = (UnitType)(randomNum + 1);
+        //獲られたときもとにもどるよう
+        unitctrl.OldUnitType = (UnitType)(randomNum + 1);
+        //場所の初期化
+        unitctrl.FieldStatus = FieldStatus.OnBoard;
+        //角度と場所
+        unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+        unitctrl.Pos = unit.Pos;
+
+        //ユニットデータセット
+        units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+        //強化中リストから除外
+        if (isseikyoukatyu[unit.Player].Contains(unit))
+        {
+            isseikyoukatyu[unit.Player].Remove(unit);
+        }
     }
 
     //ターンを終了する関数 一瞬時間を空ける
@@ -1186,6 +1253,12 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             uragiri = true;
             textResultInfo.text = "自駒に変える敵駒を選択";
+        }
+
+        else if (CardType.henshin == cardType)
+        {
+            henshin = true;
+            textResultInfo.text = "変身する駒を選択";
         }
     }
 
