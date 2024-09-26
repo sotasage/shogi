@@ -107,6 +107,8 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
     bool uragiri = false;
     bool henshin = false;
     bool irekae = false;
+    bool hishaninare = false;
+    bool kakuninare = false;
 
     //入れ替える駒のリスト
     List<UnitController> IrekaiList = new List<UnitController>();
@@ -787,6 +789,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                 return;
             }
 
+            //入れ替え
             else if (irekae)
             {
                 //選択した駒が敵の駒または持ち駒だった場合終了
@@ -819,6 +822,50 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
                     IrekaiList.Clear();
                     textResultInfo.text = "";
                 }
+
+                return;
+            }
+
+            //飛車になれ！
+            else if (hishaninare)
+            {
+                //選択した駒が玉か飛車または持ち駒だった場合は終了
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Hisha == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+
+                //選択した駒の盤上の位置を取得
+                int[] unitpos = UnitPosition(unit);
+
+                //飛車に変える処理
+                photonView.RPC(nameof(ChangeHisya), RpcTarget.All, unitpos);
+
+                unit = null;
+                hishaninare = false;
+                textResultInfo.text = "";
+
+                return;
+            }
+
+            //角になれ！
+            else if (kakuninare)
+            {
+                //選択した駒が玉か角または持ち駒だった場合は終了
+                if (UnitType.Gyoku == unit.UnitType || UnitType.Kaku == unit.UnitType || unit.FieldStatus == FieldStatus.Captured)
+                {
+                    return;
+                }
+
+                //選択した駒の盤上の位置を取得
+                int[] unitpos = UnitPosition(unit);
+
+                //角に変える処理
+                photonView.RPC(nameof(ChangeKaku), RpcTarget.All, unitpos);
+
+                unit = null;
+                kakuninare = false;
+                textResultInfo.text = "";
 
                 return;
             }
@@ -1214,6 +1261,80 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         units[unit2.Pos.x, unit2.Pos.y] = unit2;
     }
 
+    //飛車になれ
+    [PunRPC]
+    void ChangeHisya(int[] unitpos)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+
+        UnitController unit = units[unitpos[0], unitpos[1]];
+        //飛車に変える処理(内部データもオブジェクトも
+        Destroy(unit.gameObject);
+        Vector3 pos = unit.gameObject.transform.position;
+
+        GameObject prefabHisya = prefabUnits[2];
+        GameObject hisya = Instantiate(prefabHisya, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+        Rigidbody rigidbody = hisya.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
+
+        UnitController unitctrl = hisya.AddComponent<UnitController>();
+        unitctrl.Player = unit.Player;
+        unitctrl.UnitType = UnitType.Hisha;
+        //獲られたときもとにもどるよう
+        unitctrl.OldUnitType = UnitType.Hisha;
+        //場所の初期化
+        unitctrl.FieldStatus = FieldStatus.OnBoard;
+        //角度と場所
+        unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+        unitctrl.Pos = unit.Pos;
+
+        //ユニットデータセット
+        units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+        //強化中リストから除外
+        if (isseikyoukatyu[unit.Player].Contains(unit))
+        {
+            isseikyoukatyu[unit.Player].Remove(unit);
+        }
+    }
+
+    //角になれ
+    [PunRPC]
+    void ChangeKaku(int[] unitpos)
+    {
+        if (unitpos[0] < 0 || boardWidth <= unitpos[0] || unitpos[1] < 0 || boardHeight <= unitpos[1]) return;
+
+        UnitController unit = units[unitpos[0], unitpos[1]];
+        //角に変える処理(内部データもオブジェクトも
+        Destroy(unit.gameObject);
+        Vector3 pos = unit.gameObject.transform.position;
+
+        GameObject prefabKaku = prefabUnits[1];
+        GameObject kaku = Instantiate(prefabKaku, pos, Quaternion.Euler(90, unit.Player * 90, 0));
+        Rigidbody rigidbody = kaku.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
+
+        UnitController unitctrl = kaku.AddComponent<UnitController>();
+        unitctrl.Player = unit.Player;
+        unitctrl.UnitType = UnitType.Kaku;
+        //獲られたときもとにもどるよう
+        unitctrl.OldUnitType = UnitType.Kaku;
+        //場所の初期化
+        unitctrl.FieldStatus = FieldStatus.OnBoard;
+        //角度と場所
+        unitctrl.transform.eulerAngles = unitctrl.getDefaultAngles(unit.Player);
+        unitctrl.Pos = unit.Pos;
+
+        //ユニットデータセット
+        units[unit.Pos.x, unit.Pos.y] = unitctrl;
+
+        //強化中リストから除外
+        if (isseikyoukatyu[unit.Player].Contains(unit))
+        {
+            isseikyoukatyu[unit.Player].Remove(unit);
+        }
+    }
+
     //ターンを終了する関数 一瞬時間を空ける
     IEnumerator FinishPlaying()
     {
@@ -1333,6 +1454,18 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         {
             irekae = true;
             textResultInfo.text = "入れ替える駒を選択(0/2)";
+        }
+
+        else if (CardType.hishaninare == cardType)
+        {
+            hishaninare = true;
+            textResultInfo.text = "飛車に変える駒を選択";
+        }
+
+        else if (CardType.kakuninare == cardType)
+        {
+            kakuninare = true;
+            textResultInfo.text = "角に変える駒を選択";
         }
     }
 
