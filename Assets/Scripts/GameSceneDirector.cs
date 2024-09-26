@@ -516,7 +516,6 @@ public class GameSceneDirector : MonoBehaviour
             };
         }
 
-
         //王がとられていたら脱落
         if (!gyoku_survive)
         {

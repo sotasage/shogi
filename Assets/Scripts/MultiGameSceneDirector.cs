@@ -1234,6 +1234,17 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
         //裏切りの処理
         unit.Player = nowPlayer;
         unit.transform.eulerAngles = unit.getDefaultAngles(nowPlayer);
+
+        //成り駒の場合
+        if ((int)unit.UnitType >= 9)
+        {
+            Vector3 angle = unit.transform.eulerAngles;
+
+            angle.x = 270;
+            angle.y = 90 * (unit.Player - 2);
+            angle.z = 0;
+            unit.transform.eulerAngles = angle;
+        }
     }
 
     //変身
