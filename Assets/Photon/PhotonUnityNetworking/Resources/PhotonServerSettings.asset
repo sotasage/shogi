@@ -57,6 +57,11 @@ MonoBehaviour:
   - DisplayUsedCardLog
   - ChangeHu
   - Ikusei
+  - Uragiri
+  - Henshin
+  - Irekae
+  - ChangeHisya
+  - ChangeKaku
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
