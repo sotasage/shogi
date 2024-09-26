@@ -525,6 +525,18 @@ public class GameSceneDirector : MonoBehaviour
             istumi[nowPlayer] = true;
             tumicount++;
             nextMode = Mode.TurnChange;
+            foreach(var item in getUnits(nowPlayer))
+            {
+                Destroy(item.gameObject);
+                if (item.FieldStatus == FieldStatus.OnBoard)
+                {
+                    units[item.Pos.x, item.Pos.y]=null;
+                }
+                else
+                {
+                    captureUnits.Remove(item);
+                }
+            }
             return ;
         }
 
@@ -1157,6 +1169,8 @@ public class GameSceneDirector : MonoBehaviour
 
             //手札を二枚追加
             cardsDirector.AddCards(player, 2);
+
+            print((player+1) + "Pが" + (unit.Player+1) + "Pを撃破！");
 
         }
         units[tileindex.x, tileindex.y] = null;
