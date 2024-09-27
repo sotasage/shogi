@@ -26,7 +26,7 @@ public enum CardType
 public class CardController : MonoBehaviour
 {
     //カードサイズ
-    public const float Width = 100;
+    public const float Width = 100f;
 
     //カードのプレイヤー番号 1P: 0, 2P: 1, 3P: 2, 4P: 3
     public int Player;
@@ -66,7 +66,9 @@ public class CardController : MonoBehaviour
 
     public void Select(bool select = true)
     {
-        Vector3 pos = transform.position;
+        GameObject card = gameObject;
+        RectTransform rectTransform = card.GetComponent<RectTransform>();
+        Vector2 pos = rectTransform.anchoredPosition;
 
         if (select)
         {
@@ -76,7 +78,7 @@ public class CardController : MonoBehaviour
         {
             pos.y = UnSelectUnitY;
         }
-        transform.position = pos;
+        rectTransform.anchoredPosition = pos;
     }
 
 

@@ -93,7 +93,7 @@ public class CardsDirector : MonoBehaviour
             int type = (int)cardctrl.CardType;
             GameObject card = Instantiate(prefabCards[type], canvas);
             RectTransform rectTransform = card.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = new Vector2(x, -40); // 座標を設定
+            rectTransform.anchoredPosition = new Vector2(x, -40f); // 座標を設定
 
             //cardにCardControllerをアタッチ
             CardController Cardctrl = card.AddComponent<CardController>();
@@ -117,7 +117,7 @@ public class CardsDirector : MonoBehaviour
                 }
                 if (selectFlg)
                 {
-                    Cardctrl.Select(selectFlg);
+                    Cardctrl.Select();
                     selectCard = Cardctrl;
                     int type = (int)selectCard.CardType;
                     sampleCard = Instantiate(prefabCards[type], canvas);
