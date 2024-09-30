@@ -162,7 +162,7 @@ public class GameSceneDirector : MonoBehaviour
         //sound.PlayBGM(0);
 
         //UI関連初期設定
-        buttonTitle.gameObject.SetActive(false);
+        buttonTitle.gameObject.SetActive(true);
         buttonRematch.gameObject.SetActive(false);
         buttonEvolutionApply.gameObject.SetActive(false);
         buttonEvolutionCancel.gameObject.SetActive(false);

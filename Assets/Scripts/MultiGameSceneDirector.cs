@@ -1401,7 +1401,7 @@ public class MultiGameSceneDirector : MonoBehaviourPunCallbacks, IPunTurnManager
             else
             {
                 myturn = false;
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.5f);
                 multiCardsDirector.buttonUseCard.gameObject.SetActive(false);
 
                 //カード使用フラグを元に戻す
